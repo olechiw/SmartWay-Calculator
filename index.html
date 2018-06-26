@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="styles.css"/>
+    
+    <script type="text/javascript" src="freightMethods.js"></script>
+    <script type="text/javascript" src = "elementBuilders.js"></script>
+</head>
+
+<body>
+    <form class = "center">
+        
+        <fieldset id = "movingMethodsFieldset">
+            <legend>Moving Methods</legend>
+        </fieldset>
+
+        <fieldset id = "activityQuantityFieldSet">
+            <legend>Movement Activity</legend>
+            <label>
+                Units:
+                <select id = "unitsSelect" class="center">
+                    <option value = "Miles">Miles</option>
+                    <option value = "Ton-Miles">Ton-Miles</option>
+                </select>
+            </label>
+            <table style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Movement Amount</th>
+                        <th>General Performance Level</th>
+                    </tr>
+                </thead>
+                <tbody id="activityQuantityTable">
+                </tbody>
+            </table>
+        </fieldset>
+
+    </form>
+    <!--
+    <div id = "selectedMethodsOutput" class="center">
+    </div>
+-->
+
+    <!-- Update -->
+    <script type="text/javascript">
+            function updateActiveMethods(activeMethods)
+            {
+                for (let i = 0; i < freightMethods.length; ++i)
+                {
+                    let method = freightMethods[i];
+                    if (activeMethods.includes(method.type))
+                    {
+                        method.active = true;
+                    }
+                    else
+                    {
+                        method.active = false;
+                    }
+                }
+            }
+
+            function updateQuantityInputUI()
+            {
+                
+                let activityQuantityTable = document.getElementById("activityQuantityTable")
+
+                // Clear out table
+                while (activityQuantityTable.firstChild)
+                {
+                    activityQuantityTable.removeChild(activityQuantityTable.firstChild)
+                }
+
+                for (let i = 0; i < freightMethods.length; ++i)
+                {
+                    var method = freightMethods[i];
+                    if (method.active)
+                    {
+                        let label = document.createTextNode(method.type)
+                        label.textContent = method.type;
+                        var input = document.createElement("input")
+                        input.type = "number";
+                        input.id = i;
+                        input.onchange =  function() {
+                            freightMethods[event.currentTarget.id].activityQuantity = event.currentTarget.value
+                        };
+                        input.value = method.activityQuantity
+
+                        let select = createGeneralPerformanceSelect();
+                        select.value = performanceLevels[method.smartWayGeneral]
+                        select.id = i;
+                        select.onchange = function() {
+                            freightMethods[event.currentTarget.id].smartWayGeneral = performanceLevels.indexOf(event.currentTarget.value)
+                        }
+
+                        let row = createTableRow(label, input, select)
+                        
+                        activityQuantityTable.appendChild(row)
+                    }
+                }
+            }
+
+            </script>
+    <!-- Event Handlers-->
+    <script type="text/javascript">
+            // Update the "active" boolean of each method
+            function onSelectedFreightMethodsChange()
+            {
+                let label = document.getElementById("selectedMethodsOutput")
+                //label.textContent = "othertext"
+                let selected = [];
+                let elements = document.getElementById("movingMethodsFieldset").getElementsByTagName("input")
+                for (let i = 0, element; element = elements[i++];)
+                {
+                    if (element.type === "checkbox" && element.checked)
+                    {
+                        let text = element.parentElement.textContent
+                        selected.push(text)
+                    }
+                }
+
+                //Update the model for all of the methods
+                updateActiveMethods(selected)
+                updateQuantityInputUI()
+            }
+    </script>
+
+    <!-- Main -->
+    <script type="text/javascript">
+
+            let element = document.getElementById("movingMethodsFieldset")
+
+            // Populate moving methods checkboxes
+            for (let i = 0; i < freightMethods.length; ++i) 
+            {
+                let box = createCheckBox(freightMethods[i].type)
+                box.addEventListener("click", onSelectedFreightMethodsChange)
+                element.appendChild(box)
+            }
+    </script>
+
+    <!-- Step Two is choosing units -->
+</body>
+</html>

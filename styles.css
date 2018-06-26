@@ -1,0 +1,40 @@
+html *
+{
+    font-family: 'Trebuchet MS'
+}
+
+.multiCheckBox {
+    border:1px solid #ccc;
+    padding:10px;
+   }
+   
+   .multiCheckBox:hover {
+    background:#eee;
+    cursor:pointer;
+   }
+
+.inlineBlock {
+    display:inline-block
+}
+
+.block {
+    display:block
+}
+
+th, td {
+    border-bottom: 1px solid #000000;
+}
+
+.center {
+    margin:auto;
+    text-align:center;
+    width:50%;
+}
+
+legend {
+    padding:10px;
+    color:black;
+    font-size:20px;
+    text-align: center;
+    font-weight: bolder;
+}
