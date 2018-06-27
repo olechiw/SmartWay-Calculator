@@ -1,10 +1,10 @@
 var performanceLevels = [
     "Non-SmartWay",
-    "SmartWay Bin 5",
-    "SmartWay Bin 4",
-    "SmartWay Bin 3",
+    "SmartWay Bin 1",
     "SmartWay Bin 2",
-    "SmartWay Bin 1"
+    "SmartWay Bin 3",
+    "SmartWay Bin 4",
+    "SmartWay Bin 5"
 ]
 
 // Create the full-click checkbox format

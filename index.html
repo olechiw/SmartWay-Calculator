@@ -5,6 +5,7 @@
     
     <script type="text/javascript" src="freightMethods.js"></script>
     <script type="text/javascript" src = "elementBuilders.js"></script>
+    <script type="text/javascript" src = "smartwayBin.js"></script>
 </head>
 
 <body>
@@ -28,11 +29,38 @@
                     <tr>
                         <th>Type</th>
                         <th>Movement Amount</th>
-                        <th>General Performance Level</th>
                     </tr>
                 </thead>
                 <tbody id="activityQuantityTable">
                 </tbody>
+            </table>
+        </fieldset>
+        <fieldset id = "performanceRankingsFieldset">
+            <legend>Performance Rankings</legend>
+            <label>
+                Detailed Rankings (optional)
+                <input type="checkbox" onchange="onDoDetailedChange(this)" id = "doDetailed"/>
+            </label>
+            <table style = "width:100%">
+                <thead id = "simpleHeader">
+                    <tr>
+                        <th>Type</th>
+                        <th>General Performance Level</th>
+                    </tr>
+                </thead>
+                <thead id = "detailedHeader" style="display:none">
+                    <tr>
+                        <th>Type</th>
+                        <th>% NON</th>
+                        <th>% Bin 5</th>
+                        <th>% Bin 4</th>
+                        <th>% Bin 3</th>
+                        <th>% Bin 2</th>
+                        <th>% Bin 1</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id = "activityPerformanceTable"></tbody>
             </table>
         </fieldset>
 
@@ -87,16 +115,72 @@
                         input.value = method.activityQuantity
 
                         let select = createGeneralPerformanceSelect();
-                        select.value = performanceLevels[method.smartWayGeneral]
-                        select.id = i;
-                        select.onchange = function() {
-                            freightMethods[event.currentTarget.id].smartWayGeneral = performanceLevels.indexOf(event.currentTarget.value)
-                        }
 
                         let row = createTableRow(label, input, select)
                         
                         activityQuantityTable.appendChild(row)
                     }
+                }
+            }
+
+            function updatePerformanceRankingsUI() 
+            {
+                // Clear table
+                let table = document.getElementById("activityPerformanceTable")
+                while (table.firstChild) 
+                {
+                    table.removeChild(table.firstChild)
+                }
+
+
+                let doDetailed = document.getElementById("doDetailed")
+                // One row per type
+                for (let t = 0; t < freightMethods.length; ++t) {
+
+                    if (!freightMethods[t].active)
+                    {
+                        continue
+                    }
+
+                    let row = document.createElement("tr")
+
+                    // Add type label
+                    let method = freightMethods[t]
+                    let td = document.createElement("td")
+                    td.appendChild(document.createTextNode(method.type))
+                    row.appendChild(td)
+
+                    // If checked, do percentages so a row of 6 inputs
+                    if (doDetailed.checked) {
+
+                        // 0,1,2,3,4,5 all correspond to rankings, 0 is best 5 is worst
+                        for (let i = 0; i < 6; ++i) {
+                            let td = document.createElement("td")
+                            let input = document.createElement("input")
+                            input.type = "number"
+                            input.value = method.percentSmartWay[i]
+                            input.id = i
+                            input.onchange = function () {
+                                // Update the freightmethods model onchange
+                                method.percentSmartWay[event.currentTarget.id] = event.currentTarget.value
+                            }
+                            td.appendChild(input)
+                            row.appendChild(td)
+                        }
+                    }
+                    else
+                    {
+                        let select = createGeneralPerformanceSelect()
+                        select.value = performanceLevels[method.smartwayGeneral]
+                        select.onchange = function() {
+                            method.smartWayGeneral = event.currentTarget.value
+                        }
+                        let td = document.createElement("td")
+                        td.appendChild(select)
+                        row.appendChild(td)
+                    }
+
+                    table.appendChild(row)
                 }
             }
 
@@ -122,10 +206,29 @@
                 //Update the model for all of the methods
                 updateActiveMethods(selected)
                 updateQuantityInputUI()
+                updatePerformanceRankingsUI()
+            }
+
+            // If the "detailed rankings" checkbox changes
+            function onDoDetailedChange(checkbox)
+            {
+                let simpleHeader = document.getElementById("simpleHeader")
+                let detailedHeader = document.getElementById("detailedHeader")
+                if (checkbox.checked)
+                {
+                    simpleHeader.style.display = "none"
+                    detailedHeader.style.display = ''
+                }
+                else
+                {
+                    simpleHeader.style.display = ''
+                    detailedHeader.style.display = "none"
+                }
+                updatePerformanceRankingsUI()
             }
     </script>
 
-    <!-- Main -->
+    <!-- Moving Methods UI -->
     <script type="text/javascript">
 
             let element = document.getElementById("movingMethodsFieldset")
@@ -138,7 +241,5 @@
                 element.appendChild(box)
             }
     </script>
-
-    <!-- Step Two is choosing units -->
 </body>
 </html>

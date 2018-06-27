@@ -15,22 +15,8 @@ class FreightMethodModel {
 
         // The general ranking, 1-6 with 6 being NON
         this.smartWayGeneral = 0;
-        // The specific smartway usage
-        this.percentSmartWay = new PercentSmartWay
-        (0,0,0,0,0,0)
-    }
-}
-
-class PercentSmartWay
-{
-    constructor(non, rank5, rank4, rank3, rank2, rank1)
-    {
-        this.NonSmartway = non;
-        this.Rank5 = rank5;
-        this.Rank4 = rank4;
-        this.Rank3 = rank3;
-        this.Rank2 = rank2;
-        this.Rank1 = rank1;
+        // The specific smartway usage, from Bin 1 to NON
+        this.percentSmartWay = [0,0,0,0,0,0]
     }
 }
 
