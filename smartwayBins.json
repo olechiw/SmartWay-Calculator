@@ -1,0 +1,886 @@
+{
+    "Miles": {
+        "Auto Carrier Trucking1": {
+            "CO2": 1912.5,
+            "NOX": 1.5,
+            "PM": 0.01
+        },
+        "Auto Carrier Trucking2": {
+            "CO2": 1987.5,
+            "NOX": 4.5,
+            "PM": 0.07
+        },
+        "Auto Carrier Trucking3": {
+            "CO2": 2062.5,
+            "NOX": 7.5,
+            "PM": 0.17
+        },
+        "Auto Carrier Trucking4": {
+            "CO2": 2137.5,
+            "NOX": 10.5,
+            "PM": 0.27
+        },
+        "Auto Carrier Trucking5": {
+            "CO2": 2212.5,
+            "NOX": 13.5,
+            "PM": 0.37
+        },
+        "Dray Trucking1": {
+            "CO2": 1555,
+            "NOX": 4.5,
+            "PM": 0.0125
+        },
+        "Dray Trucking2": {
+            "CO2": 1645,
+            "NOX": 7.5,
+            "PM": 0.1125
+        },
+        "Dray Trucking3": {
+            "CO2": 1735,
+            "NOX": 10.5,
+            "PM": 0.2875
+        },
+        "Dray Trucking4": {
+            "CO2": 1825,
+            "NOX": 13.5,
+            "PM": 0.4625
+        },
+        "Dray Trucking5": {
+            "CO2": 1915,
+            "NOX": 16.5,
+            "PM": 0.6375
+        },
+        "Expedited Trucking1": {
+            "CO2": 600,
+            "NOX": 0.35,
+            "PM": 0.005
+        },
+        "Expedited Trucking2": {
+            "CO2": 800,
+            "NOX": 1.55,
+            "PM": 0.03
+        },
+        "Expedited Trucking3": {
+            "CO2": 1000,
+            "NOX": 3.25,
+            "PM": 0.07
+        },
+        "Expedited Trucking4": {
+            "CO2": 1200,
+            "NOX": 4.95,
+            "PM": 0.11
+        },
+        "Expedited Trucking5": {
+            "CO2": 1400,
+            "NOX": 6.65,
+            "PM": 0.15
+        },
+        "Flatbed Trucking1": {
+            "CO2": 1550,
+            "NOX": 1.6,
+            "PM": 0.01
+        },
+        "Flatbed Trucking2": {
+            "CO2": 1650,
+            "NOX": 3.6,
+            "PM": 0.065
+        },
+        "Flatbed Trucking3": {
+            "CO2": 1750,
+            "NOX": 5.6,
+            "PM": 0.155
+        },
+        "Flatbed Trucking4": {
+            "CO2": 1850,
+            "NOX": 7.6,
+            "PM": 0.245
+        },
+        "Flatbed Trucking5": {
+            "CO2": 1950,
+            "NOX": 9.6,
+            "PM": 0.335
+        },
+        "Heavy and Bulk Trucking1": {
+            "CO2": 1725,
+            "NOX": 1.35,
+            "PM": 0.025
+        },
+        "Heavy and Bulk Trucking2": {
+            "CO2": 1875,
+            "NOX": 2.85,
+            "PM": 0.075
+        },
+        "Heavy and Bulk Trucking3": {
+            "CO2": 2025,
+            "NOX": 4.35,
+            "PM": 0.125
+        },
+        "Heavy and Bulk Trucking4": {
+            "CO2": 2175,
+            "NOX": 5.85,
+            "PM": 0.175
+        },
+        "Heavy and Bulk Trucking5": {
+            "CO2": 2325,
+            "NOX": 7.35,
+            "PM": 0.225
+        },
+        "Logistics1": {
+            "CO2": 1580,
+            "NOX": 6,
+            "PM": 0.16
+        },
+        "Logistics2": {
+            "CO2": 1680,
+            "NOX": 8,
+            "PM": 0.24
+        },
+        "Logistics3": {
+            "CO2": 1780,
+            "NOX": 10,
+            "PM": 0.32
+        },
+        "Logistics4": {
+            "CO2": 1880,
+            "NOX": 12,
+            "PM": 0.4
+        },
+        "Logistics5": {
+            "CO2": 1980,
+            "NOX": 14,
+            "PM": 0.48
+        },
+        "LTL/Dry Van1": {
+            "CO2": 1300,
+            "NOX": 1.2,
+            "PM": 0.01
+        },
+        "LTL/Dry Van2": {
+            "CO2": 1400,
+            "NOX": 3,
+            "PM": 0.055
+        },
+        "LTL/Dry Van3": {
+            "CO2": 1500,
+            "NOX": 4.8,
+            "PM": 0.125
+        },
+        "LTL/Dry Van4": {
+            "CO2": 1600,
+            "NOX": 6.6,
+            "PM": 0.195
+        },
+        "LTL/Dry Van5": {
+            "CO2": 1700,
+            "NOX": 8.4,
+            "PM": 0.265
+        },
+        "Mixed Trucking1": {
+            "CO2": 1450,
+            "NOX": 1.25,
+            "PM": 0.005
+        },
+        "Mixed Trucking2": {
+            "CO2": 1550,
+            "NOX": 3.75,
+            "PM": 0.055
+        },
+        "Mixed Trucking3": {
+            "CO2": 1650,
+            "NOX": 6.25,
+            "PM": 0.105
+        },
+        "Mixed Trucking4": {
+            "CO2": 1750,
+            "NOX": 8.75,
+            "PM": 0.155
+        },
+        "Mixed Trucking5": {
+            "CO2": 1850,
+            "NOX": 11.25,
+            "PM": 0.205
+        },
+        "Multimodal1": {
+            "CO2": 1075,
+            "NOX": 16.45,
+            "PM": 0.44
+        },
+        "Multimodal2": {
+            "CO2": 1125,
+            "NOX": 16.75,
+            "PM": 0.46
+        },
+        "Multimodal3": {
+            "CO2": 1175,
+            "NOX": 17.05,
+            "PM": 0.48
+        },
+        "Multimodal4": {
+            "CO2": 1225,
+            "NOX": 17.35,
+            "PM": 0.5
+        },
+        "Multimodal5": {
+            "CO2": 1275,
+            "NOX": 17.65,
+            "PM": 0.52
+        },
+        "Moving Van Trucking1": {
+            "CO2": 1200,
+            "NOX": 1,
+            "PM": 0.01
+        },
+        "Moving Van Trucking2": {
+            "CO2": 1325,
+            "NOX": 5,
+            "PM": 0.095
+        },
+        "Moving Van Trucking3": {
+            "CO2": 1475,
+            "NOX": 9,
+            "PM": 0.245
+        },
+        "Moving Van Trucking4": {
+            "CO2": 1625,
+            "NOX": 13,
+            "PM": 0.395
+        },
+        "Moving Van Trucking5": {
+            "CO2": 1750,
+            "NOX": 17,
+            "PM": 0.545
+        },
+        "Package Delivery Trucking1": {
+            "CO2": 1150,
+            "NOX": 0.5,
+            "PM": 0.006
+        },
+        "Package Delivery Trucking2": {
+            "CO2": 1250,
+            "NOX": 1.5,
+            "PM": 0.037
+        },
+        "Package Delivery Trucking3": {
+            "CO2": 1350,
+            "NOX": 2.5,
+            "PM": 0.087
+        },
+        "Package Delivery Trucking4": {
+            "CO2": 1450,
+            "NOX": 3.5,
+            "PM": 0.137
+        },
+        "Package Delivery Trucking5": {
+            "CO2": 1550,
+            "NOX": 4.5,
+            "PM": 0.187
+        },
+        "Refrigerated Trucking1": {
+            "CO2": 1475,
+            "NOX": 2.3,
+            "PM": 0.04
+        },
+        "Refrigerated Trucking2": {
+            "CO2": 1575,
+            "NOX": 3.3,
+            "PM": 0.08
+        },
+        "Refrigerated Trucking3": {
+            "CO2": 1675,
+            "NOX": 4.3,
+            "PM": 0.12
+        },
+        "Refrigerated Trucking4": {
+            "CO2": 1775,
+            "NOX": 5.3,
+            "PM": 0.16
+        },
+        "Refrigerated Trucking5": {
+            "CO2": 1875,
+            "NOX": 6.3,
+            "PM": 0.2
+        },
+        "Specialty Haul Trucking1": {
+            "CO2": 1537.5,
+            "NOX": 1.75,
+            "PM": 0.008
+        },
+        "Specialty Haul Trucking2": {
+            "CO2": 1712.5,
+            "NOX": 3.25,
+            "PM": 0.041
+        },
+        "Specialty Haul Trucking3": {
+            "CO2": 1887.5,
+            "NOX": 4.75,
+            "PM": 0.091
+        },
+        "Specialty Haul Trucking4": {
+            "CO2": 2062.5,
+            "NOX": 6.25,
+            "PM": 0.141
+        },
+        "Specialty Haul Trucking5": {
+            "CO2": 2237.5,
+            "NOX": 7.75,
+            "PM": 0.191
+        },
+        "Tanker Trucking1": {
+            "CO2": 1475,
+            "NOX": 2,
+            "PM": 0.01
+        },
+        "Tanker Trucking2": {
+            "CO2": 1625,
+            "NOX": 3,
+            "PM": 0.045
+        },
+        "Tanker Trucking3": {
+            "CO2": 1775,
+            "NOX": 4,
+            "PM": 0.095
+        },
+        "Tanker Trucking4": {
+            "CO2": 1925,
+            "NOX": 5,
+            "PM": 0.145
+        },
+        "Tanker Trucking5": {
+            "CO2": 2075,
+            "NOX": 6,
+            "PM": 0.195
+        },
+        "TL/Dry Van1": {
+            "CO2": 1400,
+            "NOX": 1,
+            "PM": 0.006
+        },
+        "TL/Dry Van2": {
+            "CO2": 1500,
+            "NOX": 3,
+            "PM": 0.026
+        },
+        "TL/Dry Van3": {
+            "CO2": 1600,
+            "NOX": 5,
+            "PM": 0.046
+        },
+        "TL/Dry Van4": {
+            "CO2": 1700,
+            "NOX": 7,
+            "PM": 0.066
+        },
+        "TL/Dry Van5": {
+            "CO2": 1800,
+            "NOX": 9,
+            "PM": 0.086
+        },
+        "Auto Carrier TruckingNON": {
+            "CO2": 2256.145816,
+            "NOX": 17.1397124,
+            "PM": 0.56965808
+        },
+        "Dray TruckingNON": {
+            "CO2": 2013.791282,
+            "NOX": 19.48830273,
+            "PM": 0.92944213
+        },
+        "Expedited TruckingNON": {
+            "CO2": 1649.010231,
+            "NOX": 8.344991169,
+            "PM": 0.340795448
+        },
+        "Flatbed TruckingNON": {
+            "CO2": 2068.75829,
+            "NOX": 16.98980238,
+            "PM": 0.684089396
+        },
+        "Heavy and Bulk TruckingNON": {
+            "CO2": 2423.54534,
+            "NOX": 15.74055221,
+            "PM": 0.624625088
+        },
+        "LTL/Dry VanNON": {
+            "CO2": 1848.890259,
+            "NOX": 10.39376146,
+            "PM": 0.379772053
+        },
+        "Mixed TruckingNON": {
+            "CO2": 1998.80028,
+            "NOX": 14.04157197,
+            "PM": 0.524685074
+        },
+        "Moving Van TruckingNON": {
+            "CO2": 1748.950245,
+            "NOX": 20.98740294,
+            "PM": 0.739556104
+        },
+        "Package Delivery TruckingNON": {
+            "CO2": 1399.160196,
+            "NOX": 6.945830973,
+            "PM": 0.236857833
+        },
+        "Refrigerated TruckingNON": {
+            "CO2": 2038.776286,
+            "NOX": 12.79232179,
+            "PM": 0.42474506
+        },
+        "Specialty Haul TruckingNON": {
+            "CO2": 2411.052838,
+            "NOX": 12.44253174,
+            "PM": 0.467719266
+        },
+        "Tanker TruckingNON": {
+            "CO2": 2048.770287,
+            "NOX": 10.29382144,
+            "PM": 0.334799047
+        },
+        "TL/Dry VanNON": {
+            "CO2": 1878.872263,
+            "NOX": 13.39196188,
+            "PM": 0.422746259
+        }
+    },
+    "Ton-Miles": {
+        "Auto Carrier Trucking1": {
+            "CO2": 104,
+            "NOX": 0.135,
+            "PM": 0.0006
+        },
+        "Auto Carrier Trucking2": {
+            "CO2": 110,
+            "NOX": 0.265,
+            "PM": 0.0032
+        },
+        "Auto Carrier Trucking3": {
+            "CO2": 116,
+            "NOX": 0.395,
+            "PM": 0.0072
+        },
+        "Auto Carrier Trucking4": {
+            "CO2": 122,
+            "NOX": 0.525,
+            "PM": 0.0112
+        },
+        "Auto Carrier Trucking5": {
+            "CO2": 128,
+            "NOX": 0.655,
+            "PM": 0.0152
+        },
+        "Dray Trucking1": {
+            "CO2": 68.5,
+            "NOX": 0.15,
+            "PM": 0.0006
+        },
+        "Dray Trucking2": {
+            "CO2": 75.5,
+            "NOX": 0.35,
+            "PM": 0.0052
+        },
+        "Dray Trucking3": {
+            "CO2": 82.5,
+            "NOX": 0.55,
+            "PM": 0.0132
+        },
+        "Dray Trucking4": {
+            "CO2": 89.5,
+            "NOX": 0.75,
+            "PM": 0.0212
+        },
+        "Dray Trucking5": {
+            "CO2": 96.5,
+            "NOX": 0.95,
+            "PM": 0.0292
+        },
+        "Expedited Trucking1": {
+            "CO2": 75,
+            "NOX": 0.15,
+            "PM": 0.0025
+        },
+        "Expedited Trucking2": {
+            "CO2": 225,
+            "NOX": 0.45,
+            "PM": 0.0125
+        },
+        "Expedited Trucking3": {
+            "CO2": 375,
+            "NOX": 0.75,
+            "PM": 0.0275
+        },
+        "Expedited Trucking4": {
+            "CO2": 525,
+            "NOX": 1.05,
+            "PM": 0.0425
+        },
+        "Expedited Trucking5": {
+            "CO2": 675,
+            "NOX": 1.35,
+            "PM": 0.0575
+        },
+        "Flatbed Trucking1": {
+            "CO2": 63.5,
+            "NOX": 0.06,
+            "PM": 0.00035
+        },
+        "Flatbed Trucking2": {
+            "CO2": 70.5,
+            "NOX": 0.2,
+            "PM": 0.0032
+        },
+        "Flatbed Trucking3": {
+            "CO2": 77.5,
+            "NOX": 0.34,
+            "PM": 0.0082
+        },
+        "Flatbed Trucking4": {
+            "CO2": 84.5,
+            "NOX": 0.48,
+            "PM": 0.0132
+        },
+        "Flatbed Trucking5": {
+            "CO2": 91.5,
+            "NOX": 0.62,
+            "PM": 0.0182
+        },
+        "Heavy and Bulk Trucking1": {
+            "CO2": 54.5,
+            "NOX": 0.03,
+            "PM": 0.00025
+        },
+        "Heavy and Bulk Trucking2": {
+            "CO2": 61.5,
+            "NOX": 0.13,
+            "PM": 0.001
+        },
+        "Heavy and Bulk Trucking3": {
+            "CO2": 68.5,
+            "NOX": 0.23,
+            "PM": 0.002
+        },
+        "Heavy and Bulk Trucking4": {
+            "CO2": 75.5,
+            "NOX": 0.33,
+            "PM": 0.003
+        },
+        "Heavy and Bulk Trucking5": {
+            "CO2": 82.5,
+            "NOX": 0.43,
+            "PM": 0.004
+        },
+        "Logistics1": {
+            "CO2": 96,
+            "NOX": 0.39,
+            "PM": 0.011
+        },
+        "Logistics2": {
+            "CO2": 104,
+            "NOX": 0.51,
+            "PM": 0.016
+        },
+        "Logistics3": {
+            "CO2": 112,
+            "NOX": 0.63,
+            "PM": 0.021
+        },
+        "Logistics4": {
+            "CO2": 120,
+            "NOX": 0.75,
+            "PM": 0.026
+        },
+        "Logistics5": {
+            "CO2": 128,
+            "NOX": 0.87,
+            "PM": 0.031
+        },
+        "LTL/Dry Van1": {
+            "CO2": 95,
+            "NOX": 0.06,
+            "PM": 0.0005
+        },
+        "LTL/Dry Van2": {
+            "CO2": 115,
+            "NOX": 0.26,
+            "PM": 0.0035
+        },
+        "LTL/Dry Van3": {
+            "CO2": 135,
+            "NOX": 0.46,
+            "PM": 0.0065
+        },
+        "LTL/Dry Van4": {
+            "CO2": 155,
+            "NOX": 0.66,
+            "PM": 0.0095
+        },
+        "LTL/Dry Van5": {
+            "CO2": 175,
+            "NOX": 0.86,
+            "PM": 0.0125
+        },
+        "Mixed Trucking1": {
+            "CO2": 69,
+            "NOX": 0.09,
+            "PM": 0.00075
+        },
+        "Mixed Trucking2": {
+            "CO2": 79,
+            "NOX": 0.19,
+            "PM": 0.003325
+        },
+        "Mixed Trucking3": {
+            "CO2": 89,
+            "NOX": 0.29,
+            "PM": 0.008325
+        },
+        "Mixed Trucking4": {
+            "CO2": 99,
+            "NOX": 0.39,
+            "PM": 0.013325
+        },
+        "Mixed Trucking5": {
+            "CO2": 109,
+            "NOX": 0.49,
+            "PM": 0.01815
+        },
+        "Multimodal1": {
+            "CO2": 26.5,
+            "NOX": 0.39,
+            "PM": 0.0122
+        },
+        "Multimodal2": {
+            "CO2": 29.5,
+            "NOX": 0.41,
+            "PM": 0.0124
+        },
+        "Multimodal3": {
+            "CO2": 32.5,
+            "NOX": 0.43,
+            "PM": 0.0126
+        },
+        "Multimodal4": {
+            "CO2": 35.5,
+            "NOX": 0.45,
+            "PM": 0.0128
+        },
+        "Multimodal5": {
+            "CO2": 38.5,
+            "NOX": 0.47,
+            "PM": 0.013
+        },
+        "Moving Van Trucking1": {
+            "CO2": 95,
+            "NOX": 0.47,
+            "PM": 0.002
+        },
+        "Moving Van Trucking2": {
+            "CO2": 125,
+            "NOX": 0.57,
+            "PM": 0.01
+        },
+        "Moving Van Trucking3": {
+            "CO2": 155,
+            "NOX": 0.67,
+            "PM": 0.022
+        },
+        "Moving Van Trucking4": {
+            "CO2": 185,
+            "NOX": 0.77,
+            "PM": 0.034
+        },
+        "Moving Van Trucking5": {
+            "CO2": 215,
+            "NOX": 0.87,
+            "PM": 0.046
+        },
+        "Package Delivery Trucking1": {
+            "CO2": 100,
+            "NOX": 0.4,
+            "PM": 0.0025
+        },
+        "Package Delivery Trucking2": {
+            "CO2": 200,
+            "NOX": 0.6,
+            "PM": 0.0125
+        },
+        "Package Delivery Trucking3": {
+            "CO2": 300,
+            "NOX": 0.8,
+            "PM": 0.0275
+        },
+        "Package Delivery Trucking4": {
+            "CO2": 400,
+            "NOX": 1,
+            "PM": 0.0425
+        },
+        "Package Delivery Trucking5": {
+            "CO2": 500,
+            "NOX": 1.2,
+            "PM": 0.0575
+        },
+        "Refrigerated Trucking1": {
+            "CO2": 73,
+            "NOX": 0.11,
+            "PM": 0.002
+        },
+        "Refrigerated Trucking2": {
+            "CO2": 79,
+            "NOX": 0.17,
+            "PM": 0.004
+        },
+        "Refrigerated Trucking3": {
+            "CO2": 85,
+            "NOX": 0.23,
+            "PM": 0.006
+        },
+        "Refrigerated Trucking4": {
+            "CO2": 91,
+            "NOX": 0.29,
+            "PM": 0.008
+        },
+        "Refrigerated Trucking5": {
+            "CO2": 97,
+            "NOX": 0.35,
+            "PM": 0.01
+        },
+        "Specialty Haul Trucking1": {
+            "CO2": 58,
+            "NOX": 0.0525,
+            "PM": 0.0005
+        },
+        "Specialty Haul Trucking2": {
+            "CO2": 70,
+            "NOX": 0.1355,
+            "PM": 0.003
+        },
+        "Specialty Haul Trucking3": {
+            "CO2": 82,
+            "NOX": 0.2005,
+            "PM": 0.007
+        },
+        "Specialty Haul Trucking4": {
+            "CO2": 94,
+            "NOX": 0.37,
+            "PM": 0.011
+        },
+        "Specialty Haul Trucking5": {
+            "CO2": 106,
+            "NOX": 0.5575,
+            "PM": 0.015
+        },
+        "Tanker Trucking1": {
+            "CO2": 56.5,
+            "NOX": 0.075,
+            "PM": 0.0003
+        },
+        "Tanker Trucking2": {
+            "CO2": 63.5,
+            "NOX": 0.125,
+            "PM": 0.0016
+        },
+        "Tanker Trucking3": {
+            "CO2": 70.5,
+            "NOX": 0.175,
+            "PM": 0.0036
+        },
+        "Tanker Trucking4": {
+            "CO2": 77.5,
+            "NOX": 0.225,
+            "PM": 0.0056
+        },
+        "Tanker Trucking5": {
+            "CO2": 84.5,
+            "NOX": 0.275,
+            "PM": 0.0076
+        },
+        "TL/Dry Van1": {
+            "CO2": 72,
+            "NOX": 0.085,
+            "PM": 0.0005
+        },
+        "TL/Dry Van2": {
+            "CO2": 80,
+            "NOX": 0.175,
+            "PM": 0.003
+        },
+        "TL/Dry Van3": {
+            "CO2": 88,
+            "NOX": 0.265,
+            "PM": 0.007
+        },
+        "TL/Dry Van4": {
+            "CO2": 96,
+            "NOX": 0.355,
+            "PM": 0.011
+        },
+        "TL/Dry Van5": {
+            "CO2": 104,
+            "NOX": 0.445,
+            "PM": 0.015
+        },
+        "Auto Carrier TruckingNON": {
+            "CO2": 140.5110769,
+            "NOX": 0.87006859,
+            "PM": 0.025802034
+        },
+        "Dray TruckingNON": {
+            "CO2": 98.00772621,
+            "NOX": 0.950074897,
+            "PM": 0.032902594
+        },
+        "Expedited TruckingNON": {
+            "CO2": 500.0394195,
+            "NOX": 1.350106433,
+            "PM": 0.056004415
+        },
+        "Flatbed TruckingNON": {
+            "CO2": 98.00772621,
+            "NOX": 0.675053216,
+            "PM": 0.02550201
+        },
+        "Heavy and Bulk TruckingNON": {
+            "CO2": 89.50705608,
+            "NOX": 0.450035478,
+            "PM": 0.022001734
+        },
+        "LTL/Dry VanNON": {
+            "CO2": 166.0130873,
+            "NOX": 0.860067801,
+            "PM": 0.033202617
+        },
+        "Mixed TruckingNON": {
+            "CO2": 113.0089088,
+            "NOX": 0.675053216,
+            "PM": 0.026202066
+        },
+        "Moving Van TruckingNON": {
+            "CO2": 352.5277907,
+            "NOX": 1.650130084,
+            "PM": 0.06000473
+        },
+        "Package Delivery TruckingNON": {
+            "CO2": 583.0459631,
+            "NOX": 2.700212865,
+            "PM": 0.081006386
+        },
+        "Refrigerated TruckingNON": {
+            "CO2": 100.0078839,
+            "NOX": 0.535042179,
+            "PM": 0.017301364
+        },
+        "Specialty Haul TruckingNON": {
+            "CO2": 109.5086329,
+            "NOX": 0.675053216,
+            "PM": 0.018201435
+        },
+        "Tanker TruckingNON": {
+            "CO2": 81.50642537,
+            "NOX": 0.390030747,
+            "PM": 0.011300891
+        },
+        "TL/Dry VanNON": {
+            "CO2": 114.0089876,
+            "NOX": 0.675053216,
+            "PM": 0.022001734
+        }
+    }
+}

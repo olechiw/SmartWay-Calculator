@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <link rel="stylesheet" href="styles.css"/>
-    
+    <link rel="stylesheet" href="styles.css" />
+
     <script type="text/javascript" src="freightMethods.js"></script>
-    <script type="text/javascript" src = "elementBuilders.js"></script>
-    <script type="text/javascript" src = "smartwayBin.js"></script>
+    <script type="text/javascript" src="elementBuilders.js"></script>
+    <script type="text/javascript" src="smartwayBins.js"></script>
+    <script type="text/javascript" src="performanceProfile.js"></script>
 </head>
 
 <body>
-    <form class = "center">
-        
-        <fieldset id = "movingMethodsFieldset">
+    <form class="center">
+
+        <fieldset id="movingMethodsFieldset">
             <legend>Moving Methods</legend>
         </fieldset>
 
-        <fieldset id = "activityQuantityFieldSet">
+        <fieldset id="activityQuantityFieldSet">
             <legend>Movement Activity</legend>
             <label>
                 Units:
-                <select id = "unitsSelect" class="center">
-                    <option value = "Miles">Miles</option>
-                    <option value = "Ton-Miles">Ton-Miles</option>
+                <select id="unitsSelect" onchange="onUnitsChange()" class="center">
+                    <option value="Miles">Miles</option>
+                    <option value="Ton-Miles">Ton-Miles</option>
                 </select>
             </label>
             <table style="width:100%">
@@ -35,20 +37,20 @@
                 </tbody>
             </table>
         </fieldset>
-        <fieldset id = "performanceRankingsFieldset">
+        <fieldset id="performanceRankingsFieldset">
             <legend>Performance Rankings</legend>
             <label>
                 Detailed Rankings (optional)
-                <input type="checkbox" onchange="onDoDetailedChange(this)" id = "doDetailed"/>
+                <input type="checkbox" id="doDetailed" />
             </label>
-            <table style = "width:100%">
-                <thead id = "simpleHeader">
+            <table style="width:100%">
+                <thead id="currentSimpleHeader">
                     <tr>
                         <th>Type</th>
                         <th>General Performance Level</th>
                     </tr>
                 </thead>
-                <thead id = "detailedHeader" style="display:none">
+                <thead id="currentDetailedHeader" style="display:none">
                     <tr>
                         <th>Type</th>
                         <th>% NON</th>
@@ -60,186 +62,163 @@
                         <th>Total</th>
                     </tr>
                 </thead>
-                <tbody id = "activityPerformanceTable"></tbody>
+                <tbody id="activityPerformanceTable"></tbody>
             </table>
+        </fieldset>
+        <fieldset id="emissionsOutputFieldSet">
+            <legend>Emissions</legend>
+            <table style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>CO2</th>
+                        <th>NOX</th>
+                        <th>PM</th>
+                    </tr>
+                </thead>
+                <tbody id="emissionsOutputTable"></tbody>
+            </table>
+            <button type="button" onclick="updateEmissionsCalculations()" class="center">Refresh</button>
         </fieldset>
 
     </form>
-    <!--
-    <div id = "selectedMethodsOutput" class="center">
-    </div>
--->
 
-    <!-- Update -->
-    <script type="text/javascript">
-            function updateActiveMethods(activeMethods)
-            {
-                for (let i = 0; i < freightMethods.length; ++i)
-                {
-                    let method = freightMethods[i];
-                    if (activeMethods.includes(method.type))
-                    {
-                        method.active = true;
-                    }
-                    else
-                    {
-                        method.active = false;
-                    }
-                }
-            }
-
-            function updateQuantityInputUI()
-            {
-                
-                let activityQuantityTable = document.getElementById("activityQuantityTable")
-
-                // Clear out table
-                while (activityQuantityTable.firstChild)
-                {
-                    activityQuantityTable.removeChild(activityQuantityTable.firstChild)
-                }
-
-                for (let i = 0; i < freightMethods.length; ++i)
-                {
-                    var method = freightMethods[i];
-                    if (method.active)
-                    {
-                        let label = document.createTextNode(method.type)
-                        label.textContent = method.type;
-                        var input = document.createElement("input")
-                        input.type = "number";
-                        input.id = i;
-                        input.onchange =  function() {
-                            freightMethods[event.currentTarget.id].activityQuantity = event.currentTarget.value
-                        };
-                        input.value = method.activityQuantity
-
-                        let select = createGeneralPerformanceSelect();
-
-                        let row = createTableRow(label, input, select)
-                        
-                        activityQuantityTable.appendChild(row)
-                    }
-                }
-            }
-
-            function updatePerformanceRankingsUI() 
-            {
-                // Clear table
-                let table = document.getElementById("activityPerformanceTable")
-                while (table.firstChild) 
-                {
-                    table.removeChild(table.firstChild)
-                }
-
-
-                let doDetailed = document.getElementById("doDetailed")
-                // One row per type
-                for (let t = 0; t < freightMethods.length; ++t) {
-
-                    if (!freightMethods[t].active)
-                    {
-                        continue
-                    }
-
-                    let row = document.createElement("tr")
-
-                    // Add type label
-                    let method = freightMethods[t]
-                    let td = document.createElement("td")
-                    td.appendChild(document.createTextNode(method.type))
-                    row.appendChild(td)
-
-                    // If checked, do percentages so a row of 6 inputs
-                    if (doDetailed.checked) {
-
-                        // 0,1,2,3,4,5 all correspond to rankings, 0 is best 5 is worst
-                        for (let i = 0; i < 6; ++i) {
-                            let td = document.createElement("td")
-                            let input = document.createElement("input")
-                            input.type = "number"
-                            input.value = method.percentSmartWay[i]
-                            input.id = i
-                            input.onchange = function () {
-                                // Update the freightmethods model onchange
-                                method.percentSmartWay[event.currentTarget.id] = event.currentTarget.value
-                            }
-                            td.appendChild(input)
-                            row.appendChild(td)
-                        }
-                    }
-                    else
-                    {
-                        let select = createGeneralPerformanceSelect()
-                        select.value = performanceLevels[method.smartwayGeneral]
-                        select.onchange = function() {
-                            method.smartWayGeneral = event.currentTarget.value
-                        }
-                        let td = document.createElement("td")
-                        td.appendChild(select)
-                        row.appendChild(td)
-                    }
-
-                    table.appendChild(row)
-                }
-            }
-
-            </script>
-    <!-- Event Handlers-->
-    <script type="text/javascript">
-            // Update the "active" boolean of each method
-            function onSelectedFreightMethodsChange()
-            {
-                let label = document.getElementById("selectedMethodsOutput")
-                //label.textContent = "othertext"
-                let selected = [];
-                let elements = document.getElementById("movingMethodsFieldset").getElementsByTagName("input")
-                for (let i = 0, element; element = elements[i++];)
-                {
-                    if (element.type === "checkbox" && element.checked)
-                    {
-                        let text = element.parentElement.textContent
-                        selected.push(text)
-                    }
-                }
-
-                //Update the model for all of the methods
-                updateActiveMethods(selected)
-                updateQuantityInputUI()
-                updatePerformanceRankingsUI()
-            }
-
-            // If the "detailed rankings" checkbox changes
-            function onDoDetailedChange(checkbox)
-            {
-                let simpleHeader = document.getElementById("simpleHeader")
-                let detailedHeader = document.getElementById("detailedHeader")
-                if (checkbox.checked)
-                {
-                    simpleHeader.style.display = "none"
-                    detailedHeader.style.display = ''
-                }
-                else
-                {
-                    simpleHeader.style.display = ''
-                    detailedHeader.style.display = "none"
-                }
-                updatePerformanceRankingsUI()
-            }
-    </script>
-
-    <!-- Moving Methods UI -->
     <script type="text/javascript">
 
-            let element = document.getElementById("movingMethodsFieldset")
+        // The object representing all current activity/performance levels
+        var currentProfile = new PerformanceProfile(freightMethods,
+            "activityPerformanceTable", "doDetailed", "currentSimpleHeader",
+            "currentDetailedHeader", function () {
+                updateEmissionsUI();
+            });
 
-            // Populate moving methods checkboxes
-            for (let i = 0; i < freightMethods.length; ++i) 
-            {
-                let box = createCheckBox(freightMethods[i].type)
-                box.addEventListener("click", onSelectedFreightMethodsChange)
-                element.appendChild(box)
+        // Update the "active" boolean of each method, and update the UI
+        function onSelectedFreightMethodsChange() {
+            let label = document.getElementById("selectedMethodsOutput");
+            //label.textContent = "othertext"
+            let selected = [];
+            let elements = document.getElementById("movingMethodsFieldset").getElementsByTagName("input")
+            for (let i = 0, element; element = elements[i++];) {
+                if (element.type === "checkbox" && element.checked) {
+                    let text = element.parentElement.textContent;
+                    selected.push(text);
+                }
             }
+
+            //Update the model for all of the methods
+            updateActiveMethods(selected);
+            updateQuantityInputUI();
+
+            let units = document.getElementById("unitsSelect").value;
+            currentProfile.bins = smartwayBinJSON[units];
+            currentProfile.updateInputUI();
+
+            updateEmissionsCalculations();
+        }
+
+        function onUnitsChange() {
+            currentProfile.bins = smartwayBinJSON[event.currentTarget.value];
+            updateEmissionsCalculations();
+        }
+
+        let element = document.getElementById("movingMethodsFieldset");
+
+        // Populate moving methods checkboxes
+        for (let i = 0; i < freightMethods.length; ++i) {
+            let box = createCheckBox(freightMethods[i].type);
+            box.addEventListener("click", onSelectedFreightMethodsChange);
+            element.appendChild(box);
+        }
+
+
+        function updateActiveMethods(activeMethods) {
+            for (let i = 0; i < freightMethods.length; ++i) {
+                let method = freightMethods[i];
+                if (activeMethods.includes(method.type)) {
+                    method.active = true;
+                }
+                else {
+                    method.active = false;
+                }
+            }
+        }
+
+        function updateQuantityInputUI() {
+
+            let activityQuantityTable = document.getElementById("activityQuantityTable")
+            // Clear out table
+            while (activityQuantityTable.firstChild) {
+                activityQuantityTable.removeChild(activityQuantityTable.firstChild)
+            }
+            for (let i = 0; i < freightMethods.length; ++i) {
+                var method = freightMethods[i];
+                if (method.active) {
+                    let label = document.createTextNode(method.type)
+                    label.textContent = method.type;
+                    var input = document.createElement("input")
+                    input.type = "number";
+                    input.min = 0;
+                    input.onchange = function () {
+                        freightMethods[i].activityQuantity = event.currentTarget.value;
+                        updateEmissionsCalculations();
+                    };
+                    input.value = method.activityQuantity;
+                    let row = createTableRow(label, input);
+
+                    activityQuantityTable.appendChild(row)
+                }
+            }
+        }
+
+        function updateCurrentInputUI() {
+            currentProfile.updateInputUI()
+        }
+
+        function updateEmissionsUI() {
+            activeFreightMethods = [];
+            freightMethods.forEach(function (method) {
+                if (method.active) activeFreightMethods.push(method);
+            })
+
+            let table = document.getElementById("emissionsOutputTable")
+            while (table.firstChild) {
+                table.removeChild(table.firstChild);
+            }
+
+            for (let i = 0; i < activeFreightMethods.length; ++i) {
+                let method = activeFreightMethods[i];
+                let tableRow = createTableRow(
+                    createTableCell(method.type),
+                    createTableCell(method.CO2),
+                    createTableCell(method.NOX),
+                    createTableCell(method.PM)
+                )
+
+                table.appendChild(tableRow)
+            }
+        }
+
+        function updateEmissionsCalculations() {
+
+            let units = document.getElementById("unitsSelect").value;
+            currentProfile.bins = smartwayBinJSON[units];
+            let activeFreightMethods = [];
+            freightMethods.forEach(function (method) {
+                if (method.active) {
+                    activeFreightMethods.push(method);
+                }
+            })
+
+            if (document.getElementById("doDetailed").checked) {
+                currentProfile.updateEmissionsDetailed();
+            }
+            else {
+                currentProfile.updateEmissionsSimple();
+            }
+
+            updateEmissionsUI();
+        }
     </script>
 </body>
+
 </html>
