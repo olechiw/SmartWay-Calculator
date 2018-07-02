@@ -21,29 +21,32 @@ class FreightMethodModel {
     }
 }
 
-var freightMethods = [
-    new FreightMethodModel("Auto Carrier Trucking"),
-    new FreightMethodModel("Dray Trucking"),
-    new FreightMethodModel("Expedited Trucking"),
-    new FreightMethodModel("Flatbed Trucking"),
-    new FreightMethodModel("Heavy and Bulk Trucking"),
-    new FreightMethodModel("LTL/Dry Van"),
-    new FreightMethodModel("Mixed Trucking"),
-    new FreightMethodModel("Moving Van Trucking"),
-    new FreightMethodModel("Package Delivery Trucking"),
-    new FreightMethodModel("Refrigerated Trucking"),
-    new FreightMethodModel("Specialty Haul Trucking"),
-    new FreightMethodModel("Tanker Trucking"),
-    new FreightMethodModel("TL/Dry Van"),
-    new FreightMethodModel("Logistics"),
-    new FreightMethodModel("Multimodal")
-    /*,
-    new FreightMethodModel("Rail"),
-new FreightMethodModel("Barge")*/];
+function createFreightMethods()
+{
+    return [
+        new FreightMethodModel("Auto Carrier Trucking"),
+        new FreightMethodModel("Dray Trucking"),
+        new FreightMethodModel("Expedited Trucking"),
+        new FreightMethodModel("Flatbed Trucking"),
+        new FreightMethodModel("Heavy and Bulk Trucking"),
+        new FreightMethodModel("LTL/Dry Van"),
+        new FreightMethodModel("Mixed Trucking"),
+        new FreightMethodModel("Moving Van Trucking"),
+        new FreightMethodModel("Package Delivery Trucking"),
+        new FreightMethodModel("Refrigerated Trucking"),
+        new FreightMethodModel("Specialty Haul Trucking"),
+        new FreightMethodModel("Tanker Trucking"),
+        new FreightMethodModel("TL/Dry Van"),
+        new FreightMethodModel("Logistics"),
+        new FreightMethodModel("Multimodal")
+        /*,
+        new FreightMethodModel("Rail"),
+    new FreightMethodModel("Barge")*/];
+}
+
+var freightMethods = createFreightMethods();
 
 var freightUnits = [
     "Miles",
     "Ton-Miles"
 ]
-
-var currentFreightUnit = "Miles"

@@ -3,11 +3,11 @@ An object responsible for modeling performance of all carriers, and also constru
 */
 
 class PerformanceProfile {
-    constructor(freightMethods, tableID, doDetailedID, simpleHeaderID,
+    constructor(freightMethods, tableID, simpleHeaderID,
          detailedHeaderID, onEmissionsUpdate) {
-        this.doDetailed = document.getElementById(doDetailedID);
         this.table = document.getElementById(tableID);
         this.methods = freightMethods;
+        this.doDetailed = false;
 
         this.simpleHeader = document.getElementById(simpleHeaderID);
         this.detailedHeader = document.getElementById(detailedHeaderID);
@@ -16,18 +16,21 @@ class PerformanceProfile {
         this.bins = undefined;
 
         let profile = this;
-        doDetailed.onchange = function () {
-            if (doDetailed.checked) {
-                profile.simpleHeader.style.display = "none";
-                profile.detailedHeader.style.display = '';
-            }
-            else {
-                profile.simpleHeader.style.display = '';
-                profile.detailedHeader.style.display = "none";
-            }
+    }
 
-            profile.updateInputUI();
+    setDetailed(detailed)
+    {
+        if (detailed) {
+            this.simpleHeader.style.display = "none";
+            this.detailedHeader.style.display = '';
         }
+        else {
+            this.simpleHeader.style.display = '';
+            this.detailedHeader.style.display = "none";
+        }
+        this.doDetailed = detailed;
+
+        this.updateInputUI();
     }
 
     updateInputUI() {
@@ -52,7 +55,7 @@ class PerformanceProfile {
             row.appendChild(td);
 
             // If checked, do percentages so a row of 6 inputs
-            if (doDetailed.checked) {
+            if (this.doDetailed) {
 
                 // 0,1,2,3,4,5 all correspond to rankings, 0 is best 5 is worst
                 for (let i = 0; i < 6; ++i) {
@@ -113,7 +116,7 @@ class PerformanceProfile {
             let method = this.methods[i];
 
             // If percentages dont add up, dont re-calculate
-            if (method.invalid) {
+            if (method.invalid || !method.active) {
                 continue;
             }
 
@@ -134,7 +137,7 @@ class PerformanceProfile {
     }
 
     updateDetailedTotals() {
-        if (!doDetailed.checked) {
+        if (!doDetailed) {
             return;
         }
         if (this.table.childElementCount === 0) {

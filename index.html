@@ -41,7 +41,7 @@
             <legend>Performance Rankings</legend>
             <label>
                 Detailed Rankings (optional)
-                <input type="checkbox" id="doDetailed" />
+                <input type="checkbox" onchange="onDetailedChange(this)" id="doDetailed" />
             </label>
             <table style="width:100%">
                 <thead id="currentSimpleHeader">
@@ -71,14 +71,37 @@
                 <thead>
                     <tr>
                         <th>Type</th>
-                        <th>CO2</th>
-                        <th>NOX</th>
-                        <th>PM</th>
+                        <th>CO2 (g)</th>
+                        <th>NOX (g)</th>
+                        <th>PM (g)</th>
                     </tr>
                 </thead>
                 <tbody id="emissionsOutputTable"></tbody>
             </table>
-            <button type="button" onclick="updateEmissionsCalculations()" class="center">Refresh</button>
+        </fieldset>
+        <fieldset id"targetPerformanceFieldSet">
+            <legend>Target Performance Rankings</legend>
+            <table style="width:100%">
+                <thead id="targetSimpleHeader">
+                    <tr>
+                        <th>Type</th>
+                        <th>General Performance Level</th>
+                    </tr>
+                </thead>
+                <thead id="targetDetailedHeader" style="display:none">
+                    <tr>
+                        <th>Type</th>
+                        <th>% NON</th>
+                        <th>% Bin 5</th>
+                        <th>% Bin 4</th>
+                        <th>% Bin 3</th>
+                        <th>% Bin 2</th>
+                        <th>% Bin 1</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="targetPerformanceTable"></tbody>
+            </table>
         </fieldset>
 
     </form>
@@ -87,10 +110,10 @@
 
         // The object representing all current activity/performance levels
         var currentProfile = new PerformanceProfile(freightMethods,
-            "activityPerformanceTable", "doDetailed", "currentSimpleHeader",
-            "currentDetailedHeader", function () {
-                updateEmissionsUI();
-            });
+            "activityPerformanceTable", "currentSimpleHeader",
+            "currentDetailedHeader", updateEmissionsUI);
+        var targetProfile = new PerformanceProfile(createFreightMethods(),
+        "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", updateSavingsUI)
 
         // Update the "active" boolean of each method, and update the UI
         function onSelectedFreightMethodsChange() {
@@ -112,6 +135,8 @@
             let units = document.getElementById("unitsSelect").value;
             currentProfile.bins = smartwayBinJSON[units];
             currentProfile.updateInputUI();
+            targetProfile.bins = smartwayBinJSON[units];
+            targetProfile.updateInputUI();
 
             updateEmissionsCalculations();
         }
@@ -119,6 +144,14 @@
         function onUnitsChange() {
             currentProfile.bins = smartwayBinJSON[event.currentTarget.value];
             updateEmissionsCalculations();
+        }
+
+        function onDetailedChange(doDetailed)
+        {
+            let units = document.getElementById("unitsSelect");
+            currentProfile.bins = smartwayBinJSON[units];
+            currentProfile.setDetailed(doDetailed.checked);
+            targetProfile.setDetailed(doDetailed.checked);
         }
 
         let element = document.getElementById("movingMethodsFieldset");
@@ -136,6 +169,7 @@
                 let method = freightMethods[i];
                 if (activeMethods.includes(method.type)) {
                     method.active = true;
+                    targetProfile.methods[i].active = true;
                 }
                 else {
                     method.active = false;
@@ -172,6 +206,11 @@
 
         function updateCurrentInputUI() {
             currentProfile.updateInputUI()
+            targetProfile.updateInputUI();
+        }
+
+        function roundToTwo(num) {
+            return +(Math.round(num + "e+2") + "e-2");
         }
 
         function updateEmissionsUI() {
@@ -189,13 +228,17 @@
                 let method = activeFreightMethods[i];
                 let tableRow = createTableRow(
                     createTableCell(method.type),
-                    createTableCell(method.CO2),
-                    createTableCell(method.NOX),
-                    createTableCell(method.PM)
-                )
+                    createTableCell(roundToTwo(method.CO2).toLocaleString()),
+                    createTableCell(roundToTwo(method.NOX).toLocaleString()),
+                    createTableCell(roundToTwo(method.PM).toLocaleString()));
 
                 table.appendChild(tableRow)
             }
+        }
+
+        function updateSavingsUI()
+        {
+
         }
 
         function updateEmissionsCalculations() {
