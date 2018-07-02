@@ -6,7 +6,6 @@
 
     <script type="text/javascript" src="freightMethods.js"></script>
     <script type="text/javascript" src="elementBuilders.js"></script>
-    <script type="text/javascript" src="smartwayBins.js"></script>
     <script type="text/javascript" src="performanceProfile.js"></script>
 </head>
 
@@ -79,7 +78,7 @@
                 <tbody id="emissionsOutputTable"></tbody>
             </table>
         </fieldset>
-        <fieldset id"targetPerformanceFieldSet">
+        <fieldset id="targetPerformanceFieldSet">
             <legend>Target Performance Rankings</legend>
             <table style="width:100%">
                 <thead id="targetSimpleHeader">
@@ -103,6 +102,38 @@
                 <tbody id="targetPerformanceTable"></tbody>
             </table>
         </fieldset>
+        <fieldset id="savingsFieldSet">
+            <legend>Final Emissions/Emissions Saved</legend>
+            <legend>Emissions</legend>
+            <select id="savingsOutputSelect" onchange="updateSavingsUI()">
+                <option value="Grams">Final Grams</option>
+                <option value="Grams Saved">Grams Saved</option>
+                <option value="% Saved">% Saved</option>
+                <script type="text/javascript">
+                    var savingsOutputTypes = [
+                        "Grams",
+                        "Grams Saved",
+                        "% Saved"
+                    ];
+                    var savingsOutputOperations = [
+                        function (previous, target) { return target; },
+                        function (previous, target) { return previous - target; },
+                        function (previous, target) { return 100 * ((previous - target) / previous); }
+                    ];
+                </script>
+            </select>
+            <table style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>CO2</th>
+                        <th>NOX</th>
+                        <th>PM</th>
+                    </tr>
+                </thead>
+                <tbody id="savingsTable"></tbody>
+            </table>
+        </fieldset>
 
     </form>
 
@@ -113,7 +144,18 @@
             "activityPerformanceTable", "currentSimpleHeader",
             "currentDetailedHeader", updateEmissionsUI);
         var targetProfile = new PerformanceProfile(createFreightMethods(),
-        "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", updateSavingsUI)
+            "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", updateSavingsUI)
+
+        var smartwayBinJSON = undefined;
+
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onload = function () {
+            smartwayBinJSON = JSON.parse(xmlhttp.responseText)
+            currentProfile.bins = smartwayBinJSON.Miles;
+            targetProfile.bins = smartwayBinJSON.Miles;
+        }
+        xmlhttp.open("GET", "smartwayBins.json")
+        xmlhttp.send()
 
         // Update the "active" boolean of each method, and update the UI
         function onSelectedFreightMethodsChange() {
@@ -146,10 +188,10 @@
             updateEmissionsCalculations();
         }
 
-        function onDetailedChange(doDetailed)
-        {
+        function onDetailedChange(doDetailed) {
             let units = document.getElementById("unitsSelect");
             currentProfile.bins = smartwayBinJSON[units];
+            targetProfile.bins = smartwayBinJSON[units];
             currentProfile.setDetailed(doDetailed.checked);
             targetProfile.setDetailed(doDetailed.checked);
         }
@@ -173,6 +215,7 @@
                 }
                 else {
                     method.active = false;
+                    targetProfile.methods[i].active = false;
                 }
             }
         }
@@ -193,7 +236,9 @@
                     input.type = "number";
                     input.min = 0;
                     input.onchange = function () {
-                        freightMethods[i].activityQuantity = event.currentTarget.value;
+                        let value = event.currentTarget.value;
+                        freightMethods[i].activityQuantity = value;
+                        targetProfile.methods[i].activityQuantity = value;
                         updateEmissionsCalculations();
                     };
                     input.value = method.activityQuantity;
@@ -215,15 +260,19 @@
 
         function updateEmissionsUI() {
             activeFreightMethods = [];
+            // Get active methods from all current freightmethods
             freightMethods.forEach(function (method) {
                 if (method.active) activeFreightMethods.push(method);
             })
 
             let table = document.getElementById("emissionsOutputTable")
+
+            // Clear table
             while (table.firstChild) {
                 table.removeChild(table.firstChild);
             }
 
+            // Add row for emissions for each type
             for (let i = 0; i < activeFreightMethods.length; ++i) {
                 let method = activeFreightMethods[i];
                 let tableRow = createTableRow(
@@ -234,29 +283,52 @@
 
                 table.appendChild(tableRow)
             }
+            //targetProfile.updateEmissions();
+            updateSavingsUI();
         }
 
-        function updateSavingsUI()
-        {
+        function updateSavingsUI() {
+            let type = document.getElementById("savingsOutputSelect").value;
+            let outputFunction =
+                savingsOutputOperations[savingsOutputTypes.indexOf(type)];
 
+            let table = document.getElementById("savingsTable");
+
+            // Clear table
+            while (table.firstChild) {
+                table.removeChild(table.firstChild);
+            }
+
+            // Go through each method to calculate savings
+            for (let i = 0; i < freightMethods.length; ++i) {
+                if (!freightMethods[i].active) { continue; }
+
+                let currentMethod = freightMethods[i];
+                let targetMethod = targetProfile.methods[i];
+
+                let outputCO2 = outputFunction(currentMethod.CO2, targetMethod.CO2);
+                let outputNOX = outputFunction(currentMethod.NOX, targetMethod.NOX);
+                let outputPM = outputFunction(currentMethod.PM, targetMethod.PM);
+
+                let tableRow = createTableRow(
+                    createTableCell(currentMethod.type),
+                    createTableCell(roundToTwo(outputCO2).toLocaleString()),
+                    createTableCell(roundToTwo(outputNOX).toLocaleString()),
+                    createTableCell(roundToTwo(outputPM).toLocaleString())
+                );
+                table.appendChild(tableRow);
+            }
         }
 
         function updateEmissionsCalculations() {
 
-            let units = document.getElementById("unitsSelect").value;
-            currentProfile.bins = smartwayBinJSON[units];
-            let activeFreightMethods = [];
-            freightMethods.forEach(function (method) {
-                if (method.active) {
-                    activeFreightMethods.push(method);
-                }
-            })
-
             if (document.getElementById("doDetailed").checked) {
                 currentProfile.updateEmissionsDetailed();
+                targetProfile.updateEmissionsDetailed();
             }
             else {
                 currentProfile.updateEmissionsSimple();
+                targetProfile.updateEmissionsSimple();
             }
 
             updateEmissionsUI();
