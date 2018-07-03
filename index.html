@@ -7,6 +7,9 @@
     <script type="text/javascript" src="freightMethods.js"></script>
     <script type="text/javascript" src="elementBuilders.js"></script>
     <script type="text/javascript" src="performanceProfile.js"></script>
+
+    <!--- JQUERY -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -153,24 +156,33 @@
 
         var smartwayBinJSON = undefined;
 
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.onload = function () {
-            smartwayBinJSON = JSON.parse(xmlhttp.responseText)
-            currentProfile.bins = smartwayBinJSON.Miles;
-            targetProfile.bins = smartwayBinJSON.Miles;
-        }
-        xmlhttp.open("GET", "smartwayBins.json")
-        xmlhttp.send()
+        $(function () {
 
-        function onProfileChanged()
-        {
+            $.getJSON("smartwayBins.json", function (data) {
+                smartwayBinJSON = data;
+                currentProfile.bins = smartwayBinJSON.Miles;
+                targetProfile.bins = smartwayBinJSON.Miles;
+            });
+
+            let element = document.getElementById("movingMethodsFieldset");
+
+            // Populate moving methods checkboxes
+            for (let i = 0; i < freightMethods.length; ++i) {
+                let box = createCheckBox(freightMethods[i].type);
+                box.addEventListener("click", onSelectedFreightMethodsChange);
+                element.appendChild(box);
+            }
+
+        })
+
+
+        function onProfileChanged() {
             updateEmissionsCalculations();
             updateEmissionsUI();
             updateSavingsUI();
         }
 
-        function onTargetProfileChanged()
-        {
+        function onTargetProfileChanged() {
             updateEmissionsCalculations();
             updateEmissionsUI();
             updateSavingsUI();
@@ -179,21 +191,21 @@
         // Update the "active" boolean of each method, and update the UI
         function onSelectedFreightMethodsChange() {
             let label = document.getElementById("selectedMethodsOutput");
-            //label.textContent = "othertext"
+            
             let selected = [];
-            let elements = document.getElementById("movingMethodsFieldset").getElementsByTagName("input")
-            for (let i = 0, element; element = elements[i++];) {
-                if (element.type === "checkbox" && element.checked) {
-                    let text = element.parentElement.textContent;
-                    selected.push(text);
+            $('#movingMethodsFieldset').children('label').each(
+                function () {
+                    if ($(this).children('input[name=checkbox]:checked').length > 0)
+                    {
+                        selected.push(this.textContent);
+                    }
                 }
-            }
-
+            );
             //Update the model for all of the methods
             updateActiveMethods(selected);
             updateQuantityInputUI();
 
-            let units = document.getElementById("unitsSelect").value;
+            let units = $('#unitsSelect').val();
             currentProfile.bins = smartwayBinJSON[units];
             currentProfile.updateInputUI();
             targetProfile.bins = smartwayBinJSON[units];
@@ -210,22 +222,12 @@
         }
 
         function onDetailedChange(doDetailed) {
-            let units = document.getElementById("unitsSelect").value;
+            let units = $("#unitsSelect").val();
             currentProfile.bins = smartwayBinJSON[units];
             targetProfile.bins = smartwayBinJSON[units];
             currentProfile.setDetailed(doDetailed.checked);
             targetProfile.setDetailed(doDetailed.checked);
         }
-
-        let element = document.getElementById("movingMethodsFieldset");
-
-        // Populate moving methods checkboxes
-        for (let i = 0; i < freightMethods.length; ++i) {
-            let box = createCheckBox(freightMethods[i].type);
-            box.addEventListener("click", onSelectedFreightMethodsChange);
-            element.appendChild(box);
-        }
-
 
         function updateActiveMethods(activeMethods) {
             for (let i = 0; i < freightMethods.length; ++i) {
@@ -244,10 +246,7 @@
         function updateQuantityInputUI() {
 
             let activityQuantityTable = document.getElementById("activityQuantityTable")
-            // Clear out table
-            while (activityQuantityTable.firstChild) {
-                activityQuantityTable.removeChild(activityQuantityTable.firstChild)
-            }
+            $("#activityQuantityTable").empty();
             for (let i = 0; i < freightMethods.length; ++i) {
                 var method = freightMethods[i];
                 if (method.active) {
@@ -280,20 +279,17 @@
             return +(Math.round(num + "e+2") + "e-2");
         }
 
-        function updateTotalActivity()
-        {
+        function updateTotalActivity() {
             activeFreightMethods = [];
-            freightMethods.forEach(function(method) {
+            freightMethods.forEach(function (method) {
                 if (method.active) activeFreightMethods.push(method);
             })
             let total = 0;
-            for (let i = 0; i < activeFreightMethods.length; ++i)
-            {
+            for (let i = 0; i < activeFreightMethods.length; ++i) {
                 total += Number(activeFreightMethods[i].activityQuantity);
             }
             let totalOutput = document.getElementById("totalActivityLabel")
-            let unitsInput = document.getElementById("unitsSelect");
-            let units = unitsInput.value;
+            let units = $('#unitsSelect').val();
             totalOutput.textContent = "Total Activity: " + total + " " + units;
         }
 
@@ -306,10 +302,7 @@
 
             let table = document.getElementById("emissionsOutputTable")
 
-            // Clear table
-            while (table.firstChild) {
-                table.removeChild(table.firstChild);
-            }
+            $("#emissionsOutputTable").empty();
 
             // Add row for emissions for each type
             for (let i = 0; i < activeFreightMethods.length; ++i) {
@@ -325,17 +318,14 @@
         }
 
         function updateSavingsUI() {
-            
+
             let type = document.getElementById("savingsOutputSelect").value;
             let outputFunction =
                 savingsOutputOperations[savingsOutputTypes.indexOf(type)];
 
             let table = document.getElementById("savingsTable");
 
-            // Clear table
-            while (table.firstChild) {
-                table.removeChild(table.firstChild);
-            }
+            $("#savingsTable").empty();
 
             // Go through each method to calculate savings
             for (let i = 0; i < freightMethods.length; ++i) {
@@ -356,12 +346,12 @@
                 );
                 table.appendChild(tableRow);
             }
-            
+
         }
 
         function updateEmissionsCalculations() {
 
-            if (document.getElementById("doDetailed").checked) {
+            if ($("#doDetailed:checked").length > 0) {
                 currentProfile.updateEmissionsDetailed();
                 targetProfile.updateEmissionsDetailed();
             }

@@ -11,6 +11,7 @@ var performanceLevels = [
 function createCheckBox(label) {
     var labelElement = document.createElement("label")
     var checkboxElement = document.createElement("input")
+    checkboxElement.name = "checkbox";
     checkboxElement.type = "checkbox"
     labelElement.textContent = label
     labelElement.classList.add("multiCheckBox", "inlineBlock")
