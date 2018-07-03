@@ -25,10 +25,6 @@
                     <option value="Ton-Miles">Ton-Miles</option>
                 </select>
             </label>
-            <label id="totalActivityLabel">
-                Total Activity:
-                <input type="number" min="0" id="totalActivityInput" readonly="true"/>
-            </label>
             <table style="width:100%">
                 <thead>
                     <tr>
@@ -39,6 +35,9 @@
                 <tbody id="activityQuantityTable">
                 </tbody>
             </table>
+            <label id="totalActivityLabel" style="font-weight:bold">
+                Total Activity:
+            </label>
         </fieldset>
         <fieldset id="performanceRankingsFieldset">
             <legend>Performance Rankings</legend>
@@ -206,6 +205,7 @@
         function onUnitsChange() {
             currentProfile.bins = smartwayBinJSON[event.currentTarget.value];
             targetProfile.bins = smartwayBinJSON[event.currentTarget.value];
+            updateTotalActivity();
             onProfileChanged();
         }
 
@@ -260,6 +260,7 @@
                         let value = event.currentTarget.value;
                         freightMethods[i].activityQuantity = value;
                         targetProfile.methods[i].activityQuantity = value;
+                        updateTotalActivity();
                         onProfileChanged();
                     };
                     input.value = method.activityQuantity;
@@ -277,6 +278,23 @@
 
         function roundToTwo(num) {
             return +(Math.round(num + "e+2") + "e-2");
+        }
+
+        function updateTotalActivity()
+        {
+            activeFreightMethods = [];
+            freightMethods.forEach(function(method) {
+                if (method.active) activeFreightMethods.push(method);
+            })
+            let total = 0;
+            for (let i = 0; i < activeFreightMethods.length; ++i)
+            {
+                total += Number(activeFreightMethods[i].activityQuantity);
+            }
+            let totalOutput = document.getElementById("totalActivityLabel")
+            let unitsInput = document.getElementById("unitsSelect");
+            let units = unitsInput.value;
+            totalOutput.textContent = "Total Activity: " + total + " " + units;
         }
 
         function updateEmissionsUI() {
