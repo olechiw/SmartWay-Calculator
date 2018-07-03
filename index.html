@@ -105,23 +105,25 @@
         <fieldset id="savingsFieldSet">
             <legend>Final Emissions/Emissions Saved</legend>
             <legend>Emissions</legend>
-            <select id="savingsOutputSelect" onchange="updateSavingsUI()">
-                <option value="Grams">Final Grams</option>
-                <option value="Grams Saved">Grams Saved</option>
-                <option value="% Saved">% Saved</option>
-                <script type="text/javascript">
-                    var savingsOutputTypes = [
-                        "Grams",
-                        "Grams Saved",
-                        "% Saved"
-                    ];
-                    var savingsOutputOperations = [
-                        function (previous, target) { return target; },
-                        function (previous, target) { return previous - target; },
-                        function (previous, target) { return 100 * ((previous - target) / previous); }
-                    ];
-                </script>
-            </select>
+            <label>Metric:
+                <select id="savingsOutputSelect" onchange="updateSavingsUI()">
+                    <option value="Grams">Final Grams</option>
+                    <option value="Grams Saved">Grams Saved</option>
+                    <option value="% Saved">% Saved</option>
+                    <script type="text/javascript">
+                        var savingsOutputTypes = [
+                            "Grams",
+                            "Grams Saved",
+                            "% Saved"
+                        ];
+                        var savingsOutputOperations = [
+                            function (previous, target) { return target; },
+                            function (previous, target) { return previous - target; },
+                            function (previous, target) { return 100 * ((previous - target) / previous); }
+                        ];
+                    </script>
+                </select>
+            </label>
             <table style="width:100%">
                 <thead>
                     <tr>
@@ -185,11 +187,12 @@
 
         function onUnitsChange() {
             currentProfile.bins = smartwayBinJSON[event.currentTarget.value];
+            targetProfile.bins = smartwayBinJSON[event.currentTarget.value];
             updateEmissionsCalculations();
         }
 
         function onDetailedChange(doDetailed) {
-            let units = document.getElementById("unitsSelect");
+            let units = document.getElementById("unitsSelect").value;
             currentProfile.bins = smartwayBinJSON[units];
             targetProfile.bins = smartwayBinJSON[units];
             currentProfile.setDetailed(doDetailed.checked);
@@ -288,6 +291,7 @@
         }
 
         function updateSavingsUI() {
+            
             let type = document.getElementById("savingsOutputSelect").value;
             let outputFunction =
                 savingsOutputOperations[savingsOutputTypes.indexOf(type)];
@@ -318,6 +322,7 @@
                 );
                 table.appendChild(tableRow);
             }
+            
         }
 
         function updateEmissionsCalculations() {
