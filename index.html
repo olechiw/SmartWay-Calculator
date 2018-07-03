@@ -3,31 +3,42 @@
 
 <head>
     <link rel="stylesheet" href="styles.css" />
+    <!--- JQUERY -->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <script type="text/javascript" src="freightMethods.js"></script>
     <script type="text/javascript" src="elementBuilders.js"></script>
     <script type="text/javascript" src="performanceProfile.js"></script>
-
-    <!--- JQUERY -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="comboBox.js"></script>
+    <style>
+        .custom-combobox {
+          position: relative;
+          display: inline-block;
+        }
+        .custom-combobox-toggle {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          margin-left: -1px;
+          padding: 0;
+        }
+        .custom-combobox-input {
+          margin: 0;
+          padding: 5px 10px;
+        }
+        </style>
 </head>
 
 <body>
     <form class="center">
 
-        <fieldset id="movingMethodsFieldset">
-            <legend>Moving Methods</legend>
-        </fieldset>
-
         <fieldset id="activityQuantityFieldSet">
             <legend>Movement Activity</legend>
-            <label>
-                Units:
-                <select id="unitsSelect" onchange="onUnitsChange()" class="center">
-                    <option value="Miles">Miles</option>
-                    <option value="Ton-Miles">Ton-Miles</option>
-                </select>
-            </label>
+            <p>
+                <input type="button" value="+" onclick="addCurrentActivity()"/>
+            </p>
             <table style="width:100%">
                 <thead>
                     <tr>
@@ -164,17 +175,29 @@
                 targetProfile.bins = smartwayBinJSON.Miles;
             });
 
-            let element = document.getElementById("movingMethodsFieldset");
-
-            // Populate moving methods checkboxes
-            for (let i = 0; i < freightMethods.length; ++i) {
-                let box = createCheckBox(freightMethods[i].type);
-                box.addEventListener("click", onSelectedFreightMethodsChange);
-                element.appendChild(box);
-            }
-
         })
 
+        function getAvailableActivities() {
+            let available = freightMethods.slice();
+            freightMethods.forEach(function (method) {
+                if (method.active) available.splice(available.indexOf(method), 1);
+            });
+            return available;
+        }
+
+        function addCurrentActivity() {
+            let $typeSelect = $('<select></select>');
+            $typeSelect.empty().append(function () {
+                let output = '';
+                getAvailableActivities().forEach(function (activity) {
+                    output += "<option>" + activity.type + "</option>";
+                });
+                return output;
+            });
+            $("#activityQuantityTable").append("<tr><td></td></tr>");
+            $("#activityQuantityTable").find('td').last().append($typeSelect);
+            $typeSelect.combobox();
+        }
 
         function onProfileChanged() {
             updateEmissionsCalculations();
@@ -186,32 +209,6 @@
             updateEmissionsCalculations();
             updateEmissionsUI();
             updateSavingsUI();
-        }
-
-        // Update the "active" boolean of each method, and update the UI
-        function onSelectedFreightMethodsChange() {
-            let label = document.getElementById("selectedMethodsOutput");
-            
-            let selected = [];
-            $('#movingMethodsFieldset').children('label').each(
-                function () {
-                    if ($(this).children('input[name=checkbox]:checked').length > 0)
-                    {
-                        selected.push(this.textContent);
-                    }
-                }
-            );
-            //Update the model for all of the methods
-            updateActiveMethods(selected);
-            updateQuantityInputUI();
-
-            let units = $('#unitsSelect').val();
-            currentProfile.bins = smartwayBinJSON[units];
-            currentProfile.updateInputUI();
-            targetProfile.bins = smartwayBinJSON[units];
-            targetProfile.updateInputUI();
-
-            onTargetProfileChanged();
         }
 
         function onUnitsChange() {
