@@ -38,10 +38,9 @@ function createFreightMethods()
         new FreightMethodModel("Tanker Trucking"),
         new FreightMethodModel("TL/Dry Van"),
         new FreightMethodModel("Logistics"),
-        new FreightMethodModel("Multimodal")
-        /*,
+        new FreightMethodModel("Multimodal"),
         new FreightMethodModel("Rail"),
-    new FreightMethodModel("Barge")*/];
+    new FreightMethodModel("Barge")];
 }
 
 var freightMethods = createFreightMethods();

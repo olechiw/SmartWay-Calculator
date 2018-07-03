@@ -25,6 +25,10 @@
                     <option value="Ton-Miles">Ton-Miles</option>
                 </select>
             </label>
+            <label id="totalActivityLabel">
+                Total Activity:
+                <input type="number" min="0" id="totalActivityInput" readonly="true"/>
+            </label>
             <table style="width:100%">
                 <thead>
                     <tr>
@@ -144,9 +148,9 @@
         // The object representing all current activity/performance levels
         var currentProfile = new PerformanceProfile(freightMethods,
             "activityPerformanceTable", "currentSimpleHeader",
-            "currentDetailedHeader", updateEmissionsUI);
+            "currentDetailedHeader", onProfileChanged);
         var targetProfile = new PerformanceProfile(createFreightMethods(),
-            "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", updateSavingsUI)
+            "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", onProfileChanged)
 
         var smartwayBinJSON = undefined;
 
@@ -158,6 +162,20 @@
         }
         xmlhttp.open("GET", "smartwayBins.json")
         xmlhttp.send()
+
+        function onProfileChanged()
+        {
+            updateEmissionsCalculations();
+            updateEmissionsUI();
+            updateSavingsUI();
+        }
+
+        function onTargetProfileChanged()
+        {
+            updateEmissionsCalculations();
+            updateEmissionsUI();
+            updateSavingsUI();
+        }
 
         // Update the "active" boolean of each method, and update the UI
         function onSelectedFreightMethodsChange() {
@@ -182,13 +200,13 @@
             targetProfile.bins = smartwayBinJSON[units];
             targetProfile.updateInputUI();
 
-            updateEmissionsCalculations();
+            onTargetProfileChanged();
         }
 
         function onUnitsChange() {
             currentProfile.bins = smartwayBinJSON[event.currentTarget.value];
             targetProfile.bins = smartwayBinJSON[event.currentTarget.value];
-            updateEmissionsCalculations();
+            onProfileChanged();
         }
 
         function onDetailedChange(doDetailed) {
@@ -242,7 +260,7 @@
                         let value = event.currentTarget.value;
                         freightMethods[i].activityQuantity = value;
                         targetProfile.methods[i].activityQuantity = value;
-                        updateEmissionsCalculations();
+                        onProfileChanged();
                     };
                     input.value = method.activityQuantity;
                     let row = createTableRow(label, input);
@@ -252,7 +270,7 @@
             }
         }
 
-        function updateCurrentInputUI() {
+        function updatePerformanceInputUI() {
             currentProfile.updateInputUI()
             targetProfile.updateInputUI();
         }
@@ -286,8 +304,6 @@
 
                 table.appendChild(tableRow)
             }
-            //targetProfile.updateEmissions();
-            updateSavingsUI();
         }
 
         function updateSavingsUI() {
@@ -335,8 +351,6 @@
                 currentProfile.updateEmissionsSimple();
                 targetProfile.updateEmissionsSimple();
             }
-
-            updateEmissionsUI();
         }
     </script>
 </body>
