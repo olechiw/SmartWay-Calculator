@@ -5,30 +5,14 @@
     <link rel="stylesheet" href="styles.css" />
     <!--- JQUERY -->
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="jquery-ui/jquery-ui.js"></script>
+    <link rel="stylesheet" href="jquery-ui/jquery-ui.css">
 
     <script type="text/javascript" src="freightMethods.js"></script>
     <script type="text/javascript" src="elementBuilders.js"></script>
     <script type="text/javascript" src="performanceProfile.js"></script>
     <script type="text/javascript" src="comboBox.js"></script>
-    <style>
-        .custom-combobox {
-          position: relative;
-          display: inline-block;
-        }
-        .custom-combobox-toggle {
-          position: absolute;
-          top: 0;
-          bottom: 0;
-          margin-left: -1px;
-          padding: 0;
-        }
-        .custom-combobox-input {
-          margin: 0;
-          padding: 5px 10px;
-        }
-        </style>
+    <script type="text/javascript" src="activityProfile.js"></script>
 </head>
 
 <body>
@@ -37,7 +21,7 @@
         <fieldset id="activityQuantityFieldSet">
             <legend>Movement Activity</legend>
             <p>
-                <input type="button" value="+" onclick="addCurrentActivity()"/>
+                <input type="button" value="+" onclick="addCurrentActivity()" />
             </p>
             <table style="width:100%">
                 <thead>
@@ -185,20 +169,6 @@
             return available;
         }
 
-        function addCurrentActivity() {
-            let $typeSelect = $('<select></select>');
-            $typeSelect.empty().append(function () {
-                let output = '';
-                getAvailableActivities().forEach(function (activity) {
-                    output += "<option>" + activity.type + "</option>";
-                });
-                return output;
-            });
-            $("#activityQuantityTable").append("<tr><td></td></tr>");
-            $("#activityQuantityTable").find('td').last().append($typeSelect);
-            $typeSelect.combobox();
-        }
-
         function onProfileChanged() {
             updateEmissionsCalculations();
             updateEmissionsUI();
@@ -226,43 +196,26 @@
             targetProfile.setDetailed(doDetailed.checked);
         }
 
-        function updateActiveMethods(activeMethods) {
+        function updateActiveMethods() {
+            let activeMethods = [];
+            $("#activityQuantityTable").find('select').each(function () {
+                let val = $(this).val();
+                if (!activeMethods.includes(val)) {
+                    activeMethods.push(val);
+                }
+            });
+
             for (let i = 0; i < freightMethods.length; ++i) {
                 let method = freightMethods[i];
                 if (activeMethods.includes(method.type)) {
                     method.active = true;
-                    targetProfile.methods[i].active = true;
+                    // Move to the end to preserve order from activemethods (hacky)
+                    freightMethods.splice(freightMethods.indexOf(method), 1);
+                    freightMethods.push(method);
                 }
                 else {
                     method.active = false;
                     targetProfile.methods[i].active = false;
-                }
-            }
-        }
-
-        function updateQuantityInputUI() {
-
-            let activityQuantityTable = document.getElementById("activityQuantityTable")
-            $("#activityQuantityTable").empty();
-            for (let i = 0; i < freightMethods.length; ++i) {
-                var method = freightMethods[i];
-                if (method.active) {
-                    let label = document.createTextNode(method.type)
-                    label.textContent = method.type;
-                    var input = document.createElement("input")
-                    input.type = "number";
-                    input.min = 0;
-                    input.onchange = function () {
-                        let value = event.currentTarget.value;
-                        freightMethods[i].activityQuantity = value;
-                        targetProfile.methods[i].activityQuantity = value;
-                        updateTotalActivity();
-                        onProfileChanged();
-                    };
-                    input.value = method.activityQuantity;
-                    let row = createTableRow(label, input);
-
-                    activityQuantityTable.appendChild(row)
                 }
             }
         }
@@ -288,6 +241,47 @@
             let totalOutput = document.getElementById("totalActivityLabel")
             let units = $('#unitsSelect').val();
             totalOutput.textContent = "Total Activity: " + total + " " + units;
+        }
+
+        function addCurrentActivity() {
+            addQuantityInputUI("#activityQuantityTable",
+                currentTypeChanged,
+                currentQuantityChanged,
+                currentUnitsChanged,
+                currentRemoved);
+        }
+
+        function currentQuantityChanged() {
+            let $input = $(event.currentTarget);
+            let $select = $input.parent().parent().find('select').first();
+            let type = $select.val();
+            let quantity = $input.val();
+
+            currentProfile.methods.find(x => x.type === type)
+                .activityQuantity = quantity;
+            onProfileChanged();
+        }
+
+        function currentTypeChanged() {
+            updateActiveMethods();
+            updatePerformanceInputUI();
+            onProfileChanged();
+        }
+
+        function currentUnitsChanged() {
+
+        }
+
+        function currentRemoved() {
+            let row = $(event.currentTarget).parent().parent();
+            let id = $(row).attr("name");
+            $("#activityQuantityTable > tr:eq(" + (Number(id) - 1) + ")").remove();
+            let i = 0;
+            $('#activityQuantityTable').find('tr').each(function () {
+                ++i;
+                $(this).attr("name", i);
+            });
+            currentTypeChanged();
         }
 
         function updateEmissionsUI() {

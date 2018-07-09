@@ -19,7 +19,7 @@ $(function () {
                 $("<input />")
                     .insertAfter(select)
                     .addClass("ui-widget ui-widget-content ui-corner-left ui-combobox-input")
-                    .val(select.children(':selected').text())
+                    //.val(select.children((':selected')).text())
                     .attr('tabindex', select.attr('tabindex'))
                     .width($(this.element).width());
 
@@ -42,6 +42,7 @@ $(function () {
                     select: function (event, ui) {
                         //var selectedObj = ui.item;              
                         $(this).attr('title', ui.item.value);
+                        select.trigger("change");
                     }
                 });
 
@@ -229,6 +230,7 @@ $(function () {
                     return false;
                 }
             });
+            select.trigger("change");
 
             if (valid) {
                 this.uiInput.val(select.children(':selected').text());

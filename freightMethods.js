@@ -6,7 +6,7 @@ class FreightMethodModel {
         this.invalid = false;
 
         // The activity units (Ton-Miles or Miles) and the corresponding scalar
-        this.activityUnits = "";
+        this.activityUnits = "Miles";
         this.activityQuantity = 0;
 
         // The current calculated amounts of pollution
