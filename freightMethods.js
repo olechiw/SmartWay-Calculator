@@ -21,8 +21,7 @@ class FreightMethodModel {
     }
 }
 
-function createFreightMethods()
-{
+function createFreightMethods() {
     return [
         new FreightMethodModel("Auto Carrier Trucking"),
         new FreightMethodModel("Dray Trucking"),
@@ -40,10 +39,13 @@ function createFreightMethods()
         new FreightMethodModel("Logistics"),
         new FreightMethodModel("Multimodal"),
         new FreightMethodModel("Rail"),
-    new FreightMethodModel("Barge")];
+        new FreightMethodModel("Barge"),
+        new FreightMethodModel("Air-Long Haul"),
+        new FreightMethodModel("Air-Short Haul")];
 }
 
 var freightMethods = createFreightMethods();
+var targetFreightMethods = createFreightMethods();
 
 var freightUnits = [
     "Miles",

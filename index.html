@@ -17,9 +17,8 @@
 
 <body>
     <form class="center">
-
         <fieldset id="activityQuantityFieldSet">
-            <legend>Movement Activity</legend>
+            <legend>Current Movement Activity</legend>
             <p>
                 <input type="button" value="+" onclick="addCurrentActivity()" />
             </p>
@@ -28,14 +27,12 @@
                     <tr>
                         <th>Type</th>
                         <th>Movement Amount</th>
+                        <th>Movement Units</th>
                     </tr>
                 </thead>
                 <tbody id="activityQuantityTable">
                 </tbody>
             </table>
-            <label id="totalActivityLabel" style="font-weight:bold">
-                Total Activity:
-            </label>
         </fieldset>
         <fieldset id="performanceRankingsFieldset">
             <legend>Performance Rankings</legend>
@@ -77,6 +74,23 @@
                     </tr>
                 </thead>
                 <tbody id="emissionsOutputTable"></tbody>
+            </table>
+        </fieldset>
+        <fieldset id="targetQuantityFieldset">
+            <legend>Target Movement Activity</legend>
+            <p>
+                <input type="button" value="+" onclick="addTargetActivity()" />
+            </p>
+            <table style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Movement Amount</th>
+                        <th>Movement Units</th>
+                    </tr>
+                </thead>
+                <tbody id="targetQuantityTable">
+                </tbody>
             </table>
         </fieldset>
         <fieldset id="targetPerformanceFieldSet">
@@ -142,12 +156,17 @@
 
     <script type="text/javascript">
 
-        // The object representing all current activity/performance levels
-        var currentProfile = new PerformanceProfile(freightMethods,
+        // The object representing all current performance levels
+        var currentPerformanceProfile = new PerformanceProfile(freightMethods,
             "activityPerformanceTable", "currentSimpleHeader",
-            "currentDetailedHeader", onProfileChanged);
-        var targetProfile = new PerformanceProfile(createFreightMethods(),
-            "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", onProfileChanged)
+            "currentDetailedHeader", updateEmissions);
+        var currentActivityProfile = new ActivityProfile("#activityQuantityTable",
+            onActivityChanged, freightMethods);
+
+        var targetProfile = new PerformanceProfile(targetFreightMethods,
+            "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", updateEmissions)
+        var targetActivityProfile = new ActivityProfile("#targetQuantityTable",
+            onActivityChanged, targetFreightMethods);
 
         var smartwayBinJSON = undefined;
 
@@ -155,73 +174,25 @@
 
             $.getJSON("smartwayBins.json", function (data) {
                 smartwayBinJSON = data;
-                currentProfile.bins = smartwayBinJSON.Miles;
-                targetProfile.bins = smartwayBinJSON.Miles;
+                currentPerformanceProfile.bins = smartwayBinJSON;
+                targetProfile.bins = smartwayBinJSON;
             });
 
         })
 
-        function getAvailableActivities() {
-            let available = freightMethods.slice();
-            freightMethods.forEach(function (method) {
-                if (method.active) available.splice(available.indexOf(method), 1);
-            });
-            return available;
-        }
-
-        function onProfileChanged() {
+        function updateEmissions() {
             updateEmissionsCalculations();
             updateEmissionsUI();
             updateSavingsUI();
-        }
-
-        function onTargetProfileChanged() {
-            updateEmissionsCalculations();
-            updateEmissionsUI();
-            updateSavingsUI();
-        }
-
-        function onUnitsChange() {
-            currentProfile.bins = smartwayBinJSON[event.currentTarget.value];
-            targetProfile.bins = smartwayBinJSON[event.currentTarget.value];
-            updateTotalActivity();
-            onProfileChanged();
         }
 
         function onDetailedChange(doDetailed) {
-            let units = $("#unitsSelect").val();
-            currentProfile.bins = smartwayBinJSON[units];
-            targetProfile.bins = smartwayBinJSON[units];
-            currentProfile.setDetailed(doDetailed.checked);
+            currentPerformanceProfile.setDetailed(doDetailed.checked);
             targetProfile.setDetailed(doDetailed.checked);
         }
 
-        function updateActiveMethods() {
-            let activeMethods = [];
-            $("#activityQuantityTable").find('select').each(function () {
-                let val = $(this).val();
-                if (!activeMethods.includes(val)) {
-                    activeMethods.push(val);
-                }
-            });
-
-            for (let i = 0; i < freightMethods.length; ++i) {
-                let method = freightMethods[i];
-                if (activeMethods.includes(method.type)) {
-                    method.active = true;
-                    // Move to the end to preserve order from activemethods (hacky)
-                    freightMethods.splice(freightMethods.indexOf(method), 1);
-                    freightMethods.push(method);
-                }
-                else {
-                    method.active = false;
-                    targetProfile.methods[i].active = false;
-                }
-            }
-        }
-
         function updatePerformanceInputUI() {
-            currentProfile.updateInputUI()
+            currentPerformanceProfile.updateInputUI();
             targetProfile.updateInputUI();
         }
 
@@ -229,59 +200,16 @@
             return +(Math.round(num + "e+2") + "e-2");
         }
 
-        function updateTotalActivity() {
-            activeFreightMethods = [];
-            freightMethods.forEach(function (method) {
-                if (method.active) activeFreightMethods.push(method);
-            })
-            let total = 0;
-            for (let i = 0; i < activeFreightMethods.length; ++i) {
-                total += Number(activeFreightMethods[i].activityQuantity);
-            }
-            let totalOutput = document.getElementById("totalActivityLabel")
-            let units = $('#unitsSelect').val();
-            totalOutput.textContent = "Total Activity: " + total + " " + units;
-        }
-
         function addCurrentActivity() {
-            addQuantityInputUI("#activityQuantityTable",
-                currentTypeChanged,
-                currentQuantityChanged,
-                currentUnitsChanged,
-                currentRemoved);
+            currentActivityProfile.addQuantityInputUI();
+        }
+        function addTargetActivity() {
+            targetActivityProfile.addQuantityInputUI();
         }
 
-        function currentQuantityChanged() {
-            let $input = $(event.currentTarget);
-            let $select = $input.parent().parent().find('select').first();
-            let type = $select.val();
-            let quantity = $input.val();
-
-            currentProfile.methods.find(x => x.type === type)
-                .activityQuantity = quantity;
-            onProfileChanged();
-        }
-
-        function currentTypeChanged() {
-            updateActiveMethods();
+        function onActivityChanged() {
             updatePerformanceInputUI();
-            onProfileChanged();
-        }
-
-        function currentUnitsChanged() {
-
-        }
-
-        function currentRemoved() {
-            let row = $(event.currentTarget).parent().parent();
-            let id = $(row).attr("name");
-            $("#activityQuantityTable > tr:eq(" + (Number(id) - 1) + ")").remove();
-            let i = 0;
-            $('#activityQuantityTable').find('tr').each(function () {
-                ++i;
-                $(this).attr("name", i);
-            });
-            currentTypeChanged();
+            updateEmissions();
         }
 
         function updateEmissionsUI() {
@@ -310,7 +238,7 @@
 
         function updateSavingsUI() {
 
-            let type = document.getElementById("savingsOutputSelect").value;
+            let type = $("#savingsOutputSelect").val();
             let outputFunction =
                 savingsOutputOperations[savingsOutputTypes.indexOf(type)];
 
@@ -318,9 +246,14 @@
 
             $("#savingsTable").empty();
 
+
+            // Totals
+            let totalCO2 = 0;
+            let totalNOX = 0;
+            let totalPM = 0;
             // Go through each method to calculate savings
             for (let i = 0; i < freightMethods.length; ++i) {
-                if (!freightMethods[i].active) { continue; }
+                if (!freightMethods[i].active && !targetFreightMethods[i].active) { continue; }
 
                 let currentMethod = freightMethods[i];
                 let targetMethod = targetProfile.methods[i];
@@ -328,6 +261,10 @@
                 let outputCO2 = outputFunction(currentMethod.CO2, targetMethod.CO2);
                 let outputNOX = outputFunction(currentMethod.NOX, targetMethod.NOX);
                 let outputPM = outputFunction(currentMethod.PM, targetMethod.PM);
+
+                totalCO2 += outputCO2;
+                totalNOX += outputNOX;
+                totalPM += outputPM;
 
                 let tableRow = createTableRow(
                     createTableCell(currentMethod.type),
@@ -337,17 +274,26 @@
                 );
                 table.appendChild(tableRow);
             }
+            let totalsRow = createTableRow(
+                createTableCell("Totals"),
+                createTableCell(roundToTwo(totalCO2).toLocaleString()),
+                createTableCell(roundToTwo(totalNOX).toLocaleString()),
+                createTableCell(roundToTwo(totalPM).toLocaleString())
+            );
+            totalsRow.style.fontWeight = "bolder";
+            $("#savingsTable").append($(totalsRow));
 
         }
 
         function updateEmissionsCalculations() {
-
+            currentPerformanceProfile.bins = smartwayBinJSON;
+            targetProfile.bins = smartwayBinJSON;
             if ($("#doDetailed:checked").length > 0) {
-                currentProfile.updateEmissionsDetailed();
+                currentPerformanceProfile.updateEmissionsDetailed();
                 targetProfile.updateEmissionsDetailed();
             }
             else {
-                currentProfile.updateEmissionsSimple();
+                currentPerformanceProfile.updateEmissionsSimple();
                 targetProfile.updateEmissionsSimple();
             }
         }

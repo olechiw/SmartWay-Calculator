@@ -101,7 +101,7 @@ class PerformanceProfile {
 
             if (!method.active) { continue; }
 
-            let bin = this.bins[method.type + method.smartWayGeneral];
+            let bin = this.bins[method.activityUnits][method.type + method.smartWayGeneral];
             let CO2 = bin.CO2;
             let NOX = bin.NOX;
             let PM = bin.PM;
@@ -126,7 +126,7 @@ class PerformanceProfile {
             let activity = method.activityQuantity;
             for (let i = 0; i < method.percentSmartWay.length; ++i) {
                 let binTag = performanceLevels[i]
-                let bin = this.bins[method.type + binTag]
+                let bin = this.bins[method.activityUnits][method.type + binTag]
 
                 let percent = Number(method.percentSmartWay[i]) * .01;
                 method.CO2 += activity * percent * bin.CO2;
@@ -162,7 +162,7 @@ class PerformanceProfile {
             // Sum all of the percentages
             let sum = method.percentSmartWay.reduce(function (total, num) {
                 return total + num;
-            })
+            });
 
             let label = document.createTextNode(sum);
             let td = document.createElement("td");
