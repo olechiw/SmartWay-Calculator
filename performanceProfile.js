@@ -4,7 +4,7 @@ An object responsible for modeling performance of all carriers, and also constru
 
 class PerformanceProfile {
     constructor(freightMethods, tableID, simpleHeaderID,
-         detailedHeaderID, onEmissionsUpdate) {
+        detailedHeaderID, onEmissionsUpdate) {
         this.table = document.getElementById(tableID);
         this.methods = freightMethods;
         this.doDetailed = false;
@@ -18,8 +18,7 @@ class PerformanceProfile {
         let profile = this;
     }
 
-    setDetailed(detailed)
-    {
+    setDetailed(detailed) {
         if (detailed) {
             this.simpleHeader.style.display = "none";
             this.detailedHeader.style.display = '';
@@ -35,9 +34,7 @@ class PerformanceProfile {
 
     updateInputUI() {
         // Clear table
-        while (this.table.firstChild) {
-            this.table.removeChild(this.table.firstChild);
-        }
+        $(this.table).empty();
 
         // One row per type
         for (let t = 0; t < this.methods.length; ++t) {
@@ -47,15 +44,39 @@ class PerformanceProfile {
                 continue;
             }
 
-            let row = document.createElement("tr");
+            // Static, non-smartway only, not detailed
+            if (freightNonOnly.includes(method.type)) {
+                if (this.doDetailed) {
+                    let $row = $(function () {
+                        let output = "<tr>";
+                        output += "<td>" + method.type + "</td>";
+                        output += '<td><input value="100" readOnly="true" type="number"/></td>';
+                        for (let i = 0; i < 5; ++i)
+                            output += '<td><input value="0" readOnly="true" type="number"/></td>';
+                        output += "</tr>";
+                        return output;
+                    }());
+                    $(this.table).append($row);
+                }
+                else {
+                    let $row = $(function () {
+                        let output = "<tr><td>" + method.type + "</td><td>";
+                        output += '<select><option value="NON">NON</option></select>';
+                        output += "</td></tr>";
+                        return output;
+                    }());
+                    $(this.table).append($row);
+                }
+                method.percentSmartWay[5] = 100;
+            }
+            // Row of six inputs
+            else if (this.doDetailed) {
+                let row = document.createElement("tr");
 
-            // Add type label
-            let td = document.createElement("td");
-            td.appendChild(document.createTextNode(method.type));
-            row.appendChild(td);
-
-            // If checked, do percentages so a row of 6 inputs
-            if (this.doDetailed) {
+                // Add type label
+                let t = document.createElement("td");
+                t.appendChild(document.createTextNode(method.type));
+                row.appendChild(t);
 
                 // 0,1,2,3,4,5 all correspond to rankings, 0 is best 5 is worst
                 for (let i = 0; i < 6; ++i) {
@@ -76,8 +97,19 @@ class PerformanceProfile {
                     td.appendChild(input);
                     row.appendChild(td);
                 }
+
+
+                this.table.appendChild(row);
             }
+            // Simple select
             else {
+                let row = document.createElement("tr");
+
+                // Add type label
+                let t = document.createElement("td");
+                t.appendChild(document.createTextNode(method.type));
+                row.appendChild(t);
+
                 let select = createGeneralPerformanceSelect();
                 select.value = method.smartWayGeneral;
                 let profile = this;
@@ -89,9 +121,9 @@ class PerformanceProfile {
                 let td = document.createElement("td");
                 td.appendChild(select);
                 row.appendChild(td);
-            }
 
-            this.table.appendChild(row);
+                this.table.appendChild(row);
+            }
         }
     }
 
@@ -105,9 +137,9 @@ class PerformanceProfile {
             let CO2 = bin.CO2;
             let NOX = bin.NOX;
             let PM = bin.PM;
-            method.CO2 = CO2 * method.activityQuantity;
-            method.NOX = NOX * method.activityQuantity;
-            method.PM = PM * method.activityQuantity;
+            method.CO2 = CO2 * Number(method.activityQuantity);
+            method.NOX = NOX * Number(method.activityQuantity);
+            method.PM = PM * Number(method.activityQuantity);
         }
     }
 
@@ -126,12 +158,13 @@ class PerformanceProfile {
             let activity = method.activityQuantity;
             for (let i = 0; i < method.percentSmartWay.length; ++i) {
                 let binTag = performanceLevels[i]
+                if (freightNonOnly.includes(method.type) && binTag != "NON") continue;
                 let bin = this.bins[method.activityUnits][method.type + binTag]
 
                 let percent = Number(method.percentSmartWay[i]) * .01;
-                method.CO2 += activity * percent * bin.CO2;
-                method.NOX += activity * percent * bin.NOX;
-                method.PM += activity * percent * bin.PM;
+                method.CO2 += Number(activity) * percent * bin.CO2;
+                method.NOX += Number(activity) * percent * bin.NOX;
+                method.PM += Number(activity) * percent * bin.PM;
             }
         }
     }

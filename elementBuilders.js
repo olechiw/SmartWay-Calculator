@@ -1,10 +1,10 @@
 var performanceLevels = [
-    "NON",
-    "5",
-    "4",
-    "3",
+    "1",
     "2",
-    "1"
+    "3",
+    "4",
+    "5",
+    "NON"
 ]
 
 // Create the full-click checkbox format

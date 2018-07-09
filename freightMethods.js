@@ -51,3 +51,10 @@ var freightUnits = [
     "Miles",
     "Ton-Miles"
 ]
+
+var freightNonOnly = [
+    "Rail",
+    "Barge",
+    "Air-Long Haul",
+    "Air-Short Haul"
+]

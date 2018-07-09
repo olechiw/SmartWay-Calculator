@@ -134,7 +134,12 @@
                         var savingsOutputOperations = [
                             function (previous, target) { return target; },
                             function (previous, target) { return previous - target; },
-                            function (previous, target) { return 100 * ((previous - target) / previous); }
+                            function (previous, target) {
+                                if (previous === 0)
+                                    return 0;
+                                else
+                                    return 100 * ((previous - target) / previous);
+                            }
                         ];
                     </script>
                 </select>
@@ -163,7 +168,7 @@
         var currentActivityProfile = new ActivityProfile("#activityQuantityTable",
             onActivityChanged, freightMethods);
 
-        var targetProfile = new PerformanceProfile(targetFreightMethods,
+        var targetPerformanceProfile = new PerformanceProfile(targetFreightMethods,
             "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", updateEmissions)
         var targetActivityProfile = new ActivityProfile("#targetQuantityTable",
             onActivityChanged, targetFreightMethods);
@@ -175,7 +180,7 @@
             $.getJSON("smartwayBins.json", function (data) {
                 smartwayBinJSON = data;
                 currentPerformanceProfile.bins = smartwayBinJSON;
-                targetProfile.bins = smartwayBinJSON;
+                targetPerformanceProfile.bins = smartwayBinJSON;
             });
 
         })
@@ -188,12 +193,12 @@
 
         function onDetailedChange(doDetailed) {
             currentPerformanceProfile.setDetailed(doDetailed.checked);
-            targetProfile.setDetailed(doDetailed.checked);
+            targetPerformanceProfile.setDetailed(doDetailed.checked);
         }
 
         function updatePerformanceInputUI() {
             currentPerformanceProfile.updateInputUI();
-            targetProfile.updateInputUI();
+            targetPerformanceProfile.updateInputUI();
         }
 
         function roundToTwo(num) {
@@ -256,7 +261,7 @@
                 if (!freightMethods[i].active && !targetFreightMethods[i].active) { continue; }
 
                 let currentMethod = freightMethods[i];
-                let targetMethod = targetProfile.methods[i];
+                let targetMethod = targetPerformanceProfile.methods[i];
 
                 let outputCO2 = outputFunction(currentMethod.CO2, targetMethod.CO2);
                 let outputNOX = outputFunction(currentMethod.NOX, targetMethod.NOX);
@@ -287,14 +292,14 @@
 
         function updateEmissionsCalculations() {
             currentPerformanceProfile.bins = smartwayBinJSON;
-            targetProfile.bins = smartwayBinJSON;
+            targetPerformanceProfile.bins = smartwayBinJSON;
             if ($("#doDetailed:checked").length > 0) {
                 currentPerformanceProfile.updateEmissionsDetailed();
-                targetProfile.updateEmissionsDetailed();
+                targetPerformanceProfile.updateEmissionsDetailed();
             }
             else {
                 currentPerformanceProfile.updateEmissionsSimple();
-                targetProfile.updateEmissionsSimple();
+                targetPerformanceProfile.updateEmissionsSimple();
             }
         }
     </script>

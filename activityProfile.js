@@ -26,7 +26,7 @@ class ActivityProfile {
         });
         $typeSelect.attr("name", "type");
 
-        let $quantityInput = $('<input type="number" min="0" name="quantity"/>');
+        let $quantityInput = $('<input type="number" min="0" value="0" name="quantity"/>');
         $quantityInput.change(function () {
             obj.onQuantityChanged(this);
         });
