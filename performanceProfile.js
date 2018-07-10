@@ -63,7 +63,7 @@ class PerformanceProfile {
             }
 
             // Static, non-smartway only, not detailed
-            if (freightNonOnly.includes(method.type)) {
+            if (Model.freightNonOnly.includes(method.type)) {
                 if (this.doDetailed) {
                     let $row = $(detailedNONRowCreator(method));
                     $(this.table).append($row);
@@ -166,7 +166,7 @@ class PerformanceProfile {
             // Iterate through 6 different percents, do calculation for each
             for (let i = 0; i < method.percentSmartWay.length; ++i) {
                 let binTag = performanceLevels[i];
-                if (freightNonOnly.includes(method.type) && binTag != "NON") continue;
+                if (Model.freightNonOnly.includes(method.type) && binTag != "NON") continue;
                 let bin = this.bins[method.activityUnits][method.type + binTag];
 
                 let percent = Number(method.percentSmartWay[i]) * 0.01;

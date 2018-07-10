@@ -8,11 +8,16 @@
     <script src="jquery-ui/jquery-ui.js"></script>
     <link rel="stylesheet" href="jquery-ui/jquery-ui.css">
 
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+
     <script type="text/javascript" src="freightMethods.js"></script>
     <script type="text/javascript" src="elementBuilders.js"></script>
     <script type="text/javascript" src="performanceProfile.js"></script>
     <script type="text/javascript" src="comboBox.js"></script>
     <script type="text/javascript" src="activityProfile.js"></script>
+    <script type="text/javascript" src="graphs.js"></script>
 </head>
 
 <body>
@@ -122,7 +127,7 @@
             <legend>Emissions</legend>
             <label>Metric:
                 <select id="savingsOutputSelect" onchange="updateSavingsUI()">
-                    <option value="Grams">Final Grams</option>
+                    <option value="Final Grams">Final Grams</option>
                     <option value="Grams Saved">Grams Saved</option>
                     <option value="% Saved">% Saved</option>
                 </select>
@@ -139,13 +144,14 @@
                 <tbody id="savingsTable"></tbody>
             </table>
         </fieldset>
+        <div id="chartDiv"></div>
 
     </form>
 
     <script type="text/javascript">
 
         var savingsOutputTypes = [
-            "Grams",
+            "Final Grams",
             "Grams Saved",
             "% Saved"
         ];
@@ -161,16 +167,16 @@
         ];
 
         // The object representing all current performance levels
-        var currentPerformanceProfile = new PerformanceProfile(freightMethods,
+        var currentPerformanceProfile = new PerformanceProfile(Model.currentFreightMethods,
             "activityPerformanceTable", "currentSimpleHeader",
             "currentDetailedHeader", updateEmissions);
         var currentActivityProfile = new ActivityProfile("#activityQuantityTable",
-            onActivityChanged, freightMethods);
+            onActivityChanged, Model.currentFreightMethods);
 
-        var targetPerformanceProfile = new PerformanceProfile(targetFreightMethods,
+        var targetPerformanceProfile = new PerformanceProfile(Model.targetFreightMethods,
             "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", updateEmissions)
         var targetActivityProfile = new ActivityProfile("#targetQuantityTable",
-            onActivityChanged, targetFreightMethods);
+            onActivityChanged, Model.targetFreightMethods);
 
         var smartwayBinJSON = undefined;
 
@@ -228,7 +234,7 @@
         function updateEmissionsUI() {
             activeFreightMethods = [];
             // Get active methods from all current freightmethods
-            freightMethods.forEach(function (method) {
+            Model.currentFreightMethods.forEach(function (method) {
                 if (method.active) activeFreightMethods.push(method);
             })
 
@@ -284,10 +290,10 @@
             targetPM = 0;
 
             // Go through each method to calculate savings
-            for (let i = 0; i < freightMethods.length; ++i) {
+            for (let i = 0; i < Model.currentFreightMethods.length; ++i) {
 
-                let currentMethod = freightMethods[i];
-                let targetMethod = targetFreightMethods.find(x => x.type === currentMethod.type);
+                let currentMethod = Model.currentFreightMethods[i];
+                let targetMethod = Model.targetFreightMethods.find(x => x.type === currentMethod.type);
 
                 if (!currentMethod.active && !targetMethod.active) { continue; }
 
@@ -321,6 +327,53 @@
             );
             tableRow.style.fontWeight = "bolder";
             table.appendChild(tableRow);
+
+            updateSavingsGraphs();
+        }
+
+        function updateSavingsGraphs() {
+            let active = [];
+            let getActive = function (method) {
+                if (method.active && !active.includes(method.type)) active.push(method.type);
+            }
+            Model.currentFreightMethods.forEach(getActive);
+            Model.targetFreightMethods.forEach(getActive);
+            switch ($("#savingsOutputSelect").val()) {
+
+                case "Final Grams":
+                    let title = "Final Emissions";
+                    let yTitle = "Emissions (g)";
+
+                    function createAllSeries(pollutant) {
+                        let series = [];
+                        active.forEach(function (val) {
+                            let current =
+                                Model.currentFreightMethods
+                                    .find(x => x.type === val)[pollutant];
+
+                            let target =
+                                Model.targetFreightMethods
+                                    .find(x => x.type === val)[pollutant];
+
+                            let saved = (current - target);
+
+                            series.push({ name: val, data: [current, target, saved] });
+                        });
+
+                        return series;
+                    }
+                    let CO2 = createAllSeries("CO2");
+                    let NOX = createAllSeries("NOX");
+                    let PM = createAllSeries("PM");
+
+                    Chart("chartDiv", title, "", ["Current", "Target", "Savings"], yTitle, "g", CO2);
+
+                    break;
+                case "Grams Saved":
+                    break;
+                case "% Saved":
+                    break;
+            }
         }
 
         // Call the profiles calculation functions (also update the bins that they use, for redundancy)

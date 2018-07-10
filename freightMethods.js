@@ -44,19 +44,14 @@ function createFreightMethods() {
         new FreightMethodModel("Air-Long Haul"),
         new FreightMethodModel("Air-Short Haul")];
 }
-
-// The global freight model, freightMethods and targetFreightMethods
-var freightMethods = createFreightMethods();
-var targetFreightMethods = createFreightMethods();
-
-var freightUnits = [
-    "Miles",
-    "Ton-Miles"
-];
-
-var freightNonOnly = [
-    "Rail",
-    "Barge",
-    "Air-Long Haul",
-    "Air-Short Haul"
-];
+// Global freight model
+var Model = {
+    "freightNonOnly": [
+        "Rail",
+        "Barge",
+        "Air-Long Haul",
+        "Air-Short Haul"
+    ],
+    "currentFreightMethods": createFreightMethods(),
+    "targetFreightMethods": createFreightMethods()
+};
