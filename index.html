@@ -125,23 +125,6 @@
                     <option value="Grams">Final Grams</option>
                     <option value="Grams Saved">Grams Saved</option>
                     <option value="% Saved">% Saved</option>
-                    <script type="text/javascript">
-                        var savingsOutputTypes = [
-                            "Grams",
-                            "Grams Saved",
-                            "% Saved"
-                        ];
-                        var savingsOutputOperations = [
-                            function (previous, target) { return target; },
-                            function (previous, target) { return previous - target; },
-                            function (previous, target) {
-                                if (previous === 0)
-                                    return 0;
-                                else
-                                    return 100 * ((previous - target) / previous);
-                            }
-                        ];
-                    </script>
                 </select>
             </label>
             <table style="width:100%">
@@ -160,6 +143,22 @@
     </form>
 
     <script type="text/javascript">
+
+        var savingsOutputTypes = [
+            "Grams",
+            "Grams Saved",
+            "% Saved"
+        ];
+        var savingsOutputOperations = [
+            function (previous, target) { return target; },
+            function (previous, target) { return previous - target; },
+            function (previous, target) {
+                if (previous === 0)
+                    return 0;
+                else
+                    return 100 * ((previous - target) / previous);
+            }
+        ];
 
         // The object representing all current performance levels
         var currentPerformanceProfile = new PerformanceProfile(freightMethods,
@@ -237,6 +236,9 @@
 
             $("#emissionsOutputTable").empty();
 
+            let currentCO2 = 0;
+            let currentNOX = 0;
+            let currentPM = 0;
             // Add row for emissions for each type
             for (let i = 0; i < activeFreightMethods.length; ++i) {
                 let method = activeFreightMethods[i];
@@ -247,7 +249,18 @@
                     createTableCell(roundToTwo(method.PM).toLocaleString()));
 
                 table.appendChild(tableRow)
+                currentCO2 += method.CO2;
+                currentNOX += method.NOX;
+                currentPM += method.PM;
             }
+
+            let currentTableRow = createTableRow(
+                createTableCell("TOTAL"),
+                createTableCell(roundToTwo(currentCO2).toLocaleString()),
+                createTableCell(roundToTwo(currentNOX).toLocaleString()),
+                createTableCell(roundToTwo(currentPM).toLocaleString()));
+            currentTableRow.style.fontWeight = "bolder";
+            $("#emissionsOutputTable").append($(currentTableRow));
         }
 
         // Update the savings table, including the calculations and totals
@@ -261,26 +274,33 @@
 
             $("#savingsTable").empty();
 
+            currentCO2 = 0;
+            targetCO2 = 0;
 
-            // Totals
-            let totalCO2 = 0;
-            let totalNOX = 0;
-            let totalPM = 0;
+            currentNOX = 0;
+            targetNOX = 0;
+
+            currentPM = 0;
+            targetPM = 0;
+
             // Go through each method to calculate savings
             for (let i = 0; i < freightMethods.length; ++i) {
-                if (!freightMethods[i].active && !targetFreightMethods[i].active) { continue; }
 
                 let currentMethod = freightMethods[i];
-                let targetMethod = targetPerformanceProfile.methods[i];
+                let targetMethod = targetFreightMethods.find(x => x.type === currentMethod.type);
+
+                if (!currentMethod.active && !targetMethod.active) { continue; }
+
+                currentCO2 += currentMethod.CO2;
+                targetCO2 += targetMethod.CO2;
+                currentNOX += currentMethod.NOX;
+                targetNOX += targetMethod.NOX;
+                currentPM += currentMethod.PM;
+                targetPM += targetMethod.PM;
 
                 let outputCO2 = outputFunction(currentMethod.CO2, targetMethod.CO2);
                 let outputNOX = outputFunction(currentMethod.NOX, targetMethod.NOX);
                 let outputPM = outputFunction(currentMethod.PM, targetMethod.PM);
-
-                totalCO2 += outputCO2;
-                totalNOX += outputNOX;
-                totalPM += outputPM;
-
                 let tableRow = createTableRow(
                     createTableCell(currentMethod.type),
                     createTableCell(roundToTwo(outputCO2).toLocaleString()),
@@ -289,18 +309,21 @@
                 );
                 table.appendChild(tableRow);
             }
-            let totalsRow = createTableRow(
-                createTableCell("Totals"),
-                createTableCell(roundToTwo(totalCO2).toLocaleString()),
-                createTableCell(roundToTwo(totalNOX).toLocaleString()),
-                createTableCell(roundToTwo(totalPM).toLocaleString())
-            );
-            totalsRow.style.fontWeight = "bolder";
-            $("#savingsTable").append($(totalsRow));
 
+            let CO2 = outputFunction(currentCO2, targetCO2);
+            let NOX = outputFunction(currentNOX, targetNOX);
+            let PM = outputFunction(currentPM, targetPM);
+            let tableRow = createTableRow(
+                createTableCell("TOTAL"),
+                createTableCell(roundToTwo(CO2).toLocaleString()),
+                createTableCell(roundToTwo(NOX).toLocaleString()),
+                createTableCell(roundToTwo(PM).toLocaleString())
+            );
+            tableRow.style.fontWeight = "bolder";
+            table.appendChild(tableRow);
         }
 
-        // Call the profiles calculation functions
+        // Call the profiles calculation functions (also update the bins that they use, for redundancy)
         function updateEmissionsCalculations() {
             currentPerformanceProfile.bins = smartwayBinJSON;
             targetPerformanceProfile.bins = smartwayBinJSON;
