@@ -92,9 +92,16 @@ class ActivityProfile {
             let value = $(this).val();
             $(this).children('option').each(function () {
                 if ($(this).val() === value || availableOptions.includes($(this).val()))
+                {
+                    // Change the order because hiding it pushs it to the end
+                    let index = createFreightMethods().findIndex(x => x.type === $(this).val());
+                    $(this).insertBefore($(this).parent().find('option:eq(' + index + ')'));
                     $(this).show();
+                }
                 else
+                {
                     $(this).hide();
+                }
             })
         });
     }
@@ -122,6 +129,7 @@ class ActivityProfile {
         if (method)
             method.active = false;
 
+        this.updateSelectOptions();
         $(element).parent().parent().remove();
         this.onProfileChanged();
     }
