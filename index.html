@@ -175,6 +175,7 @@
 
         var smartwayBinJSON = undefined;
 
+        // Load the JSON with bin constants for Ton-Miles and Miles
         $(function () {
 
             $.getJSON("smartwayBins.json", function (data) {
@@ -185,38 +186,46 @@
 
         })
 
+        // Update all of the emissions calculations and UI
         function updateEmissions() {
             updateEmissionsCalculations();
             updateEmissionsUI();
             updateSavingsUI();
         }
 
+        // When the detailed checkbox changes
         function onDetailedChange(doDetailed) {
             currentPerformanceProfile.setDetailed(doDetailed.checked);
             targetPerformanceProfile.setDetailed(doDetailed.checked);
         }
 
+        // Update the target/current performance input fields
         function updatePerformanceInputUI() {
             currentPerformanceProfile.updateInputUI();
             targetPerformanceProfile.updateInputUI();
         }
 
+        // For output number formatting
         function roundToTwo(num) {
             return +(Math.round(num + "e+2") + "e-2");
         }
 
+        // When the add button for current activity input is clicked
         function addCurrentActivity() {
             currentActivityProfile.addQuantityInputUI();
         }
+        // When the add button for target activity input is clicked
         function addTargetActivity() {
             targetActivityProfile.addQuantityInputUI();
         }
 
+        // When the activity input, target or current, changes. Fired by activityprofiles
         function onActivityChanged() {
             updatePerformanceInputUI();
             updateEmissions();
         }
 
+        // Update the table for emissions
         function updateEmissionsUI() {
             activeFreightMethods = [];
             // Get active methods from all current freightmethods
@@ -241,6 +250,7 @@
             }
         }
 
+        // Update the savings table, including the calculations and totals
         function updateSavingsUI() {
 
             let type = $("#savingsOutputSelect").val();
@@ -290,6 +300,7 @@
 
         }
 
+        // Call the profiles calculation functions
         function updateEmissionsCalculations() {
             currentPerformanceProfile.bins = smartwayBinJSON;
             targetPerformanceProfile.bins = smartwayBinJSON;

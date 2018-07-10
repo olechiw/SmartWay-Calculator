@@ -17,10 +17,11 @@ class FreightMethodModel {
         // The general ranking, 1-6 with 6 being NON
         this.smartWayGeneral = "NON";
         // The specific smartway usage, from Bin 1 to NON
-        this.percentSmartWay = [0, 0, 0, 0, 0, 0]
+        this.percentSmartWay = [0, 0, 0, 0, 0, 0];
     }
 }
 
+// Constant function to create a list of every method, used as the model
 function createFreightMethods() {
     return [
         new FreightMethodModel("Auto Carrier Trucking"),
@@ -44,17 +45,18 @@ function createFreightMethods() {
         new FreightMethodModel("Air-Short Haul")];
 }
 
+// The global freight model, freightMethods and targetFreightMethods
 var freightMethods = createFreightMethods();
 var targetFreightMethods = createFreightMethods();
 
 var freightUnits = [
     "Miles",
     "Ton-Miles"
-]
+];
 
 var freightNonOnly = [
     "Rail",
     "Barge",
     "Air-Long Haul",
     "Air-Short Haul"
-]
+];

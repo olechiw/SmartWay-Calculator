@@ -32,9 +32,9 @@ class ActivityProfile {
         });
 
         let $unitsInput =
-            $('<select>'
-                + '<option value="Miles">Miles</option>'
-                + '<option value="Ton-Miles">Ton-Miles</option>');
+            $('<select>' +
+                '<option value="Miles">Miles</option>' +
+                '<option value="Ton-Miles">Ton-Miles</option>');
         $unitsInput.change(function () {
             obj.onUnitsChanged(this);
         });
@@ -49,6 +49,8 @@ class ActivityProfile {
         $(row).find('td:eq(1)').append($($quantityInput));
         $(row).find('td:eq(2)').append($($unitsInput));
         $(row).find('td:eq(3)').append($($removeInput));
+
+        this.updateSelectOptions();
     }
 
     getTypeByElement(input) {
@@ -65,13 +67,36 @@ class ActivityProfile {
         let obj = this;
 
         $(this.locationID).find('select[name=type]').each(function () {
-            let type = obj.getTypeByElement(this);
+            let type = $(this).val();
             let method = obj.methods.find(x => x.type === type);
+            if (!method) return;
             method.active = true;
             method.activityQuantity = $(this).parent().parent()
-            .find('input[name=quantity]').first().val();
+                .find('input[name=quantity]').first().val();
+
+            obj.methods.splice(obj.methods.indexOf(method), 1);
+            obj.methods.push(method);
         });
+        this.updateSelectOptions();
         this.onProfileChanged();
+    }
+
+    // Remove the active options 
+    updateSelectOptions() {
+        let profile = this;
+        let availableOptions = [];
+        profile.methods.forEach(function (method) {
+            if (!method.active) availableOptions.push(method.type);
+        });
+        $(this.locationID).find('select[name=type]').each(function () {
+            let value = $(this).val();
+            $(this).children('option').each(function () {
+                if ($(this).val() === value || availableOptions.includes($(this).val()))
+                    $(this).show();
+                else
+                    $(this).hide();
+            })
+        });
     }
 
     onUnitsChanged(element) {
@@ -94,7 +119,8 @@ class ActivityProfile {
     onRemove(element) {
         let type = this.getTypeByElement(event.currentTarget);
         let method = this.methods.find(x => x.type === type);
-        method.active = false;
+        if (method)
+            method.active = false;
 
         $(element).parent().parent().remove();
         this.onProfileChanged();

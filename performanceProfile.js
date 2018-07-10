@@ -5,6 +5,7 @@ An object responsible for modeling performance of all carriers, and also constru
 class PerformanceProfile {
     constructor(freightMethods, tableID, simpleHeaderID,
         detailedHeaderID, onEmissionsUpdate) {
+        // DOM Object for where to put the UI
         this.table = document.getElementById(tableID);
         this.methods = freightMethods;
         this.doDetailed = false;
@@ -14,10 +15,9 @@ class PerformanceProfile {
 
         this.onEmissionsUpdate = onEmissionsUpdate;
         this.bins = undefined;
-
-        let profile = this;
     }
 
+    // Toggle whether to do a detailed or simple input
     setDetailed(detailed) {
         if (detailed) {
             this.simpleHeader.style.display = "none";
@@ -32,10 +32,28 @@ class PerformanceProfile {
         this.updateInputUI();
     }
 
+    // Update the input for performance, redoing every row of the table
     updateInputUI() {
         // Clear table
         $(this.table).empty();
 
+        // For a detailed NON-only row,such as barge, creates 6 readonly inputs
+        let detailedNONRowCreator = function (method) {
+            let output = "<tr>";
+            output += "<td>" + method.type + "</td>";
+            output += '<td><input value="100" readOnly="true" type="number"/></td>';
+            for (let i = 0; i < 5; ++i)
+                output += '<td><input value="0" readOnly="true" type="number"/></td>';
+            output += "</tr>";
+            return output;
+        };
+        // For a simple NON-only row,such as barge, creates a select with only 1 option
+        let simpleNONRowCreator = function (method) {
+            let output = "<tr><td>" + method.type + "</td><td>";
+            output += '<select><option value="NON">NON</option></select>';
+            output += "</td></tr>";
+            return output;
+        };
         // One row per type
         for (let t = 0; t < this.methods.length; ++t) {
 
@@ -47,24 +65,11 @@ class PerformanceProfile {
             // Static, non-smartway only, not detailed
             if (freightNonOnly.includes(method.type)) {
                 if (this.doDetailed) {
-                    let $row = $(function () {
-                        let output = "<tr>";
-                        output += "<td>" + method.type + "</td>";
-                        output += '<td><input value="100" readOnly="true" type="number"/></td>';
-                        for (let i = 0; i < 5; ++i)
-                            output += '<td><input value="0" readOnly="true" type="number"/></td>';
-                        output += "</tr>";
-                        return output;
-                    }());
+                    let $row = $(detailedNONRowCreator(method));
                     $(this.table).append($row);
                 }
                 else {
-                    let $row = $(function () {
-                        let output = "<tr><td>" + method.type + "</td><td>";
-                        output += '<select><option value="NON">NON</option></select>';
-                        output += "</td></tr>";
-                        return output;
-                    }());
+                    let $row = $(simpleNONRowCreator(method));
                     $(this.table).append($row);
                 }
                 method.percentSmartWay[5] = 100;
@@ -78,22 +83,22 @@ class PerformanceProfile {
                 t.appendChild(document.createTextNode(method.type));
                 row.appendChild(t);
 
-                // 0,1,2,3,4,5 all correspond to rankings, 0 is best 5 is worst
+                // 0,1,2,3,4,5 from best to worst. UI is from worst to best so flip the index with 5-i
                 for (let i = 0; i < 6; ++i) {
                     let td = document.createElement("td");
                     let input = document.createElement("input");
                     input.type = "number";
-                    input.value = method.percentSmartWay[i];
+                    input.value = method.percentSmartWay[5 - i];
 
                     let profile = this;
                     input.onchange = function () {
                         // Update the freightmethods model onchange
-                        method.percentSmartWay[i] =
+                        method.percentSmartWay[5 - i] =
                             Number(event.currentTarget.value);
                         profile.updateDetailedTotals();
                         profile.updateEmissionsDetailed();
                         profile.onEmissionsUpdate();
-                    }
+                    };
                     td.appendChild(input);
                     row.appendChild(td);
                 }
@@ -110,6 +115,7 @@ class PerformanceProfile {
                 t.appendChild(document.createTextNode(method.type));
                 row.appendChild(t);
 
+                // Select which has the 6 bin options
                 let select = createGeneralPerformanceSelect();
                 select.value = method.smartWayGeneral;
                 let profile = this;
@@ -117,7 +123,7 @@ class PerformanceProfile {
                     method.smartWayGeneral = event.currentTarget.value;
                     profile.updateEmissionsSimple();
                     profile.onEmissionsUpdate();
-                }
+                };
                 let td = document.createElement("td");
                 td.appendChild(select);
                 row.appendChild(td);
@@ -133,6 +139,7 @@ class PerformanceProfile {
 
             if (!method.active) { continue; }
 
+            // Do simple calculations with units/type/bin
             let bin = this.bins[method.activityUnits][method.type + method.smartWayGeneral];
             let CO2 = bin.CO2;
             let NOX = bin.NOX;
@@ -156,12 +163,13 @@ class PerformanceProfile {
             method.NOX = 0;
             method.PM = 0;
             let activity = method.activityQuantity;
+            // Iterate through 6 different percents, do calculation for each
             for (let i = 0; i < method.percentSmartWay.length; ++i) {
-                let binTag = performanceLevels[i]
+                let binTag = performanceLevels[i];
                 if (freightNonOnly.includes(method.type) && binTag != "NON") continue;
-                let bin = this.bins[method.activityUnits][method.type + binTag]
+                let bin = this.bins[method.activityUnits][method.type + binTag];
 
-                let percent = Number(method.percentSmartWay[i]) * .01;
+                let percent = Number(method.percentSmartWay[i]) * 0.01;
                 method.CO2 += Number(activity) * percent * bin.CO2;
                 method.NOX += Number(activity) * percent * bin.NOX;
                 method.PM += Number(activity) * percent * bin.PM;
@@ -169,6 +177,7 @@ class PerformanceProfile {
         }
     }
 
+    // Update the total levels at the end and the "valid" member of each method
     updateDetailedTotals() {
         if (!doDetailed) {
             return;
@@ -177,13 +186,15 @@ class PerformanceProfile {
             return;
         }
 
-        let activeFreightMethods = []
+        // Get the active ones
+        let activeFreightMethods = [];
         this.methods.forEach(function (method) {
             if (method.active) {
                 activeFreightMethods.push(method);
             }
-        })
+        });
 
+        // Do totaling
         for (let i = 0; i < activeFreightMethods.length; ++i) {
             let method = activeFreightMethods[i];
             let row = this.table.rows[i];
