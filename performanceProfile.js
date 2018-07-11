@@ -78,8 +78,8 @@ class PerformanceProfile {
             else if (this.doDetailed) {
                 let row = document.createElement("tr");
 
-                // Add type label
-                let t = document.createElement("td");
+                // Add type header
+                let t = document.createElement("th");
                 t.appendChild(document.createTextNode(method.type));
                 row.appendChild(t);
 
@@ -89,6 +89,8 @@ class PerformanceProfile {
                     let input = document.createElement("input");
                     input.type = "number";
                     input.value = method.percentSmartWay[5 - i];
+                    input.min = 0;
+                    input.max = 100;
 
                     let profile = this;
                     input.onchange = function () {
@@ -111,7 +113,7 @@ class PerformanceProfile {
                 let row = document.createElement("tr");
 
                 // Add type label
-                let t = document.createElement("td");
+                let t = document.createElement("th");
                 t.appendChild(document.createTextNode(method.type));
                 row.appendChild(t);
 

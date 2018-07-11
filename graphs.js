@@ -4,6 +4,9 @@ function Chart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, seri
         chart: {
             type: 'column'
         },
+        exporting: {
+            enabled: false
+        },
         title: {
             text: title
         },
@@ -16,21 +19,34 @@ function Chart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, seri
         },
         yAxis: {
             title: {
-                text: yAxisTitle + ' (' + units + ')'
+                text: '<b>' + yAxisTitle + ' (' + units + ')' + '</b>'
             }
         },
         tooltip: {
-            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.1f} ' + units + '</b></td></tr>',
-            footerFormat: '</table>',
-            shared: true,
-            useHTML: true
+            backgroundColor: '#ffffff',
+            headerFormat: '',
+            pointFormatter: function() {
+                return '<b><span style="color:' + this.series.color +
+                 '">' + this.series.name + ': </span>' +
+                  this.y.toLocaleString() + ' ' + units + '</b>';
+            },
+            hideDelay: 250,
+            useHTML: true,
+            followPointer: true
         },
         plotOptions: {
+            series: {
+                allowPointSelect: true
+            },
             column: {
                 pointPadding: 0.2,
-                borderWidth: 0
+                borderWidth: 0,
+                dataLabels: {
+                    enabled: true,
+                    formatter: function () {
+                        return (this.y).toLocaleString();
+                    }
+                }
             }
         },
         series: series

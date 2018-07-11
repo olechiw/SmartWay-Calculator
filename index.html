@@ -3,7 +3,6 @@
 
 <head>
     <link rel="stylesheet" href="styles.css" />
-    <!--- JQUERY -->
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="jquery-ui/jquery-ui.js"></script>
     <link rel="stylesheet" href="jquery-ui/jquery-ui.css">
@@ -21,135 +20,159 @@
 </head>
 
 <body>
-    <form class="center">
-        <fieldset id="activityQuantityFieldSet">
-            <legend>Current Movement Activity</legend>
-            <p>
-                <input type="button" value="+" onclick="addCurrentActivity()" />
-            </p>
-            <table style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Movement Amount</th>
-                        <th>Movement Units</th>
-                    </tr>
-                </thead>
-                <tbody id="activityQuantityTable">
-                </tbody>
-            </table>
-        </fieldset>
-        <fieldset id="performanceRankingsFieldset">
-            <legend>Performance Rankings</legend>
-            <label>
-                Detailed Rankings (optional)
-                <input type="checkbox" onchange="onDetailedChange(this)" id="doDetailed" />
-            </label>
-            <table style="width:100%">
-                <thead id="currentSimpleHeader">
-                    <tr>
-                        <th>Type</th>
-                        <th>General Performance Level</th>
-                    </tr>
-                </thead>
-                <thead id="currentDetailedHeader" style="display:none">
-                    <tr>
-                        <th>Type</th>
-                        <th>% NON</th>
-                        <th>% Bin 5</th>
-                        <th>% Bin 4</th>
-                        <th>% Bin 3</th>
-                        <th>% Bin 2</th>
-                        <th>% Bin 1</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody id="activityPerformanceTable"></tbody>
-            </table>
-        </fieldset>
-        <fieldset id="emissionsOutputFieldSet">
-            <legend>Emissions</legend>
-            <table style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>CO2 (g)</th>
-                        <th>NOX (g)</th>
-                        <th>PM (g)</th>
-                    </tr>
-                </thead>
-                <tbody id="emissionsOutputTable"></tbody>
-            </table>
-        </fieldset>
-        <fieldset id="targetQuantityFieldset">
-            <legend>Target Movement Activity</legend>
-            <p>
-                <input type="button" value="+" onclick="addTargetActivity()" />
-            </p>
-            <table style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Movement Amount</th>
-                        <th>Movement Units</th>
-                    </tr>
-                </thead>
-                <tbody id="targetQuantityTable">
-                </tbody>
-            </table>
-        </fieldset>
-        <fieldset id="targetPerformanceFieldSet">
-            <legend>Target Performance Rankings</legend>
-            <table style="width:100%">
-                <thead id="targetSimpleHeader">
-                    <tr>
-                        <th>Type</th>
-                        <th>General Performance Level</th>
-                    </tr>
-                </thead>
-                <thead id="targetDetailedHeader" style="display:none">
-                    <tr>
-                        <th>Type</th>
-                        <th>% NON</th>
-                        <th>% Bin 5</th>
-                        <th>% Bin 4</th>
-                        <th>% Bin 3</th>
-                        <th>% Bin 2</th>
-                        <th>% Bin 1</th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody id="targetPerformanceTable"></tbody>
-            </table>
-        </fieldset>
-        <fieldset id="savingsFieldSet">
-            <legend>Final Emissions/Emissions Saved</legend>
-            <legend>Emissions</legend>
-            <label>Metric:
-                <select id="savingsOutputSelect" onchange="updateSavingsUI()">
-                    <option value="Final Grams">Final Grams</option>
-                    <option value="Grams Saved">Grams Saved</option>
-                    <option value="% Saved">% Saved</option>
-                </select>
-            </label>
-            <table style="width:100%">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>CO2</th>
-                        <th>NOX</th>
-                        <th>PM</th>
-                    </tr>
-                </thead>
-                <tbody id="savingsTable"></tbody>
-            </table>
-        </fieldset>
-        <div id="chartDiv"></div>
-
-    </form>
+    <div id='tabsColumn' class="column">
+        <div class="tab">
+            <button id='currentButton' class="tablinks" onclick="showTab(event, 'Current')">Current</button>
+            <button id='targetButton' class="tablinks" onclick="showTab(event, 'Target')">Target</button>
+        </div>
+        <div id="tabCurrent" class="tabcontent">
+            <fieldset id="activityQuantityDiv" class="center">
+                <legend>Current Movement Activity</legend>
+                <p>
+                    <button onclick="addCurrentActivity()">Add Carrier Type</button>
+                </p>
+                <table style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Movement Amount</th>
+                            <th>Movement Units</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityQuantityTable">
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset id="currentPerformanceDiv" class="center">
+                <legend>Performance Rankings</legend>
+                <label>
+                    Detailed Rankings (optional)
+                    <input type="checkbox" onchange="onDetailedChange(this)" id="doDetailed" />
+                </label>
+                <table style="width:100%">
+                    <thead id="currentSimpleHeader">
+                        <tr>
+                            <th>Type</th>
+                            <th>General Performance Level</th>
+                        </tr>
+                    </thead>
+                    <thead id="currentDetailedHeader" style="display:none">
+                        <tr>
+                            <th>Type</th>
+                            <th>% NON</th>
+                            <th>% Bin 5</th>
+                            <th>% Bin 4</th>
+                            <th>% Bin 3</th>
+                            <th>% Bin 2</th>
+                            <th>% Bin 1</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityPerformanceTable"></tbody>
+                </table>
+            </fieldset>
+            <fieldset id="emissionsOutputDiv" class="center">
+                <legend>Emissions</legend>
+                <table style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>CO2 (g)</th>
+                            <th>NOX (g)</th>
+                            <th>PM (g)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="emissionsOutputTable"></tbody>
+                </table>
+            </fieldset>
+        </div>
+        <div id="tabTarget" class="tabcontent">
+            <fieldset id="targetQuantityDiv" class="center">
+                <legend>Target Movement Activity</legend>
+                <p>
+                    <button onclick="addTargetActivity()">Add Carrier Type</button>
+                </p>
+                <table style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Movement Amount</th>
+                            <th>Movement Units</th>
+                        </tr>
+                    </thead>
+                    <tbody id="targetQuantityTable">
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset id="targetPerformanceDiv" class="center">
+                <legend>Target Performance Rankings</legend>
+                <table style="width:100%">
+                    <thead id="targetSimpleHeader">
+                        <tr>
+                            <th>Type</th>
+                            <th>General Performance Level</th>
+                        </tr>
+                    </thead>
+                    <thead id="targetDetailedHeader" style="display:none">
+                        <tr>
+                            <th>Type</th>
+                            <th>% NON</th>
+                            <th>% Bin 5</th>
+                            <th>% Bin 4</th>
+                            <th>% Bin 3</th>
+                            <th>% Bin 2</th>
+                            <th>% Bin 1</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody id="targetPerformanceTable"></tbody>
+                </table>
+            </fieldset>
+            <fieldset id="savingsDiv" class="center">
+                <legend>Final Emissions/Emissions Saved</legend>
+                <legend>Emissions</legend>
+                <label>Metric:
+                    <select id="savingsOutputSelect" onchange="updateSavingsUI()">
+                        <option value="Final Grams">Final Grams</option>
+                        <option value="Grams Saved">Grams Saved</option>
+                        <option value="% Saved">% Saved</option>
+                    </select>
+                </label>
+                <table style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>CO2</th>
+                            <th>NOX</th>
+                            <th>PM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="savingsTable"></tbody>
+                </table>
+            </fieldset>
+        </div>
+    </div>
+    <div class="column">
+        <div id="co2Chart" class="right"></div>
+        <div id="noxChart" class="right"></div>
+        <div id="pmChart" class="right"></div>
+    </div>
 
     <script type="text/javascript">
 
+        function showTab(event, val) {
+            $('#tabsColumn').find('.tablinks').removeClass('active');
+            $(event.currentTarget).addClass('active');
+
+            if (val === 'Current') {
+                $('#tabsColumn').children('#tabTarget').hide();
+                $('#tabsColumn').children('#tabCurrent').show();
+            }
+            else if (val === 'Target') {
+                $('#tabsColumn').children('#tabCurrent').hide();
+                $('#tabsColumn').children('#tabTarget').show();
+            }
+        }
         var savingsOutputTypes = [
             "Final Grams",
             "Grams Saved",
@@ -182,6 +205,8 @@
 
         // Load the JSON with bin constants for Ton-Miles and Miles
         $(function () {
+            $('#currentButton').trigger('click');
+            $('#currentButton').addClass('active');
 
             $.getJSON("smartwayBins.json", function (data) {
                 smartwayBinJSON = data;
@@ -200,8 +225,9 @@
 
         // When the detailed checkbox changes
         function onDetailedChange(doDetailed) {
-            currentPerformanceProfile.setDetailed(doDetailed.checked);
-            targetPerformanceProfile.setDetailed(doDetailed.checked);
+            let detailed = doDetailed.checked;
+            currentPerformanceProfile.setDetailed(detailed);
+            targetPerformanceProfile.setDetailed(detailed);
         }
 
         // Update the target/current performance input fields
@@ -254,7 +280,7 @@
                     createTableCell(roundToTwo(method.NOX).toLocaleString()),
                     createTableCell(roundToTwo(method.PM).toLocaleString()));
 
-                table.appendChild(tableRow)
+                table.appendChild(tableRow);
                 currentCO2 += method.CO2;
                 currentNOX += method.NOX;
                 currentPM += method.PM;
@@ -341,8 +367,7 @@
             switch ($("#savingsOutputSelect").val()) {
 
                 case "Final Grams":
-                    let title = "Final Emissions";
-                    let yTitle = "Emissions (g)";
+                    let yTitle = "Emissions";
 
                     function createAllSeries(pollutant) {
                         let series = [];
@@ -366,7 +391,9 @@
                     let NOX = createAllSeries("NOX");
                     let PM = createAllSeries("PM");
 
-                    Chart("chartDiv", title, "", ["Current", "Target", "Savings"], yTitle, "g", CO2);
+                    Chart("co2Chart", "CO2", "Output Emissions in grams", ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", CO2);
+                    Chart("noxChart", "NOX", "Output Emissions in grams", ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", NOX);
+                    Chart("pmChart", "PM 2.5", "Output Emissions in grams", ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", PM);
 
                     break;
                 case "Grams Saved":
