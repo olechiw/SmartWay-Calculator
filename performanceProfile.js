@@ -18,12 +18,12 @@ function PerformanceProfile(freightMethods, tableID, simpleHeaderID,
     // Toggle whether to do a detailed or simple input
     this.setDetailed = function (detailed) {
         if (detailed) {
-            this.simpleHeader.style.display = "none";
-            this.detailedHeader.style.display = '';
+            $(this.simpleHeader).hide();
+            $(this.detailedHeader).show();
         }
         else {
-            this.simpleHeader.style.display = '';
-            this.detailedHeader.style.display = "none";
+            $(this.simpleHeader).show();
+            $(this.detailedHeader).hide();
         }
         this.doDetailed = detailed;
 

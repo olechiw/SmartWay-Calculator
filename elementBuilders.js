@@ -23,7 +23,6 @@ function createTableRow() {
             let arg = arguments[i];
             var td = document.createElement("td");
             td.appendChild(arg);
-            td.style.padding = "8px";
             tableRowElement.appendChild(td);
         }
     }

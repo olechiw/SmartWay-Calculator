@@ -11,7 +11,7 @@
     <script src="https://code.highcharts.com/modules/exporting.js"></script>
     <script src="https://code.highcharts.com/modules/export-data.js"></script>
 
-    <script type="text/javascript" src="freightMethods.js"></script>
+    <script type="text/javascript" src="model.js"></script>
     <script type="text/javascript" src="elementBuilders.js"></script>
     <script type="text/javascript" src="performanceProfile.js"></script>
     <script type="text/javascript" src="comboBox.js"></script>
@@ -52,7 +52,7 @@
                 <legend>Performance Rankings</legend>
                 <label>
                     Detailed Rankings (optional)
-                    <input type="checkbox" onchange="onDetailedChange(this)" id="doDetailed" />
+                    <input type="checkbox" id="doDetailed" />
                 </label>
                 <table style="width:100%">
                     <thead id="currentSimpleHeader">
@@ -153,7 +153,7 @@
                 <legend>Visualization Settings</legend>
                 <label class="center">
                     Metric:
-                    <select id="visualizationMetric" onchange="updateGraphs()">
+                    <select id="visualizationMetric">
                         <option value="raw"># Changed</option>
                         <option value="percent">% Changed</option>
                     </select>
@@ -164,13 +164,13 @@
     </div>
     <div class="column" id="graphColumn">
         <div id="tabs" class="tab">
-            <button id='co2Tab' class="tablinks" onclick="showGraph(event, '#co2Chart')">
+            <button id='co2Tab' class="tablinks">
                 CO2
             </button>
-            <button id='noxTab' class="tablinks" onclick="showGraph(event, '#noxChart')">
+            <button id='noxTab' class="tablinks">
                 NOX
             </button>
-            <button id='pmTab' class="tablinks" onclick="showGraph(event, '#pmChart')">
+            <button id='pmTab' class="tablinks">
                 PM 2.5
             </button>
         </div>
@@ -179,277 +179,7 @@
         <div id="pmChart" class="tabcontent"></div>
     </div>
 
-    <script type="text/javascript">
-
-        function showTab(event, val) {
-            $('#inputColumn').find('.tablinks').removeClass('active');
-            $(event.currentTarget).addClass('active');
-
-            $('#inputColumn').children().hide();
-            $('#inputColumn').children('#tabs').show();
-            if (val === 'Current') {
-                $('#inputColumn').children('#tabCurrent').show();
-            }
-            else if (val === 'Target') {
-                $('#inputColumn').children('#tabTarget').show();
-            }
-            else if (val === 'Settings') {
-                $('#inputColumn').children('#tabSettings').show();
-            }
-        }
-        function showGraph(event, val) {
-            $('#graphColumn').find('.tablinks').removeClass('active');
-            $(event.currentTarget).addClass('active');
-
-            $('#graphColumn').children().hide();
-            $('#graphColumn').children('#tabs').show();
-            $('#graphColumn').children(val).show();
-        }
-        var savingsOutputTypes = [
-            "Final Grams",
-            "Grams Saved",
-            "% Saved"
-        ];
-        var savingsOutputOperations = [
-            function (previous, target) { return target; },
-            function (previous, target) { return previous - target; },
-            function (previous, target) {
-                if (previous === 0)
-                    return 0;
-                else
-                    return 100 * ((previous - target) / previous);
-            }
-        ];
-
-        // The object representing all current performance levels
-        var currentPerformanceProfile = new PerformanceProfile(Model.currentFreightMethods,
-            "activityPerformanceTable", "currentSimpleHeader",
-            "currentDetailedHeader", updateEmissions);
-        var currentActivityProfile = new ActivityProfile("#activityQuantityTable",
-            onActivityChanged, Model.currentFreightMethods);
-
-        var targetPerformanceProfile = new PerformanceProfile(Model.targetFreightMethods,
-            "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", updateEmissions)
-        var targetActivityProfile = new ActivityProfile("#targetQuantityTable",
-            onActivityChanged, Model.targetFreightMethods);
-
-        var smartwayBinJSON = undefined;
-
-        // Load the JSON with bin constants for Ton-Miles and Miles
-        $(function () {
-            // Setup event listeners
-            $("#currentTab").click(function () { showTab(event, 'Current'); });
-            $("#targetTab").click(function () { showTab(event, 'Target'); });
-            $("#settingsTab").click(function () { showTab(event, 'Settings'); });
-
-            $("#co2Tab").click(function () { showGraph(event, '#co2Chart'); });
-            $("#noxTab").click(function () { showGraph(event, '#noxChart'); });
-            $("#pmTab").click(function () { showGraph(event, '#pmChart'); });
-
-            $('#currentTab').trigger('click');
-            $('#currentTab').addClass('active');
-            $('#co2Tab').trigger('click');
-            $('#co2Tab').addClass('active');
-
-            $('#addCurrentActivity').click(addCurrentActivity);
-            $("#addTargetActivity").click(addTargetActivity);
-
-
-            $.getJSON("smartwayBins.json", function (data) {
-                smartwayBinJSON = data;
-                currentPerformanceProfile.bins = smartwayBinJSON;
-                targetPerformanceProfile.bins = smartwayBinJSON;
-            });
-
-        })
-
-        // Update all of the emissions calculations and UI
-        function updateEmissions() {
-            updateEmissionsCalculations();
-            updateEmissionsUI();
-            updateSavingsUI();
-        }
-
-        // When the detailed checkbox changes
-        function onDetailedChange(doDetailed) {
-            let detailed = doDetailed.checked;
-            currentPerformanceProfile.setDetailed(detailed);
-            targetPerformanceProfile.setDetailed(detailed);
-        }
-
-        // Update the target/current performance input fields
-        function updatePerformanceInputUI() {
-            currentPerformanceProfile.updateInputUI();
-            targetPerformanceProfile.updateInputUI();
-        }
-
-        // For output number formatting
-        function roundToTwo(num) {
-            return +(Math.round(num + "e+2") + "e-2");
-        }
-
-        // When the add button for current activity input is clicked
-        function addCurrentActivity() {
-            currentActivityProfile.addQuantityInputUI();
-        }
-        // When the add button for target activity input is clicked
-        function addTargetActivity() {
-            targetActivityProfile.addQuantityInputUI();
-        }
-
-        // When the activity input, target or current, changes. Fired by activityprofiles
-        function onActivityChanged() {
-            updatePerformanceInputUI();
-            updateEmissions();
-        }
-
-        // Update the table for emissions
-        function updateEmissionsUI() {
-            activeFreightMethods = [];
-            // Get active methods from all current freightmethods
-            $.each(Model.currentFreightMethods, function () {
-                if (this.active) activeFreightMethods.push(this);
-            });
-
-            let table = document.getElementById("emissionsOutputTable")
-
-            $("#emissionsOutputTable").empty();
-
-            let currentCO2 = 0;
-            let currentNOX = 0;
-            let currentPM = 0;
-            // Add row for emissions for each type
-            for (let i = 0; i < activeFreightMethods.length; ++i) {
-                let method = activeFreightMethods[i];
-                let tableRow = createTableRow(
-                    createTableCell(method.type),
-                    createTableCell(roundToTwo(method.CO2).toLocaleString()),
-                    createTableCell(roundToTwo(method.NOX).toLocaleString()),
-                    createTableCell(roundToTwo(method.PM).toLocaleString()));
-
-                table.appendChild(tableRow);
-                currentCO2 += method.CO2;
-                currentNOX += method.NOX;
-                currentPM += method.PM;
-            }
-
-            let currentTableRow = createTableRow(
-                createTableCell("TOTAL"),
-                createTableCell(roundToTwo(currentCO2).toLocaleString()),
-                createTableCell(roundToTwo(currentNOX).toLocaleString()),
-                createTableCell(roundToTwo(currentPM).toLocaleString()));
-            currentTableRow.style.fontWeight = "bolder";
-            $("#emissionsOutputTable").append($(currentTableRow));
-        }
-
-        // Update the savings table, including the calculations and totals
-        function updateSavingsUI() {
-            let table = document.getElementById("savingsTable");
-
-            $("#savingsTable").empty();
-
-            let targetCO2 = 0;
-            let targetNOX = 0;
-            let targetPM = 0;
-
-            // Go through each method to calculate savings
-            for (let i = 0; i < Model.currentFreightMethods.length; ++i) {
-
-                let currentMethod = Model.currentFreightMethods[i];
-                let targetMethod = $.grep(Model.targetFreightMethods,
-                    function(x) { return x.type === currentMethod.type; })[0];
-
-                if (!currentMethod.active && !targetMethod.active) { continue; }
-
-                targetCO2 += targetMethod.CO2;
-                targetNOX += targetMethod.NOX;
-                targetPM += targetMethod.PM;
-
-                let tableRow = createTableRow(
-                    createTableCell(targetMethod.type),
-                    createTableCell(roundToTwo(targetMethod.CO2).toLocaleString()),
-                    createTableCell(roundToTwo(targetMethod.NOX).toLocaleString()),
-                    createTableCell(roundToTwo(targetMethod.PM).toLocaleString())
-                );
-                table.appendChild(tableRow);
-
-            }
-
-            let tableRow = createTableRow(
-                createTableCell("TOTAL"),
-                createTableCell(roundToTwo(targetCO2).toLocaleString()),
-                createTableCell(roundToTwo(targetNOX).toLocaleString()),
-                createTableCell(roundToTwo(targetPM).toLocaleString())
-            );
-            tableRow.style.fontWeight = "bolder";
-            table.appendChild(tableRow);
-
-            updateGraphs();
-        }
-
-        function updateGraphs() {
-            let metric = $("#visualizationMetric").val();
-
-            if (metric === "raw") {
-                updateGraphsRaw();
-            }
-        }
-        function updateGraphsRaw() {
-
-            let active = [];
-            let getActive = function () {
-                if (this.active && ($.inArray(this.type, active) === -1)) active.push(this.type);
-            }
-
-            $.each(Model.currentFreightMethods, getActive);
-            $.each(Model.targetFreightMethods, getActive);
-            let yTitle = "Emissions";
-
-            function createAllSeries(pollutant) {
-                let series = [];
-                $.each(active, function () {
-                    let val = this.toString();
-                    let current =
-                    $.grep(Model.currentFreightMethods,
-                            function(x) { return x.type === val; })[0][pollutant];
-
-                    let target =
-                        $.grep(Model.targetFreightMethods,
-                            function(x) { return x.type === val; })[0][pollutant];
-
-                    let saved = (current - target);
-
-                    series.push({ name: val, data: [current, target, saved] });
-                });
-
-                return series;
-            }
-            let CO2 = createAllSeries("CO2");
-            let NOX = createAllSeries("NOX");
-            let PM = createAllSeries("PM");
-
-            BarChart("co2Chart", "CO2", "Estimated Emissions in grams",
-                ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", CO2);
-            BarChart("noxChart", "NOX", "Estimated Emissions in grams",
-                ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", NOX);
-            BarChart("pmChart", "PM 2.5", "Estimated Emissions in grams",
-                ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", PM);
-        }
-
-        // Call the profiles calculation functions (also update the bins that they use, for redundancy)
-        function updateEmissionsCalculations() {
-            currentPerformanceProfile.bins = smartwayBinJSON;
-            targetPerformanceProfile.bins = smartwayBinJSON;
-            if ($("#doDetailed:checked").length > 0) {
-                currentPerformanceProfile.updateEmissionsDetailed();
-                targetPerformanceProfile.updateEmissionsDetailed();
-            }
-            else {
-                currentPerformanceProfile.updateEmissionsSimple();
-                targetPerformanceProfile.updateEmissionsSimple();
-            }
-        }
-    </script>
+    <script type="text/javascript" src="whatIfISmartway.js"></script>
 </body>
 
 </html>
