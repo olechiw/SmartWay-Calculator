@@ -11,7 +11,7 @@ var targetActivityProfile;
 
 $(function () {
     // Load the bins JSON
-    $.getJSON("smartwayBins.json", function (data) {
+    $.getJSON("Data/smartwayBins.json", function (data) {
         smartwayBinJSON = data;
         currentPerformanceProfile.bins = smartwayBinJSON;
         targetPerformanceProfile.bins = smartwayBinJSON;
@@ -50,7 +50,7 @@ $(function () {
     $('#addCurrentActivity').click(addCurrentActivity);
     $("#addTargetActivity").click(addTargetActivity);
 
-    $("#doDetailed").change(function () { onDetailedChange($("#doDetailed:checked").length > 0); });
+    $("#doDetailed").change(function () { onDetailedChange(); });
     $("#visualizationMetric").change(updateGraphs());
 });
 
@@ -90,8 +90,8 @@ function updateEmissions() {
 }
 
 // When the detailed checkbox changes
-function onDetailedChange(doDetailed) {
-    let detailed = doDetailed.checked;
+function onDetailedChange() {
+    let detailed = $("#doDetailed").prop('checked');
     currentPerformanceProfile.setDetailed(detailed);
     targetPerformanceProfile.setDetailed(detailed);
 }
