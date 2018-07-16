@@ -242,9 +242,9 @@
             $("#targetTab").click(function () { showTab(event, 'Target'); });
             $("#settingsTab").click(function () { showTab(event, 'Settings'); });
 
-            $("#co2Tab").click(function () { showGraph(event, '#co2Tab'); });
-            $("#noxTab").click(function () { showGraph(event, '#noxTab'); });
-            $("#pmTab").click(function () { showGraph(event, '#pmTab'); });
+            $("#co2Tab").click(function () { showGraph(event, '#co2Chart'); });
+            $("#noxTab").click(function () { showGraph(event, '#noxChart'); });
+            $("#pmTab").click(function () { showGraph(event, '#pmChart'); });
 
             $('#currentTab').trigger('click');
             $('#currentTab').addClass('active');
@@ -307,9 +307,9 @@
         function updateEmissionsUI() {
             activeFreightMethods = [];
             // Get active methods from all current freightmethods
-            Model.currentFreightMethods.forEach(function (method) {
-                if (method.active) activeFreightMethods.push(method);
-            })
+            $.each(Model.currentFreightMethods, function () {
+                if (this.active) activeFreightMethods.push(this);
+            });
 
             let table = document.getElementById("emissionsOutputTable")
 
@@ -356,7 +356,8 @@
             for (let i = 0; i < Model.currentFreightMethods.length; ++i) {
 
                 let currentMethod = Model.currentFreightMethods[i];
-                let targetMethod = Model.targetFreightMethods.find(x => x.type === currentMethod.type);
+                let targetMethod = $.grep(Model.targetFreightMethods,
+                    function(x) { return x.type === currentMethod.type; })[0];
 
                 if (!currentMethod.active && !targetMethod.active) { continue; }
 
@@ -396,24 +397,25 @@
         function updateGraphsRaw() {
 
             let active = [];
-            let getActive = function (method) {
-                if (method.active && !active.includes(method.type)) active.push(method.type);
+            let getActive = function () {
+                if (this.active && ($.inArray(this.type, active) === -1)) active.push(this.type);
             }
 
-            Model.currentFreightMethods.forEach(getActive);
-            Model.targetFreightMethods.forEach(getActive);
+            $.each(Model.currentFreightMethods, getActive);
+            $.each(Model.targetFreightMethods, getActive);
             let yTitle = "Emissions";
 
             function createAllSeries(pollutant) {
                 let series = [];
-                active.forEach(function (val) {
+                $.each(active, function () {
+                    let val = this.toString();
                     let current =
-                        Model.currentFreightMethods
-                            .find(x => x.type === val)[pollutant];
+                    $.grep(Model.currentFreightMethods,
+                            function(x) { return x.type === val; })[0][pollutant];
 
                     let target =
-                        Model.targetFreightMethods
-                            .find(x => x.type === val)[pollutant];
+                        $.grep(Model.targetFreightMethods,
+                            function(x) { return x.type === val; })[0][pollutant];
 
                     let saved = (current - target);
 

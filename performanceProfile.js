@@ -2,23 +2,21 @@
 An object responsible for modeling performance of all carriers, and also constructing/updating a user-interface to match it
 */
 
-class PerformanceProfile {
-    constructor(freightMethods, tableID, simpleHeaderID,
-        detailedHeaderID, onEmissionsUpdate) {
-        // DOM Object for where to put the UI
-        this.table = document.getElementById(tableID);
-        this.methods = freightMethods;
-        this.doDetailed = false;
+function PerformanceProfile(freightMethods, tableID, simpleHeaderID,
+    detailedHeaderID, onEmissionsUpdate) {
+    // DOM Object for where to put the UI
+    this.table = document.getElementById(tableID);
+    this.methods = freightMethods;
+    this.doDetailed = false;
 
-        this.simpleHeader = document.getElementById(simpleHeaderID);
-        this.detailedHeader = document.getElementById(detailedHeaderID);
+    this.simpleHeader = document.getElementById(simpleHeaderID);
+    this.detailedHeader = document.getElementById(detailedHeaderID);
 
-        this.onEmissionsUpdate = onEmissionsUpdate;
-        this.bins = undefined;
-    }
+    this.onEmissionsUpdate = onEmissionsUpdate;
+    this.bins = undefined;
 
     // Toggle whether to do a detailed or simple input
-    setDetailed(detailed) {
+    this.setDetailed = function (detailed) {
         if (detailed) {
             this.simpleHeader.style.display = "none";
             this.detailedHeader.style.display = '';
@@ -33,7 +31,7 @@ class PerformanceProfile {
     }
 
     // Update the input for performance, redoing every row of the table
-    updateInputUI() {
+    this.updateInputUI = function () {
         // Clear table
         $(this.table).empty();
 
@@ -63,7 +61,7 @@ class PerformanceProfile {
             }
 
             // Static, non-smartway only, not detailed
-            if (Model.freightNonOnly.includes(method.type)) {
+            if ($.inArray(method.type, Model.freightNonOnly) !== -1) {
                 if (this.doDetailed) {
                     let $row = $(detailedNONRowCreator(method));
                     $(this.table).append($row);
@@ -135,7 +133,7 @@ class PerformanceProfile {
         }
     }
 
-    updateEmissionsSimple() {
+    this.updateEmissionsSimple = function () {
         for (let i = 0; i < this.methods.length; ++i) {
             let method = this.methods[i];
 
@@ -152,7 +150,7 @@ class PerformanceProfile {
         }
     }
 
-    updateEmissionsDetailed() {
+    this.updateEmissionsDetailed = function () {
         for (let i = 0; i < this.methods.length; ++i) {
             let method = this.methods[i];
 
@@ -168,7 +166,7 @@ class PerformanceProfile {
             // Iterate through 6 different percents, do calculation for each
             for (let i = 0; i < method.percentSmartWay.length; ++i) {
                 let binTag = performanceLevels[i];
-                if (Model.freightNonOnly.includes(method.type) && binTag != "NON") continue;
+                if ($.inArray(method.type, Model.freightNonOnly) !== -1 && binTag != "NON") continue;
                 let bin = this.bins[method.activityUnits][method.type + binTag];
 
                 let percent = Number(method.percentSmartWay[i]) * 0.01;
@@ -180,7 +178,7 @@ class PerformanceProfile {
     }
 
     // Update the total levels at the end and the "valid" member of each method
-    updateDetailedTotals() {
+    this.updateDetailedTotals = function () {
         if (!doDetailed) {
             return;
         }
@@ -190,9 +188,9 @@ class PerformanceProfile {
 
         // Get the active ones
         let activeFreightMethods = [];
-        this.methods.forEach(function (method) {
-            if (method.active) {
-                activeFreightMethods.push(method);
+        $.each(this.methods, function () {
+            if (this.active) {
+                activeFreightMethods.push(this);
             }
         });
 

@@ -34,10 +34,10 @@ function createTableRow() {
 function createGeneralPerformanceSelect() {
     let select = document.createElement("select");
 
-    performanceLevels.forEach(function (rank) {
+    $.each(performanceLevels, function () {
         let option = document.createElement("option");
-        option.textContent = rank;
-        option.value = rank;
+        option.textContent = this;
+        option.value = this;
         select.appendChild(option);
     });
     return select;

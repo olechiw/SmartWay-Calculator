@@ -1,24 +1,22 @@
-class FreightMethodModel {
-    constructor(name) {
-        // The name of the movement type
-        this.type = name;
-        this.active = false;
-        this.invalid = false;
+function FreightMethodModel(name) {
+    // The name of the movement type
+    this.type = name;
+    this.active = false;
+    this.invalid = false;
 
-        // The activity units (Ton-Miles or Miles) and the corresponding scalar
-        this.activityUnits = "Miles";
-        this.activityQuantity = 0;
+    // The activity units (Ton-Miles or Miles) and the corresponding scalar
+    this.activityUnits = "Miles";
+    this.activityQuantity = 0;
 
-        // The current calculated amounts of pollution
-        this.CO2 = 0;
-        this.NOX = 0;
-        this.PM = 0;
+    // The current calculated amounts of pollution
+    this.CO2 = 0;
+    this.NOX = 0;
+    this.PM = 0;
 
-        // The general ranking, 1-6 with 6 being NON
-        this.smartWayGeneral = "NON";
-        // The specific smartway usage, from Bin 1 to NON
-        this.percentSmartWay = [0, 0, 0, 0, 0, 0];
-    }
+    // The general ranking, 1-6 with 6 being NON
+    this.smartWayGeneral = "NON";
+    // The specific smartway usage, from Bin 1 to NON
+    this.percentSmartWay = [0, 0, 0, 0, 0, 0];
 }
 
 // Constant function to create a list of every method, used as the model
