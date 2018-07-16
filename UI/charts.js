@@ -25,10 +25,10 @@ function BarChart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, s
         tooltip: {
             backgroundColor: '#ffffff',
             headerFormat: '',
-            pointFormatter: function() {
+            pointFormatter: function () {
                 return '<b><span style="color:' + this.series.color +
-                 '">' + this.series.name + ': </span>' +
-                  this.y.toLocaleString() + ' ' + units + '</b>';
+                    '">' + this.series.name + ': </span>' +
+                    this.y.toLocaleString() + ' ' + units + '</b>';
             },
             hideDelay: 250,
             useHTML: true,
@@ -50,5 +50,5 @@ function BarChart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, s
             }
         },
         series: series
-    })
+    });
 }

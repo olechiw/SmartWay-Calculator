@@ -91,7 +91,7 @@ function updateEmissions() {
 
 // When the detailed checkbox changes
 function onDetailedChange() {
-    let detailed = $("#doDetailed").prop('checked');
+    var detailed = $("#doDetailed").prop('checked');
     currentPerformanceProfile.setDetailed(detailed);
     targetPerformanceProfile.setDetailed(detailed);
 }
@@ -130,17 +130,17 @@ function updateEmissionsUI() {
         if (this.active) activeFreightMethods.push(this);
     });
 
-    let table = document.getElementById("emissionsOutputTable");
+    var table = document.getElementById("emissionsOutputTable");
 
     $("#emissionsOutputTable").empty();
 
-    let currentCO2 = 0;
-    let currentNOX = 0;
-    let currentPM = 0;
+    var currentCO2 = 0;
+    var currentNOX = 0;
+    var currentPM = 0;
     // Add row for emissions for each type
-    for (let i = 0; i < activeFreightMethods.length; ++i) {
-        let method = activeFreightMethods[i];
-        let tableRow = createTableRow(
+    for (var i = 0; i < activeFreightMethods.length; ++i) {
+        var method = activeFreightMethods[i];
+        var tableRow = createTableRow(
             createTableCell(method.type),
             createTableCell(roundToTwo(method.CO2).toLocaleString()),
             createTableCell(roundToTwo(method.NOX).toLocaleString()),
@@ -153,7 +153,7 @@ function updateEmissionsUI() {
     }
 
     // Create a row for totals
-    let currentTableRow = createTableRow(
+    var currentTableRow = createTableRow(
         createTableCell("TOTAL"),
         createTableCell(roundToTwo(currentCO2).toLocaleString()),
         createTableCell(roundToTwo(currentNOX).toLocaleString()),
@@ -163,20 +163,22 @@ function updateEmissionsUI() {
 
 // Update the savings table, including the calculations and totals
 function updateSavingsUI() {
-    let table = document.getElementById("savingsTable");
+    var table = document.getElementById("savingsTable");
 
     $("#savingsTable").empty();
 
-    let targetCO2 = 0;
-    let targetNOX = 0;
-    let targetPM = 0;
+    var targetCO2 = 0;
+    var targetNOX = 0;
+    var targetPM = 0;
+
 
     // Go through each method to calculate savings
-    for (let i = 0; i < Model.currentFreightMethods.length; ++i) {
+    for (var i = 0; i < Model.currentFreightMethods.length; ++i) {
 
-        let currentMethod = Model.currentFreightMethods[i];
+        var currentMethod = Model.currentFreightMethods[i];
+
         // Find the first "targetmethod" with same ID
-        let targetMethod = $.grep(Model.targetFreightMethods,
+        var targetMethod = $.grep(Model.targetFreightMethods,
             function (x) { return x.type === currentMethod.type; })[0];
 
         if (!currentMethod.active && !targetMethod.active) { continue; }
@@ -185,7 +187,7 @@ function updateSavingsUI() {
         targetNOX += targetMethod.NOX;
         targetPM += targetMethod.PM;
 
-        let tableRow = createTableRow(
+        var tableRow = createTableRow(
             createTableCell(targetMethod.type),
             createTableCell(roundToTwo(targetMethod.CO2).toLocaleString()),
             createTableCell(roundToTwo(targetMethod.NOX).toLocaleString()),
@@ -196,20 +198,20 @@ function updateSavingsUI() {
     }
 
     // Create a totals row
-    let tableRow = createTableRow(
+    var totalsRow = createTableRow(
         createTableCell("TOTAL"),
         createTableCell(roundToTwo(targetCO2).toLocaleString()),
         createTableCell(roundToTwo(targetNOX).toLocaleString()),
         createTableCell(roundToTwo(targetPM).toLocaleString())
     );
-    table.appendChild(tableRow);
+    table.appendChild(totalsRow);
 
     updateGraphs();
 }
 
 // Update the graphs based on selected visualization metric
 function updateGraphs() {
-    let metric = $("#visualizationMetric").val();
+    var metric = $("#visualizationMetric").val();
 
     if (metric === "raw") {
         updateGraphsRaw();
@@ -219,39 +221,39 @@ function updateGraphs() {
 // Show the graphs with raw data, no percentages etc
 function updateGraphsRaw() {
 
-    let active = [];
-    let getActive = function () {
+    var active = [];
+    var getActive = function () {
         if (this.active && ($.inArray(this.type, active) === -1)) active.push(this.type);
     };
 
     // Collect all active models, no duplicates, from both lists
     $.each(Model.currentFreightMethods, getActive);
     $.each(Model.targetFreightMethods, getActive);
-    let yTitle = "Emissions";
+    var yTitle = "Emissions";
 
     // Create the series' for each pollutant
     function createAllSeries(pollutant) {
-        let series = [];
+        var series = [];
         $.each(active, function () {
-            let val = this.toString();
-            let current =
+            var val = this.toString();
+            var current =
                 $.grep(Model.currentFreightMethods,
                     function (x) { return x.type === val; })[0][pollutant];
 
-            let target =
+            var target =
                 $.grep(Model.targetFreightMethods,
                     function (x) { return x.type === val; })[0][pollutant];
 
-            let saved = (current - target);
+            var saved = (current - target);
 
             series.push({ name: val, data: [current, target, saved] });
         });
 
         return series;
     }
-    let CO2 = createAllSeries("CO2");
-    let NOX = createAllSeries("NOX");
-    let PM = createAllSeries("PM");
+    var CO2 = createAllSeries("CO2");
+    var NOX = createAllSeries("NOX");
+    var PM = createAllSeries("PM");
 
     BarChart("co2Chart", "CO2", "Estimated Emissions in grams",
         ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", CO2);
