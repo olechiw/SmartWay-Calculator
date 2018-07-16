@@ -1,5 +1,5 @@
 // Takes labels, followed by lists of data for each series
-function Chart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, series) {
+function BarChart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, series) {
     Highcharts.chart(locationID, {
         chart: {
             type: 'column'

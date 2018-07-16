@@ -1,11 +1,8 @@
-class ActivityProfile {
-    constructor(location, onProfileChanged, methods) {
-        this.locationID = location;
-        this.onProfileChanged = onProfileChanged;
-        this.methods = methods;
-    }
-
-    addQuantityInputUI() {
+function ActivityProfile(location, onProfileChanged, methods) {
+    this.locationID = location;
+    this.onProfileChanged = onProfileChanged;
+    this.methods = methods;
+    this.addQuantityInputUI = function () {
         let obj = this;
 
         let $typeSelect = $('<select></select>');
@@ -53,84 +50,94 @@ class ActivityProfile {
         this.updateSelectOptions();
     }
 
-    getTypeByElement(input) {
-        return $(input).parent().parent().find('select').first().val();
-    }
+    this.getTypeByElement =
+        function (input) {
+            return $(input).parent().parent().find('select').first().val();
+        }
 
-    onTypeChanged(element) {
-        let type = $(element).val();
-        this.methods.forEach(function (method) {
-            method.active = false;
-            method.activityQuantity = 0;
-        });
-        // Update which types are active
-        let obj = this;
+    this.onTypeChanged =
+        function (element) {
+            let type = $(element).val();
+            this.methods.forEach(function (method) {
+                method.active = false;
+                method.activityQuantity = 0;
+            });
+            // Update which types are active
+            let obj = this;
 
-        $(this.locationID).find('select[name=type]').each(function () {
-            let type = $(this).val();
-            let method = obj.methods.find(x => x.type === type);
-            if (!method) return;
-            method.active = true;
-            method.activityQuantity = $(this).parent().parent()
-                .find('input[name=quantity]').first().val();
+            $(this.locationID).find('select[name=type]').each(function () {
+                let type = $(this).val();
+                let method = obj.methods.find(function (x) { return (x.type === type); });
+                if (!method) return;
+                method.active = true;
+                method.activityQuantity = $(this).parent().parent()
+                    .find('input[name=quantity]').first().val();
 
-            obj.methods.splice(obj.methods.indexOf(method), 1);
-            obj.methods.push(method);
-        });
-        this.updateSelectOptions();
-        this.onProfileChanged();
-    }
+                obj.methods.splice(obj.methods.indexOf(method), 1);
+                obj.methods.push(method);
+            });
+            this.updateSelectOptions();
+            this.onProfileChanged();
+        }
+
 
     // Remove the active options 
-    updateSelectOptions() {
-        let profile = this;
-        let availableOptions = [];
-        profile.methods.forEach(function (method) {
-            if (!method.active) availableOptions.push(method.type);
-        });
-        $(this.locationID).find('select[name=type]').each(function () {
-            let value = $(this).val();
-            $(this).children('option').each(function () {
-                if ($(this).val() === value || availableOptions.includes($(this).val()))
-                {
-                    // Change the order because hiding it pushs it to the end
-                    let index = createFreightMethods().findIndex(x => x.type === $(this).val());
-                    $(this).insertBefore($(this).parent().find('option:eq(' + index + ')'));
-                    $(this).show();
-                }
-                else
-                {
-                    $(this).hide();
-                }
-            })
-        });
-    }
+    this.updateSelectOptions =
+        function () {
+            let profile = this;
+            let availableOptions = [];
+            profile.methods.forEach(function (method) {
+                if (!method.active) availableOptions.push(method.type);
+            });
+            $(this.locationID).find('select[name=type]').each(function () {
+                let value = $(this).val();
+                $(this).children('option').each(function () {
+                    if ($(this).val() === value || availableOptions.includes($(this).val())) {
+                        // Change the order because hiding it pushs it to the end
+                        let select = this;
+                        let index = createFreightMethods().findIndex(
+                            function (x) { return x.type === $(select).val(); });
+                        $(this).insertBefore($(this).parent().find('option:eq(' + index + ')'));
+                        $(this).show();
+                    }
+                    else {
+                        $(this).hide();
+                    }
+                })
+            });
+        };
 
-    onUnitsChanged(element) {
-        let type = this.getTypeByElement(event.currentTarget);
-        let method = this.methods.find(x => x.type === type);
-        method.activityUnits = event.currentTarget.value;
-        this.onProfileChanged();
-    }
+    this.onUnitsChanged =
+        function (element) {
+            let type = this.getTypeByElement(event.currentTarget);
+            let method = this.methods.find(function (x) { return x.type === type; });
+            method.activityUnits = event.currentTarget.value;
+            this.onProfileChanged();
+        }
 
-    onQuantityChanged(element) {
-        let $input = $(event.currentTarget);
-        let type = this.getTypeByElement($input);
-        let quantity = $input.val();
+    this.onQuantityChanged =
+        function (element) {
+            let $input = $(event.currentTarget);
+            let type = this.getTypeByElement($input);
+            let quantity = $input.val();
 
-        this.methods.find(x => x.type === type)
-            .activityQuantity = quantity;
-        this.onProfileChanged();
-    }
+            this.methods.find(function (x) { return x.type === type; })
+                .activityQuantity = quantity;
+            this.onProfileChanged();
+        }
 
-    onRemove(element) {
-        let type = this.getTypeByElement(event.currentTarget);
-        let method = this.methods.find(x => x.type === type);
-        if (method)
-            method.active = false;
+    this.onRemove =
+        function (element) {
+            let type = this.getTypeByElement(event.currentTarget);
+            let method = this.methods.find(function (x) { return x.type === type; });
+            if (method) {
+                method.activityQuantity = 0;
+                method.percentSmartWay = [0, 0, 0, 0, 0, 0];
+                method.active = false;
+            }
 
-        this.updateSelectOptions();
-        $(element).parent().parent().remove();
-        this.onProfileChanged();
-    }
+            this.updateSelectOptions();
+            $(element).parent().parent().remove();
+            this.onProfileChanged();
+        }
 }
