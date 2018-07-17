@@ -171,6 +171,12 @@ function updateSavingsUI() {
     var targetNOX = 0;
     var targetPM = 0;
 
+    // Function builder for checking if methods are the same type, used in grep search
+    var isSameType = function(val) {
+        return function(val2) {
+            return val.type === val2.type;
+        };
+    };
 
     // Go through each method to calculate savings
     for (var i = 0; i < Model.currentFreightMethods.length; ++i) {
@@ -179,7 +185,7 @@ function updateSavingsUI() {
 
         // Find the first "targetmethod" with same ID
         var targetMethod = $.grep(Model.targetFreightMethods,
-            function (x) { return x.type === currentMethod.type; })[0];
+            isSameType(currentMethod))[0];
 
         if (!currentMethod.active && !targetMethod.active) { continue; }
 

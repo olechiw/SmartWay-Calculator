@@ -52,6 +52,27 @@ function PerformanceProfile(freightMethods, tableID, simpleHeaderID,
             output += "</td></tr>";
             return output;
         };
+        var profile = this;
+        // Function builder for when a detailed input changes
+        var detailedChangeBuilder = function (method, inputIndex) {
+            return function () {
+                // Update the freightmethods model onchange
+                method.percentSmartWay[5 - i] =
+                    Number(event.currentTarget.value);
+                profile.updateDetailedTotals();
+                profile.updateEmissionsDetailed();
+                profile.onEmissionsUpdate();
+            };
+        };
+        // Function builder for when a simple input changes (select)
+        var simpleClickBuilder = function (method) {
+            return function () {
+                method.smartWayGeneral = event.currentTarget.value;
+                obj.updateEmissionsSimple();
+                obj.onEmissionsUpdate();
+            };
+        };
+
         // One row per type
         for (var t = 0; t < this.methods.length; ++t) {
 
@@ -67,19 +88,19 @@ function PerformanceProfile(freightMethods, tableID, simpleHeaderID,
                     $(this.table).append($row);
                 }
                 else {
-                    var $row = $(simpleNONRowCreator(method));
-                    $(this.table).append($row);
+                    var row = $(simpleNONRowCreator(method));
+                    $(this.table).append(row);
                 }
                 method.percentSmartWay[5] = 100;
             }
             // Row of six inputs
             else if (this.doDetailed) {
-                var row = document.createElement("tr");
+                var inputRow = document.createElement("tr");
 
                 // Add type header
-                var t = document.createElement("th");
-                t.appendChild(document.createTextNode(method.type));
-                row.appendChild(t);
+                var th = document.createElement("th");
+                th.appendChild(document.createTextNode(method.type));
+                inputRow.appendChild(th);
 
                 // 0,1,2,3,4,5 from best to worst. UI is from worst to best so flip the index with 5-i
                 for (var i = 0; i < 6; ++i) {
@@ -90,45 +111,33 @@ function PerformanceProfile(freightMethods, tableID, simpleHeaderID,
                     input.min = 0;
                     input.max = 100;
 
-                    var profile = this;
-                    input.onchange = function () {
-                        // Update the freightmethods model onchange
-                        method.percentSmartWay[5 - i] =
-                            Number(event.currentTarget.value);
-                        profile.updateDetailedTotals();
-                        profile.updateEmissionsDetailed();
-                        profile.onEmissionsUpdate();
-                    };
+                    input.onchange = detailedChangeBuilder(method, i);
                     td.appendChild(input);
-                    row.appendChild(td);
+                    inputRow.appendChild(td);
                 }
 
 
-                this.table.appendChild(row);
+                this.table.appendChild(inputRow);
             }
             // Simple select
             else {
-                var row = document.createElement("tr");
+                var outputRow = document.createElement("tr");
 
                 // Add type label
-                var t = document.createElement("th");
-                t.appendChild(document.createTextNode(method.type));
-                row.appendChild(t);
+                var thSimple = document.createElement("th");
+                thSimple.appendChild(document.createTextNode(method.type));
+                outputRow.appendChild(thSimple);
 
                 // Select which has the 6 bin options
                 var select = createGeneralPerformanceSelect();
                 select.value = method.smartWayGeneral;
-                var profile = this;
-                select.onchange = function () {
-                    method.smartWayGeneral = event.currentTarget.value;
-                    profile.updateEmissionsSimple();
-                    profile.onEmissionsUpdate();
-                };
-                var td = document.createElement("td");
-                td.appendChild(select);
-                row.appendChild(td);
+                var obj = this;
+                select.onchange = simpleClickBuilder(method);
+                var selectTD = document.createElement("td");
+                selectTD.appendChild(select);
+                outputRow.appendChild(selectTD);
 
-                this.table.appendChild(row);
+                this.table.appendChild(outputRow);
             }
         }
     };
@@ -164,12 +173,12 @@ function PerformanceProfile(freightMethods, tableID, simpleHeaderID,
             method.PM = 0;
             var activity = method.activityQuantity;
             // Iterate through 6 different percents, do calculation for each
-            for (var i = 0; i < method.percentSmartWay.length; ++i) {
-                var binTag = performanceLevels[i];
-                if ($.inArray(method.type, Model.freightNonOnly) !== -1 && binTag != "NON") continue;
+            for (var t = 0; t < method.percentSmartWay.length; ++t) {
+                var binTag = performanceLevels[t];
+                if ($.inArray(method.type, Model.freightNonOnly) !== -1 && binTag !== "NON") continue;
                 var bin = this.bins[method.activityUnits][method.type + binTag];
 
-                var percent = Number(method.percentSmartWay[i]) * 0.01;
+                var percent = Number(method.percentSmartWay[t]) * 0.01;
                 method.CO2 += Number(activity) * percent * bin.CO2;
                 method.NOX += Number(activity) * percent * bin.NOX;
                 method.PM += Number(activity) * percent * bin.PM;
@@ -211,7 +220,7 @@ function PerformanceProfile(freightMethods, tableID, simpleHeaderID,
             var label = document.createTextNode(sum);
             var td = document.createElement("td");
             td.appendChild(label);
-            if (sum != 100) {
+            if (sum !== 100) {
                 td.style.color = "red";
                 method.invalid = true;
             }
