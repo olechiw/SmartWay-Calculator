@@ -57,7 +57,7 @@ function PerformanceProfile(freightMethods, tableID, simpleHeaderID,
         var detailedChangeBuilder = function (method, inputIndex) {
             return function () {
                 // Update the freightmethods model onchange
-                method.percentSmartWay[5 - i] =
+                method.percentSmartWay[5 - inputIndex] =
                     Number(event.currentTarget.value);
                 profile.updateDetailedTotals();
                 profile.updateEmissionsDetailed();

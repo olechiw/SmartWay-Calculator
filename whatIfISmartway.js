@@ -261,12 +261,23 @@ function updateGraphsRaw() {
     var NOX = createAllSeries("NOX");
     var PM = createAllSeries("PM");
 
+    var pointFormatter = function () {
+        var values = this.series.data;
+        var percentage = (values[2].y / values[0].y) * 100;
+        var string = '<b><span style="color:' + this.series.color +
+            '">' + this.series.name + ': </span>' +
+            this.y.toLocaleString() + ' g</b>';
+        if (this.x === 2)
+            string += "<b>| " + roundToTwo(percentage).toLocaleString() + " %</b>";
+        return string;
+    };
+
     BarChart("co2Chart", "CO2", "Estimated Emissions in grams",
-        ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", CO2);
+        ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", CO2, pointFormatter);
     BarChart("noxChart", "NOX", "Estimated Emissions in grams",
-        ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", NOX);
+        ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", NOX, pointFormatter);
     BarChart("pmChart", "PM 2.5", "Estimated Emissions in grams",
-        ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", PM);
+        ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", PM, pointFormatter);
 }
 
 // Call the profiles calculation functions (also update the bins that they use, for redundancy)

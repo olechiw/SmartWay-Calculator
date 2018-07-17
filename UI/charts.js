@@ -1,5 +1,5 @@
 // Takes labels, followed by lists of data for each series
-function BarChart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, series) {
+function BarChart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, series, pointFormatter) {
     Highcharts.chart(locationID, {
         chart: {
             type: 'column'
@@ -25,11 +25,7 @@ function BarChart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, s
         tooltip: {
             backgroundColor: '#ffffff',
             headerFormat: '',
-            pointFormatter: function () {
-                return '<b><span style="color:' + this.series.color +
-                    '">' + this.series.name + ': </span>' +
-                    this.y.toLocaleString() + ' ' + units + '</b>';
-            },
+            pointFormatter: pointFormatter,
             hideDelay: 250,
             useHTML: true,
             followPointer: true
