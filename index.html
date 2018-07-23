@@ -1,185 +1,143 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="jquery-ui/jquery-ui.js"></script>
-    <link rel="stylesheet" href="jquery-ui/jquery-ui.css">
-
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-
-    <script type="text/javascript" src="Data/model.js"></script>
-    <script type="text/javascript" src="UI/charts.js"></script>
-    <script type="text/javascript" src="UI/elementBuilders.js"></script>
-    <script type="text/javascript" src="UI/performanceProfile.js"></script>
-    <script type="text/javascript" src="UI/activityProfile.js"></script>
-    <script type="text/javascript" src="UI/comboBox.js"></script>
-</head>
-
-<body>
-    <div id='inputColumn' class="column">
-        <div id="tabs" class="tab">
-            <button id='currentTab' class="tablinks">
-                Current Carrier Usage
-            </button>
-            <button id='targetTab' class="tablinks">
-                Target/Goal Carrier Usage
-            </button>
-            <button id='settingsTab' class="tablinks" style="float:right">Visualization Settings</button>
+<div id='mainColumn'>
+    <ul class="tabs" id="inputTabsNav">
+        <li>
+            <a href="#tab-1" id="inputTab1" class="menu-internal" name="inputTab">Current Freight Activity</a>
+        </li>
+        <li>
+            <a href="#tab-2" id="inputTab2" class="menu-internal" name="inputTab">Target/Goal Freight Activity</a>
+        </li>
+        <li>
+            <a href="#tab-3" id="inputTab3" class="menu-internal" name="inputTab">Visualization</a>
+        </li>
+    </ul>
+    <div id="tab-1">
+        <div style="width:100%" class="clearfix center row cols-2">
+            <div class="col">
+                <button id="addCurrentActivity" class="center">Add Carrier Type</button>
+            </div>
+            <div class="col">
+                <div class="form-item form-type-checkbox center">
+                    <input class="form-checkbox" id="doDetailed" type="checkbox" value="two">
+                    <label class="option" for="doDetailed">Do Detailed Performance (optional)</label>
+                </div>
+            </div>
         </div>
-        <div id="tabCurrent" class="tabcontent">
-            <p class="center">
-                <button id="addCurrentActivity">Add Carrier Type</button>
-            </p>
-            <fieldset id="activityQuantityDiv" class="center">
-                <legend>Current Movement Activity</legend>
-                <table style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Movement Amount</th>
-                            <th>Movement Units</th>
-                        </tr>
-                    </thead>
-                    <tbody id="activityQuantityTable">
-                    </tbody>
-                </table>
-            </fieldset>
-            <fieldset id="currentPerformanceDiv" class="center">
-                <legend>Performance Rankings</legend>
-                <label>
-                    Detailed Rankings (optional)
-                    <input type="checkbox" id="doDetailed" />
-                </label>
-                <table style="width:100%">
-                    <thead id="currentSimpleHeader">
-                        <tr>
-                            <th>Type</th>
-                            <th>General Performance Level</th>
-                        </tr>
-                    </thead>
-                    <thead id="currentDetailedHeader" style="display:none">
-                        <tr>
-                            <th>Type</th>
-                            <th>% NON</th>
-                            <th>% Bin 5</th>
-                            <th>% Bin 4</th>
-                            <th>% Bin 3</th>
-                            <th>% Bin 2</th>
-                            <th>% Bin 1</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="activityPerformanceTable"></tbody>
-                </table>
-            </fieldset>
-            <fieldset id="emissionsOutputDiv" class="center">
-                <legend>Estimated Current Emissions</legend>
-                <table style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>CO2 (g)</th>
-                            <th>NOX (g)</th>
-                            <th>PM (g)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="emissionsOutputTable"></tbody>
-                </table>
-            </fieldset>
+        <table class="center" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Movement Amount</th>
+                    <th>Movement Units</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody id="activityQuantityTable">
+            </tbody>
+        </table>
+        <div style="overflow:auto">
+            <table style="width:100%">
+                <thead id="currentSimpleHeader">
+                    <tr>
+                        <th>Type</th>
+                        <th>General Performance Level</th>
+                    </tr>
+                </thead>
+                <thead id="currentDetailedHeader" style="display:none">
+                    <tr>
+                        <th>Type</th>
+                        <th>NON</th>
+                        <th>Bin 5</th>
+                        <th>Bin 4</th>
+                        <th>Bin 3</th>
+                        <th>Bin 2</th>
+                        <th>Bin 1</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="activityPerformanceTable" style="overflow:auto"></tbody>
+            </table>
         </div>
-        <div id="tabTarget" class="tabcontent">
-            <p class="center">
-                <button id="addTargetActivity">Add Carrier Type</button>
-            </p>
-            <fieldset id="targetQuantityDiv" class="center">
-                <legend>Target Movement Activity</legend>
-                <table style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>Movement Amount</th>
-                            <th>Movement Units</th>
-                        </tr>
-                    </thead>
-                    <tbody id="targetQuantityTable">
-                    </tbody>
-                </table>
-            </fieldset>
-            <fieldset id="targetPerformanceDiv" class="center">
-                <legend>Target Performance Rankings</legend>
-                <table style="width:100%">
-                    <thead id="targetSimpleHeader">
-                        <tr>
-                            <th>Type</th>
-                            <th>General Performance Level</th>
-                        </tr>
-                    </thead>
-                    <thead id="targetDetailedHeader" style="display:none">
-                        <tr>
-                            <th>Type</th>
-                            <th>% NON</th>
-                            <th>% Bin 5</th>
-                            <th>% Bin 4</th>
-                            <th>% Bin 3</th>
-                            <th>% Bin 2</th>
-                            <th>% Bin 1</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody id="targetPerformanceTable"></tbody>
-                </table>
-            </fieldset>
-            <fieldset id="savingsDiv" class="center">
-                <legend>Estimated Final Emissions</legend>
-                <table style="width:100%">
-                    <thead>
-                        <tr>
-                            <th>Type</th>
-                            <th>CO2 (g)</th>
-                            <th>NOX (g)</th>
-                            <th>PM (g)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="savingsTable"></tbody>
-                </table>
-            </fieldset>
-        </div>
-        <div id="tabSettings" class="tabcontent">
-            <fieldset id="settingsFieldset">
-                <legend>Visualization Settings</legend>
-                <label class="center">
-                    Metric:
-                    <select id="visualizationMetric">
-                        <option value="raw"># Changed</option>
-                        <option value="percent">% Changed</option>
-                    </select>
-                </label>
-
-            </fieldset>
+        <div id="emissionsOutputDiv" class="box multi multipurpose center">
+            <table class="center" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>CO2 (g)</th>
+                        <th>NOX (g)</th>
+                        <th>PM (g)</th>
+                    </tr>
+                </thead>
+                <tbody id="emissionsOutputTable"></tbody>
+            </table>
         </div>
     </div>
-    <div class="column" id="graphColumn">
-        <div id="tabs" class="tab">
-            <button id='co2Tab' class="tablinks">
-                CO2
-            </button>
-            <button id='noxTab' class="tablinks">
-                NOX
-            </button>
-            <button id='pmTab' class="tablinks">
-                PM 2.5
-            </button>
+    <div id="tab-2">
+        <button id="addTargetActivity" class="center">Add Carrier Type</button>
+        <div id="targetQuantityDiv" class="box multi multipurpose center">
+            <table class="center" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Movement Amount</th>
+                        <th>Movement Units</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody id="targetQuantityTable">
+                </tbody>
+            </table>
         </div>
-        <div id="co2Chart" class="tabcontent"></div>
-        <div id="noxChart" class="tabcontent"></div>
-        <div id="pmChart" class="tabcontent"></div>
+        <div class="box multi multipurpose center" id="targetPerformanceDiv">
+            <table class="center" style="width:100%">
+                <thead id="targetSimpleHeader">
+                    <tr>
+                        <th>Type</th>
+                        <th>General Performance Level</th>
+                    </tr>
+                </thead>
+                <thead id="targetDetailedHeader" style="display:none">
+                    <tr>
+                        <th>Type</th>
+                        <th>NON</th>
+                        <th>Bin 5</th>
+                        <th>Bin 4</th>
+                        <th>Bin 3</th>
+                        <th>Bin 2</th>
+                        <th>Bin 1</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="targetPerformanceTable"></tbody>
+            </table>
+        </div>
+        <div class="box multi multipurpose center" id="savingsDiv">
+            <table class="center" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>CO2 (g)</th>
+                        <th>NOX (g)</th>
+                        <th>PM (g)</th>
+                    </tr>
+                </thead>
+                <tbody id="savingsTable"></tbody>
+            </table>
+        </div>
     </div>
-
-    <script type="text/javascript" src="whatIfISmartway.js"></script>
-</body>
-
-</html>
+    <div id="tab-3">
+        <ul class="tabs" id="graphTabsNav">
+            <li>
+                <a href="#graph-1" id="graphTab1" class="menu-internal" name="graphTab">CO2</a>
+            </li>
+            <li>
+                <a href="#graph-2" id="graphTab2" class="menu-internal" name="graphTab">NOX</a>
+            </li>
+            <li>
+                <a href="#graph-3" id="graphTab3" class="menu-internal" name="graphTab">PM 2.5</a>
+            </li>
+        </ul>
+        <div id="graph-1"></div>
+        <div id="graph-2"></div>
+        <div id="graph-3"></div>
+    </div>
+</div>
