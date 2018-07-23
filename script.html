@@ -1,1791 +1,1888 @@
 <script type="text/javascript" src="/sites/all/modules/contrib/jquery_update/replace/ui/ui/minified/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/sites/all/libraries/js/highcharts/highcharts.js"></script>
 <script type="text/javascript">
-var smartwayBinJSON = {
-    "Miles": {
-        "Auto Carrier Trucking1": {
-            "CO2": 1912.5,
-            "NOX": 1.5,
-            "PM": 0.01
-        },
-        "Auto Carrier Trucking2": {
-            "CO2": 1987.5,
-            "NOX": 4.5,
-            "PM": 0.07
-        },
-        "Auto Carrier Trucking3": {
-            "CO2": 2062.5,
-            "NOX": 7.5,
-            "PM": 0.17
-        },
-        "Auto Carrier Trucking4": {
-            "CO2": 2137.5,
-            "NOX": 10.5,
-            "PM": 0.27
-        },
-        "Auto Carrier Trucking5": {
-            "CO2": 2212.5,
-            "NOX": 13.5,
-            "PM": 0.37
-        },
-        "Auto Carrier TruckingNON": {
-            "CO2": 2287.5,
-            "NOX": 16.5,
-            "PM": 0.47
-        },
-        "Dray Trucking1": {
-            "CO2": 1555,
-            "NOX": 4.5,
-            "PM": 0.0125
-        },
-        "Dray Trucking2": {
-            "CO2": 1645,
-            "NOX": 7.5,
-            "PM": 0.1125
-        },
-        "Dray Trucking3": {
-            "CO2": 1735,
-            "NOX": 10.5,
-            "PM": 0.2875
-        },
-        "Dray Trucking4": {
-            "CO2": 1825,
-            "NOX": 13.5,
-            "PM": 0.4625
-        },
-        "Dray Trucking5": {
-            "CO2": 1915,
-            "NOX": 16.5,
-            "PM": 0.6375
-        },
-        "Dray TruckingNON": {
-            "CO2": 2005,
-            "NOX": 19.5,
-            "PM": 0.8125
-        },
-        "Expedited Trucking1": {
-            "CO2": 600,
-            "NOX": 0.35,
-            "PM": 0.005
-        },
-        "Expedited Trucking2": {
-            "CO2": 800,
-            "NOX": 1.55,
-            "PM": 0.03
-        },
-        "Expedited Trucking3": {
-            "CO2": 1000,
-            "NOX": 3.25,
-            "PM": 0.07
-        },
-        "Expedited Trucking4": {
-            "CO2": 1200,
-            "NOX": 4.95,
-            "PM": 0.11
-        },
-        "Expedited Trucking5": {
-            "CO2": 1400,
-            "NOX": 6.65,
-            "PM": 0.15
-        },
-        "Expedited TruckingNON": {
-            "CO2": 1600,
-            "NOX": 8.35,
-            "PM": 0.19
-        },
-        "Flatbed Trucking1": {
-            "CO2": 1550,
-            "NOX": 1.6,
-            "PM": 0.01
-        },
-        "Flatbed Trucking2": {
-            "CO2": 1650,
-            "NOX": 3.6,
-            "PM": 0.065
-        },
-        "Flatbed Trucking3": {
-            "CO2": 1750,
-            "NOX": 5.6,
-            "PM": 0.155
-        },
-        "Flatbed Trucking4": {
-            "CO2": 1850,
-            "NOX": 7.6,
-            "PM": 0.245
-        },
-        "Flatbed Trucking5": {
-            "CO2": 1950,
-            "NOX": 9.6,
-            "PM": 0.335
-        },
-        "Flatbed TruckingNON": {
-            "CO2": 2050,
-            "NOX": 11.6,
-            "PM": 0.425
-        },
-        "Heavy and Bulk Trucking1": {
-            "CO2": 1725,
-            "NOX": 1.35,
-            "PM": 0.025
-        },
-        "Heavy and Bulk Trucking2": {
-            "CO2": 1875,
-            "NOX": 2.85,
-            "PM": 0.075
-        },
-        "Heavy and Bulk Trucking3": {
-            "CO2": 2025,
-            "NOX": 4.35,
-            "PM": 0.125
-        },
-        "Heavy and Bulk Trucking4": {
-            "CO2": 2175,
-            "NOX": 5.85,
-            "PM": 0.175
-        },
-        "Heavy and Bulk Trucking5": {
-            "CO2": 2325,
-            "NOX": 7.35,
-            "PM": 0.225
-        },
-        "Heavy and Bulk TruckingNON": {
-            "CO2": 2475,
-            "NOX": 8.85,
-            "PM": 0.275
-        },
-        "Logistics1": {
-            "CO2": 1580,
-            "NOX": 6,
-            "PM": 0.16
-        },
-        "Logistics2": {
-            "CO2": 1680,
-            "NOX": 8,
-            "PM": 0.24
-        },
-        "Logistics3": {
-            "CO2": 1780,
-            "NOX": 10,
-            "PM": 0.32
-        },
-        "Logistics4": {
-            "CO2": 1880,
-            "NOX": 12,
-            "PM": 0.4
-        },
-        "Logistics5": {
-            "CO2": 1980,
-            "NOX": 14,
-            "PM": 0.48
-        },
-        "LogisticsNON": {
-            "CO2": 2080,
-            "NOX": 16,
-            "PM": 0.56
-        },
-        "LTL/Dry Van1": {
-            "CO2": 1300,
-            "NOX": 1.2,
-            "PM": 0.01
-        },
-        "LTL/Dry Van2": {
-            "CO2": 1400,
-            "NOX": 3,
-            "PM": 0.055
-        },
-        "LTL/Dry Van3": {
-            "CO2": 1500,
-            "NOX": 4.8,
-            "PM": 0.125
-        },
-        "LTL/Dry Van4": {
-            "CO2": 1600,
-            "NOX": 6.6,
-            "PM": 0.195
-        },
-        "LTL/Dry Van5": {
-            "CO2": 1700,
-            "NOX": 8.4,
-            "PM": 0.265
-        },
-        "LTL/Dry VanNON": {
-            "CO2": 1800,
-            "NOX": 10.2,
-            "PM": 0.335
-        },
-        "Mixed Trucking1": {
-            "CO2": 1450,
-            "NOX": 1.25,
-            "PM": 0.005
-        },
-        "Mixed Trucking2": {
-            "CO2": 1550,
-            "NOX": 3.75,
-            "PM": 0.055
-        },
-        "Mixed Trucking3": {
-            "CO2": 1650,
-            "NOX": 6.25,
-            "PM": 0.105
-        },
-        "Mixed Trucking4": {
-            "CO2": 1750,
-            "NOX": 8.75,
-            "PM": 0.155
-        },
-        "Mixed Trucking5": {
-            "CO2": 1850,
-            "NOX": 11.25,
-            "PM": 0.205
-        },
-        "Mixed TruckingNON": {
-            "CO2": 1950,
-            "NOX": 13.75,
-            "PM": 0.255
-        },
-        "Multimodal1": {
-            "CO2": 1075,
-            "NOX": 16.45,
-            "PM": 0.44
-        },
-        "Multimodal2": {
-            "CO2": 1125,
-            "NOX": 16.75,
-            "PM": 0.46
-        },
-        "Multimodal3": {
-            "CO2": 1175,
-            "NOX": 17.05,
-            "PM": 0.48
-        },
-        "Multimodal4": {
-            "CO2": 1225,
-            "NOX": 17.35,
-            "PM": 0.5
-        },
-        "Multimodal5": {
-            "CO2": 1275,
-            "NOX": 17.65,
-            "PM": 0.52
-        },
-        "MultimodalNON": {
-            "CO2": 1325,
-            "NOX": 17.95,
-            "PM": 0.54
-        },
-        "Moving Van Trucking1": {
-            "CO2": 1200,
-            "NOX": 1,
-            "PM": 0.01
-        },
-        "Moving Van Trucking2": {
-            "CO2": 1325,
-            "NOX": 5,
-            "PM": 0.095
-        },
-        "Moving Van Trucking3": {
-            "CO2": 1475,
-            "NOX": 9,
-            "PM": 0.245
-        },
-        "Moving Van Trucking4": {
-            "CO2": 1625,
-            "NOX": 13,
-            "PM": 0.395
-        },
-        "Moving Van Trucking5": {
-            "CO2": 1750,
-            "NOX": 17,
-            "PM": 0.545
-        },
-        "Moving Van TruckingNON": {
-            "CO2": 1875,
-            "NOX": 21,
-            "PM": 0.695
-        },
-        "Package Delivery Trucking1": {
-            "CO2": 1150,
-            "NOX": 0.5,
-            "PM": 0.006
-        },
-        "Package Delivery Trucking2": {
-            "CO2": 1250,
-            "NOX": 1.5,
-            "PM": 0.037
-        },
-        "Package Delivery Trucking3": {
-            "CO2": 1350,
-            "NOX": 2.5,
-            "PM": 0.087
-        },
-        "Package Delivery Trucking4": {
-            "CO2": 1450,
-            "NOX": 3.5,
-            "PM": 0.137
-        },
-        "Package Delivery Trucking5": {
-            "CO2": 1550,
-            "NOX": 4.5,
-            "PM": 0.187
-        },
-        "Package Delivery TruckingNON": {
-            "CO2": 1650,
-            "NOX": 5.5,
-            "PM": 0.237
-        },
-        "Refrigerated Trucking1": {
-            "CO2": 1475,
-            "NOX": 2.3,
-            "PM": 0.04
-        },
-        "Refrigerated Trucking2": {
-            "CO2": 1575,
-            "NOX": 3.3,
-            "PM": 0.08
-        },
-        "Refrigerated Trucking3": {
-            "CO2": 1675,
-            "NOX": 4.3,
-            "PM": 0.12
-        },
-        "Refrigerated Trucking4": {
-            "CO2": 1775,
-            "NOX": 5.3,
-            "PM": 0.16
-        },
-        "Refrigerated Trucking5": {
-            "CO2": 1875,
-            "NOX": 6.3,
-            "PM": 0.2
-        },
-        "Refrigerated TruckingNON": {
-            "CO2": 1975,
-            "NOX": 7.3,
-            "PM": 0.24
-        },
-        "Specialty Haul Trucking1": {
-            "CO2": 1537.5,
-            "NOX": 1.75,
-            "PM": 0.008
-        },
-        "Specialty Haul Trucking2": {
-            "CO2": 1712.5,
-            "NOX": 3.25,
-            "PM": 0.041
-        },
-        "Specialty Haul Trucking3": {
-            "CO2": 1887.5,
-            "NOX": 4.75,
-            "PM": 0.091
-        },
-        "Specialty Haul Trucking4": {
-            "CO2": 2062.5,
-            "NOX": 6.25,
-            "PM": 0.141
-        },
-        "Specialty Haul Trucking5": {
-            "CO2": 2237.5,
-            "NOX": 7.75,
-            "PM": 0.191
-        },
-        "Specialty Haul TruckingNON": {
-            "CO2": 2412.5,
-            "NOX": 9.25,
-            "PM": 0.241
-        },
-        "Tanker Trucking1": {
-            "CO2": 1475,
-            "NOX": 2,
-            "PM": 0.01
-        },
-        "Tanker Trucking2": {
-            "CO2": 1625,
-            "NOX": 3,
-            "PM": 0.045
-        },
-        "Tanker Trucking3": {
-            "CO2": 1775,
-            "NOX": 4,
-            "PM": 0.095
-        },
-        "Tanker Trucking4": {
-            "CO2": 1925,
-            "NOX": 5,
-            "PM": 0.145
-        },
-        "Tanker Trucking5": {
-            "CO2": 2075,
-            "NOX": 6,
-            "PM": 0.195
-        },
-        "Tanker TruckingNON": {
-            "CO2": 2225,
-            "NOX": 7,
-            "PM": 0.245
-        },
-        "TL/Dry Van1": {
-            "CO2": 1400,
-            "NOX": 1,
-            "PM": 0.006
-        },
-        "TL/Dry Van2": {
-            "CO2": 1500,
-            "NOX": 3,
-            "PM": 0.026
-        },
-        "TL/Dry Van3": {
-            "CO2": 1600,
-            "NOX": 5,
-            "PM": 0.046
-        },
-        "TL/Dry Van4": {
-            "CO2": 1700,
-            "NOX": 7,
-            "PM": 0.066
-        },
-        "TL/Dry Van5": {
-            "CO2": 1800,
-            "NOX": 9,
-            "PM": 0.086
-        },
-        "TL/Dry VanNON": {
-            "CO2": 1900,
-            "NOX": 11,
-            "PM": 0.106
-        },
-        "BargeNON": {
-            "CO2": 23295,
-            "NOX": 671.73,
-            "PM": 22.240
-        },
-        "RailNON": {
-            "CO2": 1072,
-            "NOX": 18.6,
-            "PM": 0.503
-        },
-        "Air-Long HaulNON": {
-            "CO2": 33448,
-            "NOX": 301.13,
-            "PM": 1980
-        },
-        "Air-Short HaulNON": {
-            "CO2": 96998,
-            "NOX": 873.27,
-            "PM": 5.743
+    var smartwayBinJSON = {
+        "Miles": {
+            "Auto Carrier Trucking1": {
+                "CO2": 1912.5,
+                "NOX": 1.5,
+                "PM": 0.01
+            },
+            "Auto Carrier Trucking2": {
+                "CO2": 1987.5,
+                "NOX": 4.5,
+                "PM": 0.07
+            },
+            "Auto Carrier Trucking3": {
+                "CO2": 2062.5,
+                "NOX": 7.5,
+                "PM": 0.17
+            },
+            "Auto Carrier Trucking4": {
+                "CO2": 2137.5,
+                "NOX": 10.5,
+                "PM": 0.27
+            },
+            "Auto Carrier Trucking5": {
+                "CO2": 2212.5,
+                "NOX": 13.5,
+                "PM": 0.37
+            },
+            "Auto Carrier TruckingNON": {
+                "CO2": 2287.5,
+                "NOX": 16.5,
+                "PM": 0.47
+            },
+            "Dray Trucking1": {
+                "CO2": 1555,
+                "NOX": 4.5,
+                "PM": 0.0125
+            },
+            "Dray Trucking2": {
+                "CO2": 1645,
+                "NOX": 7.5,
+                "PM": 0.1125
+            },
+            "Dray Trucking3": {
+                "CO2": 1735,
+                "NOX": 10.5,
+                "PM": 0.2875
+            },
+            "Dray Trucking4": {
+                "CO2": 1825,
+                "NOX": 13.5,
+                "PM": 0.4625
+            },
+            "Dray Trucking5": {
+                "CO2": 1915,
+                "NOX": 16.5,
+                "PM": 0.6375
+            },
+            "Dray TruckingNON": {
+                "CO2": 2005,
+                "NOX": 19.5,
+                "PM": 0.8125
+            },
+            "Expedited Trucking1": {
+                "CO2": 600,
+                "NOX": 0.35,
+                "PM": 0.005
+            },
+            "Expedited Trucking2": {
+                "CO2": 800,
+                "NOX": 1.55,
+                "PM": 0.03
+            },
+            "Expedited Trucking3": {
+                "CO2": 1000,
+                "NOX": 3.25,
+                "PM": 0.07
+            },
+            "Expedited Trucking4": {
+                "CO2": 1200,
+                "NOX": 4.95,
+                "PM": 0.11
+            },
+            "Expedited Trucking5": {
+                "CO2": 1400,
+                "NOX": 6.65,
+                "PM": 0.15
+            },
+            "Expedited TruckingNON": {
+                "CO2": 1600,
+                "NOX": 8.35,
+                "PM": 0.19
+            },
+            "Flatbed Trucking1": {
+                "CO2": 1550,
+                "NOX": 1.6,
+                "PM": 0.01
+            },
+            "Flatbed Trucking2": {
+                "CO2": 1650,
+                "NOX": 3.6,
+                "PM": 0.065
+            },
+            "Flatbed Trucking3": {
+                "CO2": 1750,
+                "NOX": 5.6,
+                "PM": 0.155
+            },
+            "Flatbed Trucking4": {
+                "CO2": 1850,
+                "NOX": 7.6,
+                "PM": 0.245
+            },
+            "Flatbed Trucking5": {
+                "CO2": 1950,
+                "NOX": 9.6,
+                "PM": 0.335
+            },
+            "Flatbed TruckingNON": {
+                "CO2": 2050,
+                "NOX": 11.6,
+                "PM": 0.425
+            },
+            "Heavy and Bulk Trucking1": {
+                "CO2": 1725,
+                "NOX": 1.35,
+                "PM": 0.025
+            },
+            "Heavy and Bulk Trucking2": {
+                "CO2": 1875,
+                "NOX": 2.85,
+                "PM": 0.075
+            },
+            "Heavy and Bulk Trucking3": {
+                "CO2": 2025,
+                "NOX": 4.35,
+                "PM": 0.125
+            },
+            "Heavy and Bulk Trucking4": {
+                "CO2": 2175,
+                "NOX": 5.85,
+                "PM": 0.175
+            },
+            "Heavy and Bulk Trucking5": {
+                "CO2": 2325,
+                "NOX": 7.35,
+                "PM": 0.225
+            },
+            "Heavy and Bulk TruckingNON": {
+                "CO2": 2475,
+                "NOX": 8.85,
+                "PM": 0.275
+            },
+            "Logistics1": {
+                "CO2": 1580,
+                "NOX": 6,
+                "PM": 0.16
+            },
+            "Logistics2": {
+                "CO2": 1680,
+                "NOX": 8,
+                "PM": 0.24
+            },
+            "Logistics3": {
+                "CO2": 1780,
+                "NOX": 10,
+                "PM": 0.32
+            },
+            "Logistics4": {
+                "CO2": 1880,
+                "NOX": 12,
+                "PM": 0.4
+            },
+            "Logistics5": {
+                "CO2": 1980,
+                "NOX": 14,
+                "PM": 0.48
+            },
+            "LogisticsNON": {
+                "CO2": 2080,
+                "NOX": 16,
+                "PM": 0.56
+            },
+            "LTL/Dry Van1": {
+                "CO2": 1300,
+                "NOX": 1.2,
+                "PM": 0.01
+            },
+            "LTL/Dry Van2": {
+                "CO2": 1400,
+                "NOX": 3,
+                "PM": 0.055
+            },
+            "LTL/Dry Van3": {
+                "CO2": 1500,
+                "NOX": 4.8,
+                "PM": 0.125
+            },
+            "LTL/Dry Van4": {
+                "CO2": 1600,
+                "NOX": 6.6,
+                "PM": 0.195
+            },
+            "LTL/Dry Van5": {
+                "CO2": 1700,
+                "NOX": 8.4,
+                "PM": 0.265
+            },
+            "LTL/Dry VanNON": {
+                "CO2": 1800,
+                "NOX": 10.2,
+                "PM": 0.335
+            },
+            "Mixed Trucking1": {
+                "CO2": 1450,
+                "NOX": 1.25,
+                "PM": 0.005
+            },
+            "Mixed Trucking2": {
+                "CO2": 1550,
+                "NOX": 3.75,
+                "PM": 0.055
+            },
+            "Mixed Trucking3": {
+                "CO2": 1650,
+                "NOX": 6.25,
+                "PM": 0.105
+            },
+            "Mixed Trucking4": {
+                "CO2": 1750,
+                "NOX": 8.75,
+                "PM": 0.155
+            },
+            "Mixed Trucking5": {
+                "CO2": 1850,
+                "NOX": 11.25,
+                "PM": 0.205
+            },
+            "Mixed TruckingNON": {
+                "CO2": 1950,
+                "NOX": 13.75,
+                "PM": 0.255
+            },
+            "Multimodal1": {
+                "CO2": 1075,
+                "NOX": 16.45,
+                "PM": 0.44
+            },
+            "Multimodal2": {
+                "CO2": 1125,
+                "NOX": 16.75,
+                "PM": 0.46
+            },
+            "Multimodal3": {
+                "CO2": 1175,
+                "NOX": 17.05,
+                "PM": 0.48
+            },
+            "Multimodal4": {
+                "CO2": 1225,
+                "NOX": 17.35,
+                "PM": 0.5
+            },
+            "Multimodal5": {
+                "CO2": 1275,
+                "NOX": 17.65,
+                "PM": 0.52
+            },
+            "MultimodalNON": {
+                "CO2": 1325,
+                "NOX": 17.95,
+                "PM": 0.54
+            },
+            "Moving Van Trucking1": {
+                "CO2": 1200,
+                "NOX": 1,
+                "PM": 0.01
+            },
+            "Moving Van Trucking2": {
+                "CO2": 1325,
+                "NOX": 5,
+                "PM": 0.095
+            },
+            "Moving Van Trucking3": {
+                "CO2": 1475,
+                "NOX": 9,
+                "PM": 0.245
+            },
+            "Moving Van Trucking4": {
+                "CO2": 1625,
+                "NOX": 13,
+                "PM": 0.395
+            },
+            "Moving Van Trucking5": {
+                "CO2": 1750,
+                "NOX": 17,
+                "PM": 0.545
+            },
+            "Moving Van TruckingNON": {
+                "CO2": 1875,
+                "NOX": 21,
+                "PM": 0.695
+            },
+            "Package Delivery Trucking1": {
+                "CO2": 1150,
+                "NOX": 0.5,
+                "PM": 0.006
+            },
+            "Package Delivery Trucking2": {
+                "CO2": 1250,
+                "NOX": 1.5,
+                "PM": 0.037
+            },
+            "Package Delivery Trucking3": {
+                "CO2": 1350,
+                "NOX": 2.5,
+                "PM": 0.087
+            },
+            "Package Delivery Trucking4": {
+                "CO2": 1450,
+                "NOX": 3.5,
+                "PM": 0.137
+            },
+            "Package Delivery Trucking5": {
+                "CO2": 1550,
+                "NOX": 4.5,
+                "PM": 0.187
+            },
+            "Package Delivery TruckingNON": {
+                "CO2": 1650,
+                "NOX": 5.5,
+                "PM": 0.237
+            },
+            "Refrigerated Trucking1": {
+                "CO2": 1475,
+                "NOX": 2.3,
+                "PM": 0.04
+            },
+            "Refrigerated Trucking2": {
+                "CO2": 1575,
+                "NOX": 3.3,
+                "PM": 0.08
+            },
+            "Refrigerated Trucking3": {
+                "CO2": 1675,
+                "NOX": 4.3,
+                "PM": 0.12
+            },
+            "Refrigerated Trucking4": {
+                "CO2": 1775,
+                "NOX": 5.3,
+                "PM": 0.16
+            },
+            "Refrigerated Trucking5": {
+                "CO2": 1875,
+                "NOX": 6.3,
+                "PM": 0.2
+            },
+            "Refrigerated TruckingNON": {
+                "CO2": 1975,
+                "NOX": 7.3,
+                "PM": 0.24
+            },
+            "Specialty Haul Trucking1": {
+                "CO2": 1537.5,
+                "NOX": 1.75,
+                "PM": 0.008
+            },
+            "Specialty Haul Trucking2": {
+                "CO2": 1712.5,
+                "NOX": 3.25,
+                "PM": 0.041
+            },
+            "Specialty Haul Trucking3": {
+                "CO2": 1887.5,
+                "NOX": 4.75,
+                "PM": 0.091
+            },
+            "Specialty Haul Trucking4": {
+                "CO2": 2062.5,
+                "NOX": 6.25,
+                "PM": 0.141
+            },
+            "Specialty Haul Trucking5": {
+                "CO2": 2237.5,
+                "NOX": 7.75,
+                "PM": 0.191
+            },
+            "Specialty Haul TruckingNON": {
+                "CO2": 2412.5,
+                "NOX": 9.25,
+                "PM": 0.241
+            },
+            "Tanker Trucking1": {
+                "CO2": 1475,
+                "NOX": 2,
+                "PM": 0.01
+            },
+            "Tanker Trucking2": {
+                "CO2": 1625,
+                "NOX": 3,
+                "PM": 0.045
+            },
+            "Tanker Trucking3": {
+                "CO2": 1775,
+                "NOX": 4,
+                "PM": 0.095
+            },
+            "Tanker Trucking4": {
+                "CO2": 1925,
+                "NOX": 5,
+                "PM": 0.145
+            },
+            "Tanker Trucking5": {
+                "CO2": 2075,
+                "NOX": 6,
+                "PM": 0.195
+            },
+            "Tanker TruckingNON": {
+                "CO2": 2225,
+                "NOX": 7,
+                "PM": 0.245
+            },
+            "TL/Dry Van1": {
+                "CO2": 1400,
+                "NOX": 1,
+                "PM": 0.006
+            },
+            "TL/Dry Van2": {
+                "CO2": 1500,
+                "NOX": 3,
+                "PM": 0.026
+            },
+            "TL/Dry Van3": {
+                "CO2": 1600,
+                "NOX": 5,
+                "PM": 0.046
+            },
+            "TL/Dry Van4": {
+                "CO2": 1700,
+                "NOX": 7,
+                "PM": 0.066
+            },
+            "TL/Dry Van5": {
+                "CO2": 1800,
+                "NOX": 9,
+                "PM": 0.086
+            },
+            "TL/Dry VanNON": {
+                "CO2": 1900,
+                "NOX": 11,
+                "PM": 0.106
+            },
+            "BargeNON": {
+                "CO2": 23295,
+                "NOX": 671.73,
+                "PM": 22.240
+            },
+            "RailNON": {
+                "CO2": 1072,
+                "NOX": 18.6,
+                "PM": 0.503
+            },
+            "Air-Long HaulNON": {
+                "CO2": 33448,
+                "NOX": 301.13,
+                "PM": 1980
+            },
+            "Air-Short HaulNON": {
+                "CO2": 96998,
+                "NOX": 873.27,
+                "PM": 5.743
+            }
+        },
+        "Ton-Miles": {
+            "Auto Carrier Trucking1": {
+                "CO2": 104,
+                "NOX": 0.135,
+                "PM": 0.0006
+            },
+            "Auto Carrier Trucking2": {
+                "CO2": 110,
+                "NOX": 0.265,
+                "PM": 0.0032
+            },
+            "Auto Carrier Trucking3": {
+                "CO2": 116,
+                "NOX": 0.395,
+                "PM": 0.0072
+            },
+            "Auto Carrier Trucking4": {
+                "CO2": 122,
+                "NOX": 0.525,
+                "PM": 0.0112
+            },
+            "Auto Carrier Trucking5": {
+                "CO2": 128,
+                "NOX": 0.655,
+                "PM": 0.0152
+            },
+            "Auto Carrier TruckingNON": {
+                "CO2": 134,
+                "NOX": 0.785,
+                "PM": 0.0192
+            },
+            "Dray Trucking1": {
+                "CO2": 68.5,
+                "NOX": 0.15,
+                "PM": 0.0006
+            },
+            "Dray Trucking2": {
+                "CO2": 75.5,
+                "NOX": 0.35,
+                "PM": 0.0052
+            },
+            "Dray Trucking3": {
+                "CO2": 82.5,
+                "NOX": 0.55,
+                "PM": 0.0132
+            },
+            "Dray Trucking4": {
+                "CO2": 89.5,
+                "NOX": 0.75,
+                "PM": 0.0212
+            },
+            "Dray Trucking5": {
+                "CO2": 96.5,
+                "NOX": 0.95,
+                "PM": 0.0292
+            },
+            "Dray TruckingNON": {
+                "CO2": 103.5,
+                "NOX": 1.15,
+                "PM": 0.0372
+            },
+            "Expedited Trucking1": {
+                "CO2": 75,
+                "NOX": 0.15,
+                "PM": 0.0025
+            },
+            "Expedited Trucking2": {
+                "CO2": 225,
+                "NOX": 0.45,
+                "PM": 0.0125
+            },
+            "Expedited Trucking3": {
+                "CO2": 375,
+                "NOX": 0.75,
+                "PM": 0.0275
+            },
+            "Expedited Trucking4": {
+                "CO2": 525,
+                "NOX": 1.05,
+                "PM": 0.0425
+            },
+            "Expedited Trucking5": {
+                "CO2": 675,
+                "NOX": 1.35,
+                "PM": 0.0575
+            },
+            "Expedited TruckingNON": {
+                "CO2": 825,
+                "NOX": 1.65,
+                "PM": 0.0725
+            },
+            "Flatbed Trucking1": {
+                "CO2": 63.5,
+                "NOX": 0.06,
+                "PM": 0.00035
+            },
+            "Flatbed Trucking2": {
+                "CO2": 70.5,
+                "NOX": 0.2,
+                "PM": 0.0032
+            },
+            "Flatbed Trucking3": {
+                "CO2": 77.5,
+                "NOX": 0.34,
+                "PM": 0.0082
+            },
+            "Flatbed Trucking4": {
+                "CO2": 84.5,
+                "NOX": 0.48,
+                "PM": 0.0132
+            },
+            "Flatbed Trucking5": {
+                "CO2": 91.5,
+                "NOX": 0.62,
+                "PM": 0.0182
+            },
+            "Flatbed TruckingNON": {
+                "CO2": 98.5,
+                "NOX": 0.76,
+                "PM": 0.0232
+            },
+            "Heavy and Bulk Trucking1": {
+                "CO2": 54.5,
+                "NOX": 0.03,
+                "PM": 0.00025
+            },
+            "Heavy and Bulk Trucking2": {
+                "CO2": 61.5,
+                "NOX": 0.13,
+                "PM": 0.001
+            },
+            "Heavy and Bulk Trucking3": {
+                "CO2": 68.5,
+                "NOX": 0.23,
+                "PM": 0.002
+            },
+            "Heavy and Bulk Trucking4": {
+                "CO2": 75.5,
+                "NOX": 0.33,
+                "PM": 0.003
+            },
+            "Heavy and Bulk Trucking5": {
+                "CO2": 82.5,
+                "NOX": 0.43,
+                "PM": 0.004
+            },
+            "Heavy and Bulk TruckingNON": {
+                "CO2": 89.5,
+                "NOX": 0.53,
+                "PM": 0.005
+            },
+            "Logistics1": {
+                "CO2": 96,
+                "NOX": 0.39,
+                "PM": 0.011
+            },
+            "Logistics2": {
+                "CO2": 104,
+                "NOX": 0.51,
+                "PM": 0.016
+            },
+            "Logistics3": {
+                "CO2": 112,
+                "NOX": 0.63,
+                "PM": 0.021
+            },
+            "Logistics4": {
+                "CO2": 120,
+                "NOX": 0.75,
+                "PM": 0.026
+            },
+            "Logistics5": {
+                "CO2": 128,
+                "NOX": 0.87,
+                "PM": 0.031
+            },
+            "LogisticsNON": {
+                "CO2": 136,
+                "NOX": 0.99,
+                "PM": 0.036
+            },
+            "LTL/Dry Van1": {
+                "CO2": 95,
+                "NOX": 0.06,
+                "PM": 0.0005
+            },
+            "LTL/Dry Van2": {
+                "CO2": 115,
+                "NOX": 0.26,
+                "PM": 0.0035
+            },
+            "LTL/Dry Van3": {
+                "CO2": 135,
+                "NOX": 0.46,
+                "PM": 0.0065
+            },
+            "LTL/Dry Van4": {
+                "CO2": 155,
+                "NOX": 0.66,
+                "PM": 0.0095
+            },
+            "LTL/Dry Van5": {
+                "CO2": 175,
+                "NOX": 0.86,
+                "PM": 0.0125
+            },
+            "LTL/Dry VanNON": {
+                "CO2": 195,
+                "NOX": 1.06,
+                "PM": 0.0155
+            },
+            "Mixed Trucking1": {
+                "CO2": 69,
+                "NOX": 0.09,
+                "PM": 0.00075
+            },
+            "Mixed Trucking2": {
+                "CO2": 79,
+                "NOX": 0.19,
+                "PM": 0.003325
+            },
+            "Mixed Trucking3": {
+                "CO2": 89,
+                "NOX": 0.29,
+                "PM": 0.008325
+            },
+            "Mixed Trucking4": {
+                "CO2": 99,
+                "NOX": 0.39,
+                "PM": 0.013325
+            },
+            "Mixed Trucking5": {
+                "CO2": 109,
+                "NOX": 0.49,
+                "PM": 0.01815
+            },
+            "Mixed TruckingNON": {
+                "CO2": 119,
+                "NOX": 0.59,
+                "PM": 0.022975
+            },
+            "Multimodal1": {
+                "CO2": 26.5,
+                "NOX": 0.39,
+                "PM": 0.0122
+            },
+            "Multimodal2": {
+                "CO2": 29.5,
+                "NOX": 0.41,
+                "PM": 0.0124
+            },
+            "Multimodal3": {
+                "CO2": 32.5,
+                "NOX": 0.43,
+                "PM": 0.0126
+            },
+            "Multimodal4": {
+                "CO2": 35.5,
+                "NOX": 0.45,
+                "PM": 0.0128
+            },
+            "Multimodal5": {
+                "CO2": 38.5,
+                "NOX": 0.47,
+                "PM": 0.013
+            },
+            "MultimodalNON": {
+                "CO2": 41.5,
+                "NOX": 0.49,
+                "PM": 0.0132
+            },
+            "Moving Van Trucking1": {
+                "CO2": 95,
+                "NOX": 0.47,
+                "PM": 0.002
+            },
+            "Moving Van Trucking2": {
+                "CO2": 125,
+                "NOX": 0.57,
+                "PM": 0.01
+            },
+            "Moving Van Trucking3": {
+                "CO2": 155,
+                "NOX": 0.67,
+                "PM": 0.022
+            },
+            "Moving Van Trucking4": {
+                "CO2": 185,
+                "NOX": 0.77,
+                "PM": 0.034
+            },
+            "Moving Van Trucking5": {
+                "CO2": 215,
+                "NOX": 0.87,
+                "PM": 0.046
+            },
+            "Moving Van TruckingNON": {
+                "CO2": 245,
+                "NOX": 0.97,
+                "PM": 0.058
+            },
+            "Package Delivery Trucking1": {
+                "CO2": 100,
+                "NOX": 0.4,
+                "PM": 0.0025
+            },
+            "Package Delivery Trucking2": {
+                "CO2": 200,
+                "NOX": 0.6,
+                "PM": 0.0125
+            },
+            "Package Delivery Trucking3": {
+                "CO2": 300,
+                "NOX": 0.8,
+                "PM": 0.0275
+            },
+            "Package Delivery Trucking4": {
+                "CO2": 400,
+                "NOX": 1,
+                "PM": 0.0425
+            },
+            "Package Delivery Trucking5": {
+                "CO2": 500,
+                "NOX": 1.2,
+                "PM": 0.0575
+            },
+            "Package Delivery TruckingNON": {
+                "CO2": 600,
+                "NOX": 1.4,
+                "PM": 0.0725
+            },
+            "Refrigerated Trucking1": {
+                "CO2": 73,
+                "NOX": 0.11,
+                "PM": 0.002
+            },
+            "Refrigerated Trucking2": {
+                "CO2": 79,
+                "NOX": 0.17,
+                "PM": 0.004
+            },
+            "Refrigerated Trucking3": {
+                "CO2": 85,
+                "NOX": 0.23,
+                "PM": 0.006
+            },
+            "Refrigerated Trucking4": {
+                "CO2": 91,
+                "NOX": 0.29,
+                "PM": 0.008
+            },
+            "Refrigerated Trucking5": {
+                "CO2": 97,
+                "NOX": 0.35,
+                "PM": 0.01
+            },
+            "Refrigerated TruckingNON": {
+                "CO2": 103,
+                "NOX": 0.41,
+                "PM": 0.012
+            },
+            "Specialty Haul Trucking1": {
+                "CO2": 58,
+                "NOX": 0.0525,
+                "PM": 0.0005
+            },
+            "Specialty Haul Trucking2": {
+                "CO2": 70,
+                "NOX": 0.1355,
+                "PM": 0.003
+            },
+            "Specialty Haul Trucking3": {
+                "CO2": 82,
+                "NOX": 0.2005,
+                "PM": 0.007
+            },
+            "Specialty Haul Trucking4": {
+                "CO2": 94,
+                "NOX": 0.37,
+                "PM": 0.011
+            },
+            "Specialty Haul Trucking5": {
+                "CO2": 106,
+                "NOX": 0.5575,
+                "PM": 0.015
+            },
+            "Specialty Haul TruckingNON": {
+                "CO2": 118,
+                "NOX": 0.745,
+                "PM": 0.019
+            },
+            "Tanker Trucking1": {
+                "CO2": 56.5,
+                "NOX": 0.075,
+                "PM": 0.0003
+            },
+            "Tanker Trucking2": {
+                "CO2": 63.5,
+                "NOX": 0.125,
+                "PM": 0.0016
+            },
+            "Tanker Trucking3": {
+                "CO2": 70.5,
+                "NOX": 0.175,
+                "PM": 0.0036
+            },
+            "Tanker Trucking4": {
+                "CO2": 77.5,
+                "NOX": 0.225,
+                "PM": 0.0056
+            },
+            "Tanker Trucking5": {
+                "CO2": 84.5,
+                "NOX": 0.275,
+                "PM": 0.0076
+            },
+            "Tanker TruckingNON": {
+                "CO2": 91.5,
+                "NOX": 0.325,
+                "PM": 0.0096
+            },
+            "TL/Dry Van1": {
+                "CO2": 72,
+                "NOX": 0.085,
+                "PM": 0.0005
+            },
+            "TL/Dry Van2": {
+                "CO2": 80,
+                "NOX": 0.175,
+                "PM": 0.003
+            },
+            "TL/Dry Van3": {
+                "CO2": 88,
+                "NOX": 0.265,
+                "PM": 0.007
+            },
+            "TL/Dry Van4": {
+                "CO2": 96,
+                "NOX": 0.355,
+                "PM": 0.011
+            },
+            "TL/Dry Van5": {
+                "CO2": 104,
+                "NOX": 0.445,
+                "PM": 0.015
+            },
+            "TL/Dry VanNON": {
+                "CO2": 112,
+                "NOX": 0.535,
+                "PM": 0.019
+            },
+            "BargeNON": {
+                "CO2": 19,
+                "NOX": 0.640,
+                "PM": 0.200
+            },
+            "RailNON": {
+                "CO2": 20.78,
+                "NOX": 0.427,
+                "PM": 0.00822
+            },
+            "Air-Long HaulNON": {
+                "CO2": 1461,
+                "NOX": 13.15,
+                "PM": 0.086
+            },
+            "Air-Short HaulNON": {
+                "CO2": 4236,
+                "NOX": 38.134,
+                "PM": 0.251
+            }
         }
-    },
-    "Ton-Miles": {
-        "Auto Carrier Trucking1": {
-            "CO2": 104,
-            "NOX": 0.135,
-            "PM": 0.0006
-        },
-        "Auto Carrier Trucking2": {
-            "CO2": 110,
-            "NOX": 0.265,
-            "PM": 0.0032
-        },
-        "Auto Carrier Trucking3": {
-            "CO2": 116,
-            "NOX": 0.395,
-            "PM": 0.0072
-        },
-        "Auto Carrier Trucking4": {
-            "CO2": 122,
-            "NOX": 0.525,
-            "PM": 0.0112
-        },
-        "Auto Carrier Trucking5": {
-            "CO2": 128,
-            "NOX": 0.655,
-            "PM": 0.0152
-        },
-        "Auto Carrier TruckingNON": {
-            "CO2": 134,
-            "NOX": 0.785,
-            "PM": 0.0192
-        },
-        "Dray Trucking1": {
-            "CO2": 68.5,
-            "NOX": 0.15,
-            "PM": 0.0006
-        },
-        "Dray Trucking2": {
-            "CO2": 75.5,
-            "NOX": 0.35,
-            "PM": 0.0052
-        },
-        "Dray Trucking3": {
-            "CO2": 82.5,
-            "NOX": 0.55,
-            "PM": 0.0132
-        },
-        "Dray Trucking4": {
-            "CO2": 89.5,
-            "NOX": 0.75,
-            "PM": 0.0212
-        },
-        "Dray Trucking5": {
-            "CO2": 96.5,
-            "NOX": 0.95,
-            "PM": 0.0292
-        },
-        "Dray TruckingNON": {
-            "CO2": 103.5,
-            "NOX": 1.15,
-            "PM": 0.0372
-        },
-        "Expedited Trucking1": {
-            "CO2": 75,
-            "NOX": 0.15,
-            "PM": 0.0025
-        },
-        "Expedited Trucking2": {
-            "CO2": 225,
-            "NOX": 0.45,
-            "PM": 0.0125
-        },
-        "Expedited Trucking3": {
-            "CO2": 375,
-            "NOX": 0.75,
-            "PM": 0.0275
-        },
-        "Expedited Trucking4": {
-            "CO2": 525,
-            "NOX": 1.05,
-            "PM": 0.0425
-        },
-        "Expedited Trucking5": {
-            "CO2": 675,
-            "NOX": 1.35,
-            "PM": 0.0575
-        },
-        "Expedited TruckingNON": {
-            "CO2": 825,
-            "NOX": 1.65,
-            "PM": 0.0725
-        },
-        "Flatbed Trucking1": {
-            "CO2": 63.5,
-            "NOX": 0.06,
-            "PM": 0.00035
-        },
-        "Flatbed Trucking2": {
-            "CO2": 70.5,
-            "NOX": 0.2,
-            "PM": 0.0032
-        },
-        "Flatbed Trucking3": {
-            "CO2": 77.5,
-            "NOX": 0.34,
-            "PM": 0.0082
-        },
-        "Flatbed Trucking4": {
-            "CO2": 84.5,
-            "NOX": 0.48,
-            "PM": 0.0132
-        },
-        "Flatbed Trucking5": {
-            "CO2": 91.5,
-            "NOX": 0.62,
-            "PM": 0.0182
-        },
-        "Flatbed TruckingNON": {
-            "CO2": 98.5,
-            "NOX": 0.76,
-            "PM": 0.0232
-        },
-        "Heavy and Bulk Trucking1": {
-            "CO2": 54.5,
-            "NOX": 0.03,
-            "PM": 0.00025
-        },
-        "Heavy and Bulk Trucking2": {
-            "CO2": 61.5,
-            "NOX": 0.13,
-            "PM": 0.001
-        },
-        "Heavy and Bulk Trucking3": {
-            "CO2": 68.5,
-            "NOX": 0.23,
-            "PM": 0.002
-        },
-        "Heavy and Bulk Trucking4": {
-            "CO2": 75.5,
-            "NOX": 0.33,
-            "PM": 0.003
-        },
-        "Heavy and Bulk Trucking5": {
-            "CO2": 82.5,
-            "NOX": 0.43,
-            "PM": 0.004
-        },
-        "Heavy and Bulk TruckingNON": {
-            "CO2": 89.5,
-            "NOX": 0.53,
-            "PM": 0.005
-        },
-        "Logistics1": {
-            "CO2": 96,
-            "NOX": 0.39,
-            "PM": 0.011
-        },
-        "Logistics2": {
-            "CO2": 104,
-            "NOX": 0.51,
-            "PM": 0.016
-        },
-        "Logistics3": {
-            "CO2": 112,
-            "NOX": 0.63,
-            "PM": 0.021
-        },
-        "Logistics4": {
-            "CO2": 120,
-            "NOX": 0.75,
-            "PM": 0.026
-        },
-        "Logistics5": {
-            "CO2": 128,
-            "NOX": 0.87,
-            "PM": 0.031
-        },
-        "LogisticsNON": {
-            "CO2": 136,
-            "NOX": 0.99,
-            "PM": 0.036
-        },
-        "LTL/Dry Van1": {
-            "CO2": 95,
-            "NOX": 0.06,
-            "PM": 0.0005
-        },
-        "LTL/Dry Van2": {
-            "CO2": 115,
-            "NOX": 0.26,
-            "PM": 0.0035
-        },
-        "LTL/Dry Van3": {
-            "CO2": 135,
-            "NOX": 0.46,
-            "PM": 0.0065
-        },
-        "LTL/Dry Van4": {
-            "CO2": 155,
-            "NOX": 0.66,
-            "PM": 0.0095
-        },
-        "LTL/Dry Van5": {
-            "CO2": 175,
-            "NOX": 0.86,
-            "PM": 0.0125
-        },
-        "LTL/Dry VanNON": {
-            "CO2": 195,
-            "NOX": 1.06,
-            "PM": 0.0155
-        },
-        "Mixed Trucking1": {
-            "CO2": 69,
-            "NOX": 0.09,
-            "PM": 0.00075
-        },
-        "Mixed Trucking2": {
-            "CO2": 79,
-            "NOX": 0.19,
-            "PM": 0.003325
-        },
-        "Mixed Trucking3": {
-            "CO2": 89,
-            "NOX": 0.29,
-            "PM": 0.008325
-        },
-        "Mixed Trucking4": {
-            "CO2": 99,
-            "NOX": 0.39,
-            "PM": 0.013325
-        },
-        "Mixed Trucking5": {
-            "CO2": 109,
-            "NOX": 0.49,
-            "PM": 0.01815
-        },
-        "Mixed TruckingNON": {
-            "CO2": 119,
-            "NOX": 0.59,
-            "PM": 0.022975
-        },
-        "Multimodal1": {
-            "CO2": 26.5,
-            "NOX": 0.39,
-            "PM": 0.0122
-        },
-        "Multimodal2": {
-            "CO2": 29.5,
-            "NOX": 0.41,
-            "PM": 0.0124
-        },
-        "Multimodal3": {
-            "CO2": 32.5,
-            "NOX": 0.43,
-            "PM": 0.0126
-        },
-        "Multimodal4": {
-            "CO2": 35.5,
-            "NOX": 0.45,
-            "PM": 0.0128
-        },
-        "Multimodal5": {
-            "CO2": 38.5,
-            "NOX": 0.47,
-            "PM": 0.013
-        },
-        "MultimodalNON": {
-            "CO2": 41.5,
-            "NOX": 0.49,
-            "PM": 0.0132
-        },
-        "Moving Van Trucking1": {
-            "CO2": 95,
-            "NOX": 0.47,
-            "PM": 0.002
-        },
-        "Moving Van Trucking2": {
-            "CO2": 125,
-            "NOX": 0.57,
-            "PM": 0.01
-        },
-        "Moving Van Trucking3": {
-            "CO2": 155,
-            "NOX": 0.67,
-            "PM": 0.022
-        },
-        "Moving Van Trucking4": {
-            "CO2": 185,
-            "NOX": 0.77,
-            "PM": 0.034
-        },
-        "Moving Van Trucking5": {
-            "CO2": 215,
-            "NOX": 0.87,
-            "PM": 0.046
-        },
-        "Moving Van TruckingNON": {
-            "CO2": 245,
-            "NOX": 0.97,
-            "PM": 0.058
-        },
-        "Package Delivery Trucking1": {
-            "CO2": 100,
-            "NOX": 0.4,
-            "PM": 0.0025
-        },
-        "Package Delivery Trucking2": {
-            "CO2": 200,
-            "NOX": 0.6,
-            "PM": 0.0125
-        },
-        "Package Delivery Trucking3": {
-            "CO2": 300,
-            "NOX": 0.8,
-            "PM": 0.0275
-        },
-        "Package Delivery Trucking4": {
-            "CO2": 400,
-            "NOX": 1,
-            "PM": 0.0425
-        },
-        "Package Delivery Trucking5": {
-            "CO2": 500,
-            "NOX": 1.2,
-            "PM": 0.0575
-        },
-        "Package Delivery TruckingNON": {
-            "CO2": 600,
-            "NOX": 1.4,
-            "PM": 0.0725
-        },
-        "Refrigerated Trucking1": {
-            "CO2": 73,
-            "NOX": 0.11,
-            "PM": 0.002
-        },
-        "Refrigerated Trucking2": {
-            "CO2": 79,
-            "NOX": 0.17,
-            "PM": 0.004
-        },
-        "Refrigerated Trucking3": {
-            "CO2": 85,
-            "NOX": 0.23,
-            "PM": 0.006
-        },
-        "Refrigerated Trucking4": {
-            "CO2": 91,
-            "NOX": 0.29,
-            "PM": 0.008
-        },
-        "Refrigerated Trucking5": {
-            "CO2": 97,
-            "NOX": 0.35,
-            "PM": 0.01
-        },
-        "Refrigerated TruckingNON": {
-            "CO2": 103,
-            "NOX": 0.41,
-            "PM": 0.012
-        },
-        "Specialty Haul Trucking1": {
-            "CO2": 58,
-            "NOX": 0.0525,
-            "PM": 0.0005
-        },
-        "Specialty Haul Trucking2": {
-            "CO2": 70,
-            "NOX": 0.1355,
-            "PM": 0.003
-        },
-        "Specialty Haul Trucking3": {
-            "CO2": 82,
-            "NOX": 0.2005,
-            "PM": 0.007
-        },
-        "Specialty Haul Trucking4": {
-            "CO2": 94,
-            "NOX": 0.37,
-            "PM": 0.011
-        },
-        "Specialty Haul Trucking5": {
-            "CO2": 106,
-            "NOX": 0.5575,
-            "PM": 0.015
-        },
-        "Specialty Haul TruckingNON": {
-            "CO2": 118,
-            "NOX": 0.745,
-            "PM": 0.019
-        },
-        "Tanker Trucking1": {
-            "CO2": 56.5,
-            "NOX": 0.075,
-            "PM": 0.0003
-        },
-        "Tanker Trucking2": {
-            "CO2": 63.5,
-            "NOX": 0.125,
-            "PM": 0.0016
-        },
-        "Tanker Trucking3": {
-            "CO2": 70.5,
-            "NOX": 0.175,
-            "PM": 0.0036
-        },
-        "Tanker Trucking4": {
-            "CO2": 77.5,
-            "NOX": 0.225,
-            "PM": 0.0056
-        },
-        "Tanker Trucking5": {
-            "CO2": 84.5,
-            "NOX": 0.275,
-            "PM": 0.0076
-        },
-        "Tanker TruckingNON": {
-            "CO2": 91.5,
-            "NOX": 0.325,
-            "PM": 0.0096
-        },
-        "TL/Dry Van1": {
-            "CO2": 72,
-            "NOX": 0.085,
-            "PM": 0.0005
-        },
-        "TL/Dry Van2": {
-            "CO2": 80,
-            "NOX": 0.175,
-            "PM": 0.003
-        },
-        "TL/Dry Van3": {
-            "CO2": 88,
-            "NOX": 0.265,
-            "PM": 0.007
-        },
-        "TL/Dry Van4": {
-            "CO2": 96,
-            "NOX": 0.355,
-            "PM": 0.011
-        },
-        "TL/Dry Van5": {
-            "CO2": 104,
-            "NOX": 0.445,
-            "PM": 0.015
-        },
-        "TL/Dry VanNON": {
-            "CO2": 112,
-            "NOX": 0.535,
-            "PM": 0.019
-        },
-        "BargeNON": {
-            "CO2": 19,
-            "NOX": 0.640,
-            "PM": 0.200
-        },
-        "RailNON": {
-            "CO2": 20.78,
-            "NOX": 0.427,
-            "PM": 0.00822
-        },
-        "Air-Long HaulNON": {
-            "CO2": 1461,
-            "NOX": 13.15,
-            "PM": 0.086
-        },
-        "Air-Short HaulNON": {
-            "CO2": 4236,
-            "NOX": 38.134,
-            "PM": 0.251
-        }
+    };
+
+    function FreightMethodModel(name) {
+        // The name of the movement type
+        this.type = name;
+        this.active = false;
+        this.invalid = false;
+
+        // The activity units (Ton-Miles or Miles) and the corresponding scalar
+        this.activityUnits = "Miles";
+        this.activityQuantity = 0;
+
+        // The current calculated amounts of pollution
+        this.CO2 = 0;
+        this.NOX = 0;
+        this.PM = 0;
+
+        // The general ranking, 1-6 with 6 being NON
+        this.smartWayGeneral = "NON";
+        // The specific smartway usage, from Bin 1 to NON
+        this.percentSmartWay = [0, 0, 0, 0, 0, 0];
     }
-}
 
-function FreightMethodModel(name) {
-    // The name of the movement type
-    this.type = name;
-    this.active = false;
-    this.invalid = false;
+    // Constant function to create a list of every method, used as the model
+    function createFreightMethods() {
+        return [
+            new FreightMethodModel("Auto Carrier Trucking"),
+            new FreightMethodModel("Dray Trucking"),
+            new FreightMethodModel("Expedited Trucking"),
+            new FreightMethodModel("Flatbed Trucking"),
+            new FreightMethodModel("Heavy and Bulk Trucking"),
+            new FreightMethodModel("LTL/Dry Van"),
+            new FreightMethodModel("Mixed Trucking"),
+            new FreightMethodModel("Moving Van Trucking"),
+            new FreightMethodModel("Package Delivery Trucking"),
+            new FreightMethodModel("Refrigerated Trucking"),
+            new FreightMethodModel("Specialty Haul Trucking"),
+            new FreightMethodModel("Tanker Trucking"),
+            new FreightMethodModel("TL/Dry Van"),
+            new FreightMethodModel("Logistics"),
+            new FreightMethodModel("Multimodal"),
+            new FreightMethodModel("Rail"),
+            new FreightMethodModel("Barge"),
+            new FreightMethodModel("Air-Long Haul"),
+            new FreightMethodModel("Air-Short Haul")
+        ];
+    }
+    // Global freight model
+    var Model = {
+        "freightNonOnly": [
+            "Rail",
+            "Barge",
+            "Air-Long Haul",
+            "Air-Short Haul"
+        ],
+        "currentFreightMethods": createFreightMethods(),
+        "targetFreightMethods": createFreightMethods()
+    };
 
-    // The activity units (Ton-Miles or Miles) and the corresponding scalar
-    this.activityUnits = "Miles";
-    this.activityQuantity = 0;
-
-    // The current calculated amounts of pollution
-    this.CO2 = 0;
-    this.NOX = 0;
-    this.PM = 0;
-
-    // The general ranking, 1-6 with 6 being NON
-    this.smartWayGeneral = "NON";
-    // The specific smartway usage, from Bin 1 to NON
-    this.percentSmartWay = [0, 0, 0, 0, 0, 0];
-}
-
-// Constant function to create a list of every method, used as the model
-function createFreightMethods() {
-    return [
-        new FreightMethodModel("Auto Carrier Trucking"),
-        new FreightMethodModel("Dray Trucking"),
-        new FreightMethodModel("Expedited Trucking"),
-        new FreightMethodModel("Flatbed Trucking"),
-        new FreightMethodModel("Heavy and Bulk Trucking"),
-        new FreightMethodModel("LTL/Dry Van"),
-        new FreightMethodModel("Mixed Trucking"),
-        new FreightMethodModel("Moving Van Trucking"),
-        new FreightMethodModel("Package Delivery Trucking"),
-        new FreightMethodModel("Refrigerated Trucking"),
-        new FreightMethodModel("Specialty Haul Trucking"),
-        new FreightMethodModel("Tanker Trucking"),
-        new FreightMethodModel("TL/Dry Van"),
-        new FreightMethodModel("Logistics"),
-        new FreightMethodModel("Multimodal"),
-        new FreightMethodModel("Rail"),
-        new FreightMethodModel("Barge"),
-        new FreightMethodModel("Air-Long Haul"),
-        new FreightMethodModel("Air-Short Haul")
+    var performanceLevels = [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "NON"
     ];
-}
-// Global freight model
-var Model = {
-    "freightNonOnly": [
-        "Rail",
-        "Barge",
-        "Air-Long Haul",
-        "Air-Short Haul"
-    ],
-    "currentFreightMethods": createFreightMethods(),
-    "targetFreightMethods": createFreightMethods()
-};
 
-var performanceLevels = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "NON"
-];
-
-// Create a table data cell from text
-function createTableCell(text) {
-    var textNode = document.createTextNode(text);
-    var td = document.createElement("td");
-    td.appendChild(textNode);
-    return td;
-}
-
-function createTableHeader(text) {
-    var textNode = document.createTextNode(text);
-    var th = document.createElement("th");
-    th.appendChild(textNode);
-    return th;
-}
-
-// Create a table row, populated with input forms, takes a variable amount of arguments
-function createTableRow() {
-    var tableRowElement = document.createElement("tr");
-    if (arguments.length > 0) {
-        for (var i = 0; i < arguments.length; ++i) {
-            var arg = arguments[i];
-            tableRowElement.appendChild(arg);
-        }
+    // Create a table data cell from text
+    function createTableCell(text) {
+        var textNode = document.createTextNode(text);
+        var td = document.createElement("td");
+        td.appendChild(textNode);
+        return td;
     }
-    return tableRowElement;
-}
 
-// Dropdown menu for the performance levels
-function createGeneralPerformanceSelect() {
-    var select = document.createElement("select");
+    function createTableHeader(text) {
+        var textNode = document.createTextNode(text);
+        var th = document.createElement("th");
+        th.appendChild(textNode);
+        return th;
+    }
 
-    jQuery.each(performanceLevels, function () {
-        var option = document.createElement("option");
-        option.textContent = this;
-        option.value = this;
-        select.appendChild(option);
-    });
-    return select;
-}
-
-/*
-An object responsible for modeling performance of all carriers, and also constructing/updating a user-interface to match it
-*/
-
-function PerformanceInputUI(freightMethods, tableID, simpleHeaderID,
-    detailedHeaderID, onEmissionsUpdate) {
-    // DOM Object for where to put the UI
-    this.table = document.getElementById(tableID);
-    this.methods = freightMethods;
-    this.doDetailed = false;
-
-    this.simpleHeader = document.getElementById(simpleHeaderID);
-    this.detailedHeader = document.getElementById(detailedHeaderID);
-    jQuery(this.detailedHeader).hide();
-
-    this.onEmissionsUpdate = onEmissionsUpdate;
-    this.bins = undefined;
-
-    // Toggle whether to do a detailed or simple input
-    this.setDetailed = function (detailed) {
-        if (detailed) {
-            jQuery(this.simpleHeader).hide();
-            jQuery(this.detailedHeader).show();
-        } else {
-            jQuery(this.simpleHeader).show();
-            jQuery(this.detailedHeader).hide();
-        }
-        this.doDetailed = detailed;
-
-        this.updateInputUI();
-    };
-
-    // Update the input for performance, redoing every row of the table
-    this.updateInputUI = function () {
-        // Clear table
-        jQuery(this.table).empty();
-
-        // For a detailed NON-only row,such as barge, creates 6 readonly inputs
-        var detailedNONRowCreator = function (method) {
-            var output = "<tr>";
-            output += "<td>" + method.type + "</td>";
-            output += '<td><input value="100" readOnly="true" type="number"/></td>';
-            for (var i = 0; i < 5; ++i)
-                output += '<td><input value="0" readOnly="true" type="number"/></td>';
-            output += "</tr>";
-            return output;
-        };
-        // For a simple NON-only row,such as barge, creates a select with only 1 option
-        var simpleNONRowCreator = function (method) {
-            var output = "<tr><th>" + method.type + "</th><td>";
-            output += '<select><option value="NON">NON</option></select>';
-            output += "</td></tr>";
-            return output;
-        };
-        var profile = this;
-        // Function builder for when a detailed input changes
-        var detailedChangeBuilder = function (method, inputIndex) {
-            return function () {
-                // Update the freightmethods model onchange
-                method.percentSmartWay[5 - inputIndex] =
-                    Number(event.currentTarget.value);
-                profile.updateDetailedTotals();
-                profile.updateEmissionsDetailed();
-                profile.onEmissionsUpdate();
-            };
-        };
-        // Function builder for when a simple input changes (select)
-        var simpleClickBuilder = function (method) {
-            return function () {
-                method.smartWayGeneral = event.currentTarget.value;
-                obj.updateEmissionsSimple();
-                obj.onEmissionsUpdate();
-            };
-        };
-
-        // One row per type
-        for (var t = 0; t < this.methods.length; ++t) {
-
-            var method = this.methods[t];
-            if (!method.active) {
-                continue;
-            }
-
-            // Static, non-smartway only, not detailed
-            if (jQuery.inArray(method.type, Model.freightNonOnly) !== -1) {
-                if (this.doDetailed) {
-                    var jQueryrow = jQuery(detailedNONRowCreator(method));
-                    jQuery(this.table).append(jQueryrow);
-                } else {
-                    var row = jQuery(simpleNONRowCreator(method));
-                    jQuery(this.table).append(row);
-                }
-                method.percentSmartWay[5] = 100;
-            }
-            // Row of six inputs
-            else if (this.doDetailed) {
-                var inputRow = document.createElement("tr");
-
-                // Add type header
-                var th = document.createElement("th");
-                th.appendChild(document.createTextNode(method.type));
-                inputRow.appendChild(th);
-
-                // 0,1,2,3,4,5 from best to worst. UI is from worst to best so flip the index with 5-i
-                for (var i = 0; i < 6; ++i) {
-                    var td = document.createElement("td");
-                    var input = document.createElement("input");
-                    input.type = "number";
-                    input.value = method.percentSmartWay[5 - i];
-                    input.min = 0;
-                    input.max = 100;
-                    input.maxLength = 3;
-
-                    input.onchange = detailedChangeBuilder(method, i);
-                    td.appendChild(input);
-                    inputRow.appendChild(td);
-                }
-
-                // Blank totals row
-                jQuery(inputRow).append('<td style="color:red">0</td>');
-
-                this.table.appendChild(inputRow);
-            }
-            // Simple select
-            else {
-                var outputRow = document.createElement("tr");
-
-                // Add type label
-                var thSimple = document.createElement("th");
-                thSimple.appendChild(document.createTextNode(method.type));
-                outputRow.appendChild(thSimple);
-
-                // Select which has the 6 bin options
-                var select = createGeneralPerformanceSelect();
-                select.value = method.smartWayGeneral;
-                var obj = this;
-                select.onchange = simpleClickBuilder(method);
-                var selectTD = document.createElement("td");
-                selectTD.appendChild(select);
-                outputRow.appendChild(selectTD);
-
-                this.table.appendChild(outputRow);
+    // Create a table row, populated with input forms, takes a variable amount of arguments
+    function createTableRow() {
+        var tableRowElement = document.createElement("tr");
+        if (arguments.length > 0) {
+            for (var i = 0; i < arguments.length; ++i) {
+                var arg = arguments[i];
+                tableRowElement.appendChild(arg);
             }
         }
-    };
+        return tableRowElement;
+    }
 
-    this.updateEmissionsSimple = function () {
-        for (var i = 0; i < this.methods.length; ++i) {
-            var method = this.methods[i];
+    // Dropdown menu for the performance levels
+    function createGeneralPerformanceSelect() {
+        var select = document.createElement("select");
+        jQuery(select).addClass("form-select");
 
-            if (!method.active) {
-                continue;
-            }
-
-            // Do simple calculations with units/type/bin
-            var bin = this.bins[method.activityUnits][method.type + method.smartWayGeneral];
-            var CO2 = bin.CO2;
-            var NOX = bin.NOX;
-            var PM = bin.PM;
-            method.CO2 = CO2 * Number(method.activityQuantity);
-            method.NOX = NOX * Number(method.activityQuantity);
-            method.PM = PM * Number(method.activityQuantity);
-        }
-    };
-
-    this.updateEmissionsDetailed = function () {
-        for (var i = 0; i < this.methods.length; ++i) {
-            var method = this.methods[i];
-
-            // If percentages dont add up, dont re-calculate
-            if (method.invalid || !method.active) {
-                continue;
-            }
-
-            method.CO2 = 0;
-            method.NOX = 0;
-            method.PM = 0;
-            var activity = method.activityQuantity;
-            // Iterate through 6 different percents, do calculation for each
-            for (var t = 0; t < method.percentSmartWay.length; ++t) {
-                var binTag = performanceLevels[t];
-                if (jQuery.inArray(method.type, Model.freightNonOnly) !== -1 && binTag !== "NON") continue;
-                var bin = this.bins[method.activityUnits][method.type + binTag];
-
-                var percent = Number(method.percentSmartWay[t]) * 0.01;
-                method.CO2 += Number(activity) * percent * bin.CO2;
-                method.NOX += Number(activity) * percent * bin.NOX;
-                method.PM += Number(activity) * percent * bin.PM;
-            }
-        }
-    };
-
-    // Update the total levels at the end and the "valid" member of each method
-    this.updateDetailedTotals = function () {
-        if (!doDetailed) {
-            return;
-        }
-        if (this.table.childElementCount === 0) {
-            return;
-        }
-
-        // Get the active ones
-        var activeFreightMethods = [];
-        jQuery.each(this.methods, function () {
-            if (this.active) {
-                activeFreightMethods.push(this);
-            }
+        jQuery.each(performanceLevels, function () {
+            var option = document.createElement("option");
+            option.textContent = this;
+            option.value = this;
+            select.appendChild(option);
         });
+        return select;
+    }
 
-        // Do totaling
-        for (var i = 0; i < activeFreightMethods.length; ++i) {
-            var method = activeFreightMethods[i];
-            var row = this.table.rows[i];
+    /*
+    An object responsible for modeling performance of all carriers, and also constructing/updating a user-interface to match it
+    */
 
-            // TOTAL ALREADY THERE - delete it
-            if (row.cells.length > 7)
-                row.deleteCell(7);
+    function PerformanceInputUI(freightMethods, tableID, simpleHeaderID,
+        detailedHeaderID, onEmissionsUpdate) {
+        // DOM Object for where to put the UI
+        this.table = document.getElementById(tableID);
+        this.methods = freightMethods;
+        this.doDetailed = false;
 
-            // Sum all of the percentages
-            var sum = method.percentSmartWay.reduce(function (total, num) {
-                return total + num;
-            });
+        this.simpleHeader = document.getElementById(simpleHeaderID);
+        this.detailedHeader = document.getElementById(detailedHeaderID);
+        jQuery(this.detailedHeader).hide();
 
-            var label = document.createTextNode(sum);
-            var td = document.createElement("td");
-            td.appendChild(label);
-            if (sum !== 100) {
-                td.style.color = "red";
-                method.invalid = true;
+        this.onEmissionsUpdate = onEmissionsUpdate;
+        this.bins = undefined;
+
+        // Toggle whether to do a detailed or simple input
+        this.setDetailed = function (detailed) {
+            if (detailed) {
+                jQuery(this.simpleHeader).hide();
+                jQuery(this.detailedHeader).show();
             } else {
-                td.style.color = "green";
-                method.invalid = false;
+                jQuery(this.simpleHeader).show();
+                jQuery(this.detailedHeader).hide();
             }
-            row.appendChild(td);
-        }
-    };
-}
+            this.doDetailed = detailed;
 
-
-
-function ActivityInputUI(location, onProfileChanged, methods, typeChange) {
-    this.locationID = location;
-    this.onProfileChanged = onProfileChanged;
-    this.methods = methods;
-    this.typeChange = typeChange;
-    this.addQuantityInputUI = function () {
-        var obj = this;
-
-        var jQuerytypeSelect = jQuery('<select></select>');
-        var methods = this.methods;
-        jQuerytypeSelect.empty().append(function () {
-            var output = '';
-            jQuery.each(methods, function () {
-                output += "<option>" + this.type + "</option>";
-            });
-            return output;
-        });
-        // Four times <td></td> for <Type, Quant, Units, Remove>
-        jQuery(this.locationID).append("<tr><th></th><td></td><td></td><td></td></tr>");
-        jQuery(this.locationID).find('tr').last().find('th').first().append(jQuerytypeSelect);
-        jQuerytypeSelect.change(function () {
-            obj.onTypeChanged(this);
-        });
-        jQuerytypeSelect.attr("name", "type");
-
-        var jQueryquantityInput = jQuery('<input type="number" min="0" value="0" name="quantity"/>');
-        jQueryquantityInput.on('change keyup', function () {
-            obj.onQuantityChanged(this);
-        });
-
-
-        var jQueryunitsInput =
-            jQuery('<select>' +
-                '<option value="Miles">Miles</option>' +
-                '<option value="Ton-Miles">Ton-Miles</option>');
-        jQueryunitsInput.change(function () {
-            obj.onUnitsChanged(this);
-        });
-        jQueryunitsInput.attr("name", "units");
-
-        var jQueryremoveInput = jQuery('<input type="button" value="X"/>');
-        jQueryremoveInput.click(function () {
-            obj.onRemove(this);
-        });
-
-        var row = jQuery(this.locationID).find('tr').last();
-        jQuery(row).find('td:eq(0)').append(jQuery(jQueryquantityInput));
-        jQuery(row).find('td:eq(1)').append(jQuery(jQueryunitsInput));
-        jQuery(row).find('td:eq(2)').append(jQuery(jQueryremoveInput));
-
-        this.updateSelectOptions();
-        jQuerytypeSelect.trigger('change');
-    };
-
-    this.getTypeByElement =
-        function (input) {
-            return jQuery(input).parent().parent().find('select').first().val();
+            this.updateInputUI();
         };
 
-    this.onTypeChanged =
-        function (element, dontUpdate) {
-            jQuery("body").css("cursor", "progress");
-            jQuery.each(methods, function () {
-                this.active = false;
-                this.activityQuantity = 0;
+        // Update the input for performance, redoing every row of the table
+        this.updateInputUI = function () {
+            // Clear table
+            jQuery(this.table).empty();
+
+            // For a detailed NON-only row,such as barge, creates 6 readonly inputs
+            var detailedNONRowCreator = function (method) {
+                var output = "<tr>";
+                output += "<td>" + method.type + "</td>";
+                output += '<td><input value="100" readOnly="true" type="number"/></td>';
+                for (var i = 0; i < 5; ++i)
+                    output += '<td><input value="0" readOnly="true" type="number"/></td>';
+                output += "</tr>";
+                return output;
+            };
+            // For a simple NON-only row,such as barge, creates a select with only 1 option
+            var simpleNONRowCreator = function (method) {
+                var output = "<tr><th>" + method.type + "</th><td>";
+                output += '<select class="form-select"><option value="NON">NON</option></select>';
+                output += "</td></tr>";
+                return output;
+            };
+            var profile = this;
+            // Function builder for when a detailed input changes
+            var detailedChangeBuilder = function (method, inputIndex) {
+                return function () {
+                    // Update the freightmethods model onchange
+                    method.percentSmartWay[5 - inputIndex] =
+                        Number(event.currentTarget.value);
+                    profile.updateDetailedTotals();
+                    profile.updateEmissionsDetailed();
+                    profile.onEmissionsUpdate();
+                };
+            };
+            // Function builder for when a simple input changes (select)
+            var simpleClickBuilder = function (method) {
+                return function () {
+                    method.smartWayGeneral = event.currentTarget.value;
+                    obj.updateEmissionsSimple();
+                    obj.onEmissionsUpdate();
+                };
+            };
+
+            // One row per type
+            for (var t = 0; t < this.methods.length; ++t) {
+
+                var method = this.methods[t];
+                if (!method.active) {
+                    continue;
+                }
+
+                // Static, non-smartway only, not detailed
+                if (jQuery.inArray(method.type, Model.freightNonOnly) !== -1) {
+                    if (this.doDetailed) {
+                        var jQueryrow = jQuery(detailedNONRowCreator(method));
+                        jQuery(this.table).append(jQueryrow);
+                    } else {
+                        var row = jQuery(simpleNONRowCreator(method));
+                        jQuery(this.table).append(row);
+                    }
+                    method.percentSmartWay[5] = 100;
+                }
+                // Row of six inputs
+                else if (this.doDetailed) {
+                    var inputRow = document.createElement("tr");
+
+                    // Add type header
+                    var th = document.createElement("th");
+                    th.appendChild(document.createTextNode(method.type));
+                    inputRow.appendChild(th);
+
+                    // 0,1,2,3,4,5 from best to worst. UI is from worst to best so flip the index with 5-i
+                    for (var i = 0; i < 6; ++i) {
+                        var td = document.createElement("td");
+                        var input = document.createElement("input");
+                        input.type = "number";
+                        input.value = method.percentSmartWay[5 - i];
+                        input.min = 0;
+                        input.max = 100;
+                        input.maxLength = 3;
+
+                        input.onchange = detailedChangeBuilder(method, i);
+                        td.appendChild(input);
+                        inputRow.appendChild(td);
+                    }
+
+                    // Blank totals row
+                    jQuery(inputRow).append('<td style="color:red">0</td>');
+
+                    this.table.appendChild(inputRow);
+                }
+                // Simple select
+                else {
+                    var outputRow = document.createElement("tr");
+
+                    // Add type label
+                    var thSimple = document.createElement("th");
+                    thSimple.appendChild(document.createTextNode(method.type));
+                    outputRow.appendChild(thSimple);
+
+                    // Select which has the 6 bin options
+                    var select = createGeneralPerformanceSelect();
+                    select.value = method.smartWayGeneral;
+                    var obj = this;
+                    select.onchange = simpleClickBuilder(method);
+                    var selectTD = document.createElement("td");
+                    selectTD.appendChild(select);
+                    outputRow.appendChild(selectTD);
+
+                    this.table.appendChild(outputRow);
+                }
+            }
+            if (this.doDetailed) this.updateDetailedTotals();
+        };
+
+        this.updateEmissionsSimple = function () {
+            for (var i = 0; i < this.methods.length; ++i) {
+                var method = this.methods[i];
+
+                if (!method.active) {
+                    continue;
+                }
+
+                // Do simple calculations with units/type/bin
+                var bin = this.bins[method.activityUnits][method.type + method.smartWayGeneral];
+                var CO2 = bin.CO2;
+                var NOX = bin.NOX;
+                var PM = bin.PM;
+                method.CO2 = CO2 * Number(method.activityQuantity);
+                method.NOX = NOX * Number(method.activityQuantity);
+                method.PM = PM * Number(method.activityQuantity);
+            }
+        };
+
+        this.updateEmissionsDetailed = function () {
+            for (var i = 0; i < this.methods.length; ++i) {
+                var method = this.methods[i];
+
+                // If percentages dont add up, dont re-calculate
+                if (method.invalid || !method.active) {
+                    continue;
+                }
+
+                method.CO2 = 0;
+                method.NOX = 0;
+                method.PM = 0;
+                var activity = method.activityQuantity;
+                // Iterate through 6 different percents, do calculation for each
+                for (var t = 0; t < method.percentSmartWay.length; ++t) {
+                    var binTag = performanceLevels[t];
+                    if (jQuery.inArray(method.type, Model.freightNonOnly) !== -1 && binTag !== "NON") continue;
+                    var bin = this.bins[method.activityUnits][method.type + binTag];
+
+                    var percent = Number(method.percentSmartWay[t]) * 0.01;
+                    method.CO2 += Number(activity) * percent * bin.CO2;
+                    method.NOX += Number(activity) * percent * bin.NOX;
+                    method.PM += Number(activity) * percent * bin.PM;
+                }
+            }
+        };
+
+        // Update the total levels at the end and the "valid" member of each method
+        this.updateDetailedTotals = function () {
+            if (!doDetailed) {
+                return;
+            }
+            if (this.table.childElementCount === 0) {
+                return;
+            }
+
+            // Get the active ones
+            var activeFreightMethods = [];
+            jQuery.each(this.methods, function () {
+                if (this.active) {
+                    activeFreightMethods.push(this);
+                }
             });
-            // Update which types are active
+
+            // Do totaling
+            for (var i = 0; i < activeFreightMethods.length; ++i) {
+                var method = activeFreightMethods[i];
+                var row = this.table.rows[i];
+
+                // TOTAL ALREADY THERE - delete it
+                if (row.cells.length > 7)
+                    row.deleteCell(7);
+
+                // Sum all of the percentages
+                var sum = method.percentSmartWay.reduce(function (total, num) {
+                    return total + num;
+                });
+
+                var label = document.createTextNode(sum);
+                var td = document.createElement("td");
+                td.appendChild(label);
+                if (sum !== 100) {
+                    td.style.color = "red";
+                    method.invalid = true;
+                } else {
+                    td.style.color = "green";
+                    method.invalid = false;
+                }
+                row.appendChild(td);
+            }
+        };
+    }
+
+
+
+    function ActivityInputUI(location, onProfileChanged, methods, typeChange) {
+        this.locationID = location;
+        this.onProfileChanged = onProfileChanged;
+        this.methods = methods;
+        this.typeChange = typeChange;
+        this.addQuantityInputUI = function () {
             var obj = this;
 
-            jQuery(this.locationID).find('select[name=type]').each(function () {
-                var type = jQuery(this).val();
-                var method = jQuery.grep(obj.methods, (function (x) {
-                    return (x.type === type);
-                }))[0];
-                if (!method) return;
-                method.active = true;
-                method.activityQuantity = jQuery(this).parent().parent()
-                    .find('input[name=quantity]').first().val();
-
-                obj.methods.splice(obj.methods.indexOf(method), 1);
-                obj.methods.push(method);
-            });
-            this.updateSelectOptions();
-
-            this.typeChange(jQuery(element).parent().parent().index(), jQuery(element).val());
-
-            if (!dontUpdate)
-                this.onProfileChanged();
-            jQuery("body").css("cursor", "default");
-        };
-
-    this.setType =
-        function (index, val) {
-
-            var element = jQuery(this.locationID + " > tr:eq(" + index + ")").find("select[name=type]").first();
-            element.val(val);
-            this.onTypeChanged(element, true);
-
-        };
-
-
-    // Remove the active options 
-    this.updateSelectOptions =
-        function () {
-            var profile = this;
-            var availableOptions = [];
-            jQuery.each(profile.methods, function () {
-                if (!this.active) availableOptions.push(this.type);
-            });
-            jQuery(this.locationID).find('select[name=type]').each(function () {
-                var value = jQuery(this).val();
-                jQuery(this).children('option').each(function () {
-                    if (jQuery(this).val() === value || jQuery.inArray(jQuery(this).val(), availableOptions) !== -1) {
-                        // Change the order because hiding it pushs it to the end
-                        var methods = createFreightMethods();
-                        var index = -1;
-                        for (var i = 0; i < methods.length; ++i)
-                            if (methods[i].type === jQuery(this).val())
-                                index = i;
-
-                        if (index != 0)
-                            jQuery(this).insertBefore(jQuery(this).parent().find('option:eq(' + index + ')'));
-                        jQuery(this).show();
-                    } else {
-                        jQuery(this).hide();
-                    }
+            var jQuerytypeSelect = jQuery('<select class="form-select"></select>');
+            var methods = this.methods;
+            jQuerytypeSelect.empty().append(function () {
+                var output = '';
+                jQuery.each(methods, function () {
+                    output += "<option>" + this.type + "</option>";
                 });
+                return output;
             });
-        };
+            // Four times <td></td> for <Type, Quant, Units, Remove>
+            jQuery(this.locationID).append("<tr><th></th><td></td><td></td><td></td></tr>");
+            jQuery(this.locationID).find('tr').last().find('th').first().append(jQuerytypeSelect);
+            jQuerytypeSelect.change(function () {
+                obj.onTypeChanged(this);
+            });
+            jQuerytypeSelect.attr("name", "type");
 
-    this.onUnitsChanged =
-        function (element) {
-            jQuery("body").css("cursor", "progress");
-            var type = this.getTypeByElement(event.currentTarget);
-            var method = jQuery.grep(this.methods, function (x) {
-                return x.type === type;
-            })[0];
-            method.activityUnits = event.currentTarget.value;
-            this.onProfileChanged();
-            jQuery("body").css("cursor", "default");
-        };
+            var jQueryquantityInput = jQuery('<input type="number" min="0" value="0" name="quantity"/>');
+            jQueryquantityInput.on('change keyup', function () {
+                obj.onQuantityChanged(this);
+            });
 
-    this.onQuantityChanged =
-        function (element) {
-            jQuery("body").css("cursor", "progress");
-            var jQueryinput = jQuery(event.currentTarget);
-            var type = this.getTypeByElement(jQueryinput);
-            var quantity = jQueryinput.val();
 
-            jQuery.grep(this.methods, function (x) {
-                    return x.type === type;
-                })[0]
-                .activityQuantity = quantity;
-            this.onProfileChanged();
-            jQuery("body").css("cursor", "default");
-        };
+            var jQueryunitsInput =
+                jQuery('<select>' +
+                    '<option value="Miles">Miles</option>' +
+                    '<option value="Ton-Miles">Ton-Miles</option>');
+            jQueryunitsInput.change(function () {
+                obj.onUnitsChanged(this);
+            });
+            jQueryunitsInput.attr("name", "units");
 
-    this.onRemove =
-        function (element) {
-            var type = this.getTypeByElement(event.currentTarget);
-            var method = jQuery.grep(this.methods, function (x) {
-                return x.type === type;
-            })[0];
-            if (method) {
-                method.activityQuantity = 0;
-                method.percentSmartWay = [0, 0, 0, 0, 0, 0];
-                method.active = false;
-            }
+            var jQueryremoveInput = jQuery('<input type="button" value="X"/>');
+            jQueryremoveInput.click(function () {
+                obj.onRemove(this);
+            });
+
+            var row = jQuery(this.locationID).find('tr').last();
+            jQuery(row).find('td:eq(0)').append(jQuery(jQueryquantityInput));
+            jQuery(row).find('td:eq(1)').append(jQuery(jQueryunitsInput));
+            jQuery(row).find('td:eq(2)').append(jQuery(jQueryremoveInput));
 
             this.updateSelectOptions();
-            jQuery(element).parent().parent().remove();
-            this.onProfileChanged();
+            jQuerytypeSelect.trigger('change');
         };
-}
 
-// Takes labels, followed by lists of data for each series
-function BarChart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, series, pointFormatter) {
-    Highcharts.chart(locationID, {
-        chart: {
-            type: 'column'
-        },
-        exporting: {
-            enabled: false
-        },
-        title: {
-            text: title
-        },
-        subtitle: {
-            text: subtitle
-        },
-        xAxis: {
-            categories: xAxisLabels
-        },
-        yAxis: {
-            title: {
-                text: '<b>' + yAxisTitle + ' (' + units + ')' + '</b>'
-            }
-        },
-        tooltip: {
-            backgroundColor: '#ffffff',
-            headerFormat: '',
-            pointFormatter: pointFormatter,
-            followPointer: true
-        },
-        plotOptions: {
-            series: {
-                allowPointSelect: true
+        this.getTypeByElement =
+            function (input) {
+                return jQuery(input).parent().parent().find('select').first().val();
+            };
+
+        this.onTypeChanged =
+            function (element, wasManual) {
+                jQuery("body").css("cursor", "progress");
+                jQuery.each(methods, function () {
+                    this.active = false;
+                    this.activityQuantity = 0;
+                });
+                // Update which types are active
+                var obj = this;
+
+                jQuery(this.locationID).find('select[name=type]').each(function () {
+                    var type = jQuery(this).val();
+                    var method = jQuery.grep(obj.methods, (function (x) {
+                        return (x.type === type);
+                    }))[0];
+                    if (!method) return;
+                    method.active = true;
+                    method.activityQuantity = jQuery(this).parent().parent()
+                        .find('input[name=quantity]').first().val();
+
+                    obj.methods.splice(obj.methods.indexOf(method), 1);
+                    obj.methods.push(method);
+                });
+                this.updateSelectOptions();
+
+                if (!wasManual) {
+                    this.typeChange(jQuery(element).parent().parent().index(), jQuery(element).val());
+                    this.onProfileChanged();
+                }
+                jQuery("body").css("cursor", "default");
+            };
+
+        this.setType =
+            function (index, val) {
+
+                var element = jQuery(this.locationID + " > tr:eq(" + index + ")").find("select[name=type]").first();
+                element.val(val);
+                this.onTypeChanged(element, true);
+            };
+
+
+        // Remove the active options 
+        this.updateSelectOptions =
+            function () {
+                var profile = this;
+                var availableOptions = [];
+                jQuery.each(profile.methods, function () {
+                    if (!this.active) availableOptions.push(this.type);
+                });
+                jQuery(this.locationID).find('select[name=type]').each(function () {
+                    var value = jQuery(this).val();
+                    jQuery(this).children('option').each(function () {
+                        if (jQuery(this).val() === value || jQuery.inArray(jQuery(this).val(),
+                                availableOptions) !== -1) {
+                            // Change the order because hiding it pushs it to the end
+                            var methods = createFreightMethods();
+                            var index = -1;
+                            for (var i = 0; i < methods.length; ++i)
+                                if (methods[i].type === jQuery(this).val())
+                                    index = i;
+
+                            if (index !== 0)
+                                jQuery(this).insertBefore(jQuery(this).parent().find('option:eq(' +
+                                    index + ')'));
+                            jQuery(this).show();
+                        } else {
+                            jQuery(this).hide();
+                        }
+                    });
+                });
+            };
+
+        this.onUnitsChanged =
+            function (element) {
+                jQuery("body").css("cursor", "progress");
+                var type = this.getTypeByElement(event.currentTarget);
+                var method = jQuery.grep(this.methods, function (x) {
+                    return x.type === type;
+                })[0];
+                method.activityUnits = event.currentTarget.value;
+                this.onProfileChanged();
+                jQuery("body").css("cursor", "default");
+            };
+
+        this.onQuantityChanged =
+            function (element) {
+                jQuery("body").css("cursor", "progress");
+                var jQueryinput = jQuery(event.currentTarget);
+                var type = this.getTypeByElement(jQueryinput);
+                var quantity = jQueryinput.val();
+
+                jQuery.grep(this.methods, function (x) {
+                        return x.type === type;
+                    })[0]
+                    .activityQuantity = quantity;
+                this.onProfileChanged();
+                jQuery("body").css("cursor", "default");
+            };
+
+        this.onRemove =
+            function (element) {
+                var type = this.getTypeByElement(event.currentTarget);
+                var method = jQuery.grep(this.methods, function (x) {
+                    return x.type === type;
+                })[0];
+                if (method) {
+                    method.activityQuantity = 0;
+                    method.percentSmartWay = [0, 0, 0, 0, 0, 0];
+                    method.active = false;
+                }
+
+                this.updateSelectOptions();
+                jQuery(element).parent().parent().remove();
+                this.onProfileChanged();
+            };
+    }
+
+    // Takes labels, followed by lists of data for each series
+    function BarChart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, series, pointFormatter) {
+        Highcharts.chart(locationID, {
+            chart: {
+                type: 'column'
             },
-            column: {
-                pointPadding: 0.2,
-                borderWidth: 0,
-                dataLabels: {
-                    enabled: true,
-                    formatter: function () {
-                        return (this.y).toLocaleString();
+            exporting: {
+                enabled: false
+            },
+            title: {
+                text: title
+            },
+            subtitle: {
+                text: subtitle
+            },
+            xAxis: {
+                categories: xAxisLabels
+            },
+            yAxis: {
+                title: {
+                    text: '<b>' + yAxisTitle + ' (' + units + ')' + '</b>'
+                }
+            },
+            tooltip: {
+                backgroundColor: '#ffffff',
+                headerFormat: '',
+                pointFormatter: pointFormatter,
+                followPointer: true
+            },
+            plotOptions: {
+                series: {
+                    allowPointSelect: true
+                },
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        formatter: function () {
+                            return (this.y).toLocaleString();
+                        }
                     }
                 }
-            }
-        },
-        series: series
-    });
-}
-
-
-// Load the JSON with bin constants for Ton-Miles and Miles
-
-// Globals for four different input forms
-var currentPerformance;
-var currentActivity;
-var targetPerformance;
-var targetActivity;
-
-jQuery(document).ready(function () {
-    var currentTypeChange = function (index, val) {
-        targetActivity.setType(index, val);
-    };
-    // Object handling input for the CURRENT performance rankings
-    currentPerformance = new PerformanceInputUI(Model.currentFreightMethods,
-        "activityPerformanceTable", "currentSimpleHeader",
-        "currentDetailedHeader", updateEmissions);
-    // Object handling input for the CURRENT activity
-    currentActivity = new ActivityInputUI("#activityQuantityTable",
-        onActivityChanged, Model.currentFreightMethods, currentTypeChange);
-
-    // Object handling input for all of the TARGET performance rankings
-    targetPerformance = new PerformanceInputUI(Model.targetFreightMethods,
-        "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", updateEmissions);
-    // Object handling input for all of the TARGET activity
-    targetActivity = new ActivityInputUI("#targetQuantityTable",
-        onActivityChanged, Model.targetFreightMethods,
-        function () {});
-
-    // Load the bins JSON
-    currentPerformance.bins = smartwayBinJSON;
-    targetPerformance.bins = smartwayBinJSON;
-
-    var setupTabs = function (tabsColumn, tabsNav, tabsName) {
-        jQuery(tabsColumn + ' > div').hide(); // hide all child divs
-        jQuery(tabsColumn + ' div:first').show(); // show first child dive
-        jQuery(tabsNav + ' li:first').addClass('active');
-
-        jQuery('.menu-internal[name="' + tabsName + '"]').click(function () {
-            jQuery(tabsNav + ' li').removeClass('active');
-            var currentTab = jQuery(this).attr('href');
-            jQuery(tabsNav + ' li a[href="' + currentTab + '"]').parent().addClass('active');
-            jQuery(tabsColumn + ' > div').hide();
-            jQuery(currentTab).show();
-            return false;
+            },
+            series: series
         });
-    };
-    setupTabs("#mainColumn", "#inputTabsNav", "inputTab");
-    setupTabs("#tab-3", "#graphTabsNav", "graphTab");
-
-
-    jQuery('#addCurrentActivity').click(addCurrentActivity);
-    jQuery("#addTargetActivity").click(addTargetActivity);
-
-    jQuery("#doDetailed").change(onDetailedChange);
-});
-
-
-// Update all of the emissions calculations and UI
-function updateEmissions() {
-    updateEmissionsCalculations();
-    updateEmissionsUI();
-    updateSavingsUI();
-}
-
-// When the detailed checkbox changes
-function onDetailedChange() {
-    var detailed = jQuery("#doDetailed").prop('checked');
-    currentPerformance.setDetailed(detailed);
-    targetPerformance.setDetailed(detailed);
-}
-
-// Update the target/current performance input fields
-function updatePerformanceInputUI() {
-    currentPerformance.updateInputUI();
-    targetPerformance.updateInputUI();
-}
-
-// For output number formatting
-function roundToTwo(num) {
-    return +(Math.round(num + "e+2") + "e-2");
-}
-
-// When the add button for current activity input is clicked
-function addCurrentActivity() {
-    addTargetActivity();
-    currentActivity.addQuantityInputUI();
-}
-// When the add button for target activity input is clicked
-function addTargetActivity() {
-    targetActivity.addQuantityInputUI();
-}
-
-// When the activity input, target or current, changes. Fired by activityprofiles
-function onActivityChanged() {
-    updatePerformanceInputUI();
-    updateEmissions();
-}
-
-// Update the table for emissions
-function updateEmissionsUI() {
-    activeFreightMethods = [];
-    // Get active methods from all current freightmethods
-    jQuery.each(Model.currentFreightMethods, function () {
-        if (this.active) activeFreightMethods.push(this);
-    });
-
-    var table = document.getElementById("emissionsOutputTable");
-
-    jQuery("#emissionsOutputTable").empty();
-
-    var currentCO2 = 0;
-    var currentNOX = 0;
-    var currentPM = 0;
-    // Add row for emissions for each type
-    for (var i = 0; i < activeFreightMethods.length; ++i) {
-        var method = activeFreightMethods[i];
-        var tableRow = createTableRow(
-            createTableHeader(method.type),
-            createTableCell(roundToTwo(method.CO2).toLocaleString()),
-            createTableCell(roundToTwo(method.NOX).toLocaleString()),
-            createTableCell(roundToTwo(method.PM).toLocaleString()));
-
-        table.appendChild(tableRow);
-        currentCO2 += method.CO2;
-        currentNOX += method.NOX;
-        currentPM += method.PM;
     }
 
-    // Create a row for totals
-    var currentTableRow = createTableRow(
-        createTableHeader("TOTAL"),
-        createTableCell(roundToTwo(currentCO2).toLocaleString()),
-        createTableCell(roundToTwo(currentNOX).toLocaleString()),
-        createTableCell(roundToTwo(currentPM).toLocaleString()));
-    jQuery("#emissionsOutputTable").append(jQuery(currentTableRow));
-}
 
-// Update the savings table, including the calculations and totals
-function updateSavingsUI() {
-    var table = document.getElementById("savingsTable");
+    // Load the JSON with bin constants for Ton-Miles and Miles
 
-    jQuery("#savingsTable").empty();
+    // Globals for four different input forms
+    var currentPerformance;
+    var currentActivity;
+    var targetPerformance;
+    var targetActivity;
 
-    var targetCO2 = 0;
-    var targetNOX = 0;
-    var targetPM = 0;
-
-    // Function builder for checking if methods are the same type, used in grep search
-    var isSameType = function (val) {
-        return function (val2) {
-            return val.type === val2.type;
+    jQuery(document).ready(function () {
+        var currentTypeChange = function (index, val) {
+            targetActivity.setType(index, val);
         };
-    };
+        // Object handling input for the CURRENT performance rankings
+        currentPerformance = new PerformanceInputUI(Model.currentFreightMethods,
+            "activityPerformanceTable", "currentSimpleHeader",
+            "currentDetailedHeader", updateEmissions);
+        // Object handling input for the CURRENT activity
+        currentActivity = new ActivityInputUI("#activityQuantityTable",
+            onActivityChanged, Model.currentFreightMethods, currentTypeChange);
 
-    // Go through each method to calculate savings
-    for (var i = 0; i < Model.currentFreightMethods.length; ++i) {
+        // Object handling input for all of the TARGET performance rankings
+        targetPerformance = new PerformanceInputUI(Model.targetFreightMethods,
+            "targetPerformanceTable", "targetSimpleHeader", "targetDetailedHeader", updateEmissions);
+        // Object handling input for all of the TARGET activity
+        targetActivity = new ActivityInputUI("#targetQuantityTable",
+            onActivityChanged, Model.targetFreightMethods,
+            function () {}); // No syncing types for target values, for modal shift/usability reasons
 
-        var currentMethod = Model.currentFreightMethods[i];
+        // Load the bins JSON
+        currentPerformance.bins = smartwayBinJSON;
+        targetPerformance.bins = smartwayBinJSON;
 
-        // Find the first "targetmethod" with same ID
-        var targetMethod = jQuery.grep(Model.targetFreightMethods,
-            isSameType(currentMethod))[0];
+        // Adds events for the tablinks to show the different tabs
+        //  -Given id for parent div, tablinks parent, and name of tablinks
+        var setupTabs = function (parentDiv, tabsNav, tablinksName) {
+            jQuery(parentDiv + ' > div').hide(); // hide all child divs
+            jQuery(parentDiv + ' div:first').show(); // show first child dive
+            jQuery(tabsNav + ' li:first').addClass('active');
 
-        if (!currentMethod.active && !targetMethod.active) {
-            continue;
+            jQuery('.menu-internal[name="' + tablinksName + '"]').click(function () {
+                var targetTab = jQuery(this).attr('href');
+                var currentTab = jQuery(tabsNav + ' > li.active > a').attr("href");
+                if (!validateState(currentTab))
+                    return;
+                jQuery(tabsNav + ' li').removeClass('active');
+                jQuery(tabsNav + ' li a[href="' + targetTab + '"]').parent().addClass('active');
+                jQuery(parentDiv + ' > div').hide();
+                jQuery(targetTab).show();
+                return false;
+            });
+        };
+        setupTabs("#mainColumn", "#inputTabsNav", "inputTab");
+        setupTabs("#graphTabs", "#graphTabsNav", "graphTab");
+
+
+        jQuery('#addCurrentActivity').click(addCurrentActivity);
+        jQuery("#addTargetActivity").click(addTargetActivity);
+
+        jQuery("#doDetailed").change(onDetailedChange);
+
+        jQuery("#graphSelect").change(updateGraphs);
+
+        updateGraphs();
+    });
+
+    function validateState(tabID) {
+        var methods;
+        switch (tabID) {
+            // Current activity tab
+            case "#tab-1":
+                methods = Model.currentFreightMethods;
+                break;
+                // Target activity tab
+            case "#tab-2":
+                methods = Model.targetFreightMethods;
+                break;
+        }
+        if (!methods)
+            return true;
+
+        var failed = false;
+        jQuery.each(methods, function () {
+            if (!this.active)
+                return;
+
+            if (this.activityQuantity < 0) {
+                alert("Negative activity quantity detected");
+                failed = true;
+            }
+            else if (this.activityQuantity === 0) {
+                alert("Activity quantity cannot be 0, remove the carrier or add movement");
+                failed = true;
+            }
+            if (jQuery("#doDetailed").prop("checked") && this.invalid) {
+                alert("One of your detailed percentages does not add up to 100!");
+                failed = true;
+            }
+        });
+
+        if (failed)
+            return false;
+
+        return true;
+    }
+
+
+    // Update all of the emissions calculations and UI
+    function updateEmissions() {
+        updateEmissionsCalculations();
+        updateEmissionsUI();
+        updateSavingsUI();
+        updateGraphs();
+    }
+
+    // When the detailed checkbox changes
+    function onDetailedChange() {
+        var detailed = jQuery("#doDetailed").prop('checked');
+        currentPerformance.setDetailed(detailed);
+        targetPerformance.setDetailed(detailed);
+    }
+
+    // Update the target/current performance input fields
+    function updatePerformanceInputUI() {
+        currentPerformance.updateInputUI();
+        targetPerformance.updateInputUI();
+    }
+
+    // For output number formatting
+    function roundToTwo(num) {
+        return +(Math.round(num + "e+2") + "e-2");
+    }
+
+    // When the add button for current activity input is clicked
+    function addCurrentActivity() {
+        addTargetActivity();
+        currentActivity.addQuantityInputUI();
+    }
+    // When the add button for target activity input is clicked
+    function addTargetActivity() {
+        targetActivity.addQuantityInputUI();
+    }
+
+    // When the activity input, target or current, changes. Fired by activityprofiles
+    function onActivityChanged() {
+        updatePerformanceInputUI();
+        updateEmissions();
+    }
+
+    // Update the table for emissions
+    function updateEmissionsUI() {
+        var activeFreightMethods = [];
+        // Get active methods from all current freightmethods
+        jQuery.each(Model.currentFreightMethods, function () {
+            if (this.active) activeFreightMethods.push(this);
+        });
+
+        var table = document.getElementById("emissionsOutputTable");
+
+        jQuery("#emissionsOutputTable").empty();
+
+        var currentCO2 = 0;
+        var currentNOX = 0;
+        var currentPM = 0;
+        // Add row for emissions for each type
+        for (var i = 0; i < activeFreightMethods.length; ++i) {
+            var method = activeFreightMethods[i];
+            var tableRow = createTableRow(
+                createTableCell(method.type),
+                createTableCell(roundToTwo(method.CO2).toLocaleString()),
+                createTableCell(roundToTwo(method.NOX).toLocaleString()),
+                createTableCell(roundToTwo(method.PM).toLocaleString()));
+
+            table.appendChild(tableRow);
+            currentCO2 += method.CO2;
+            currentNOX += method.NOX;
+            currentPM += method.PM;
         }
 
-        targetCO2 += targetMethod.CO2;
-        targetNOX += targetMethod.NOX;
-        targetPM += targetMethod.PM;
-
-        var tableRow = createTableRow(
-            createTableHeader(targetMethod.type),
-            createTableCell(roundToTwo(targetMethod.CO2).toLocaleString()),
-            createTableCell(roundToTwo(targetMethod.NOX).toLocaleString()),
-            createTableCell(roundToTwo(targetMethod.PM).toLocaleString())
-        );
-        table.appendChild(tableRow);
-
+        // Create a row for totals
+        var currentTableRow = createTableRow(
+            createTableHeader("TOTAL"),
+            createTableHeader(roundToTwo(currentCO2).toLocaleString()),
+            createTableHeader(roundToTwo(currentNOX).toLocaleString()),
+            createTableHeader(roundToTwo(currentPM).toLocaleString()));
+        jQuery("#emissionsOutputTable").append(jQuery(currentTableRow));
     }
 
-    // Create a totals row
-    var totalsRow = createTableRow(
-        createTableHeader("TOTAL"),
-        createTableCell(roundToTwo(targetCO2).toLocaleString()),
-        createTableCell(roundToTwo(targetNOX).toLocaleString()),
-        createTableCell(roundToTwo(targetPM).toLocaleString())
-    );
-    table.appendChild(totalsRow);
+    // Update the savings table, including the calculations and totals
+    function updateSavingsUI() {
+        var table = document.getElementById("savingsTable");
 
-    updateGraphs();
-}
+        jQuery("#savingsTable").empty();
 
-// Update the graphs based on selected visualization metric
-function updateGraphs() {
-    updateGraphsRaw();
-}
+        var targetCO2 = 0;
+        var targetNOX = 0;
+        var targetPM = 0;
 
-// Show the graphs with raw data, no percentages etc
-function updateGraphsRaw() {
+        // Function builder for checking if methods are the same type, used in grep search
+        var isSameType = function (val) {
+            return function (val2) {
+                return val.type === val2.type;
+            };
+        };
 
-    var active = [];
-    var getActive = function () {
-        if (this.active && (jQuery.inArray(this.type, active) === -1)) active.push(this.type);
-    };
+        // Go through each method to calculate savings
+        for (var i = 0; i < Model.currentFreightMethods.length; ++i) {
 
-    // Collect all active models, no duplicates, from both lists
-    jQuery.each(Model.currentFreightMethods, getActive);
-    jQuery.each(Model.targetFreightMethods, getActive);
-    var yTitle = "Emissions";
+            var currentMethod = Model.currentFreightMethods[i];
 
-    // Create the series' for each pollutant
-    function createAllSeries(pollutant) {
-        var series = [];
-        jQuery.each(active, function () {
-            var val = this.toString();
-            var current =
-                jQuery.grep(Model.currentFreightMethods,
-                    function (x) {
-                        return x.type === val;
-                    })[0][pollutant];
+            // Find the first "targetmethod" with same ID
+            var targetMethod = jQuery.grep(Model.targetFreightMethods,
+                isSameType(currentMethod))[0];
 
-            var target =
-                jQuery.grep(Model.targetFreightMethods,
-                    function (x) {
-                        return x.type === val;
-                    })[0][pollutant];
+            if (!currentMethod.active && !targetMethod.active) {
+                continue;
+            }
 
-            var saved = (current - target);
+            targetCO2 += targetMethod.CO2;
+            targetNOX += targetMethod.NOX;
+            targetPM += targetMethod.PM;
 
-            series.push({
-                name: val,
-                data: [current, target, saved]
-            });
+            var tableRow = createTableRow(
+                createTableCell(targetMethod.type),
+                createTableCell(roundToTwo(targetMethod.CO2).toLocaleString()),
+                createTableCell(roundToTwo(targetMethod.NOX).toLocaleString()),
+                createTableCell(roundToTwo(targetMethod.PM).toLocaleString())
+            );
+            table.appendChild(tableRow);
+
+        }
+
+        // Create a totals row
+        var totalsRow = createTableRow(
+            createTableHeader("TOTAL"),
+            createTableHeader(roundToTwo(targetCO2).toLocaleString()),
+            createTableHeader(roundToTwo(targetNOX).toLocaleString()),
+            createTableHeader(roundToTwo(targetPM).toLocaleString())
+        );
+        table.appendChild(totalsRow);
+    }
+
+    // Update the graphs based on selected visualization metric
+    function updateGraphs() {
+        // Update the select options
+        var activeMethods = [];
+        var addIfActive = function (method) {
+            if (method.active && jQuery.inArray(method.type, activeMethods) === -1) {
+                activeMethods.push(method.type);
+            }
+        };
+        // Add all of the active methods to the array
+        jQuery.each(Model.currentFreightMethods, function () {
+            addIfActive(this);
+        });
+        jQuery.each(Model.targetFreightMethods, function () {
+            addIfActive(this);
         });
 
-        return series;
+        var value = jQuery("#graphSelect").val();
+        var option = function (val) {
+            return '<option value="' + val + '">' +
+                val + '</option>';
+        }
+        jQuery("#graphSelect").empty();
+        jQuery("#graphSelect").append(option("All"));
+        jQuery.each(activeMethods, function () {
+            jQuery("#graphSelect").append(option(this.toString()));
+        });
+        if (jQuery.inArray(activeMethods, value) !== -1) {
+            jQuery("#graphSelect").val(value);
+            updateGraphsForMethod(jQuery("#graphSelect").val());
+        } else {
+            jQuery("#graphSelect").val("All");
+            updateGraphsRaw();
+        }
     }
-    var CO2 = createAllSeries("CO2");
-    var NOX = createAllSeries("NOX");
-    var PM = createAllSeries("PM");
 
-    var pointFormatter = function () {
-        var values = this.series.data;
-        var percentage = (values[2].y / values[0].y) * 100;
-        var string = '<b><span style="color:' + this.series.color +
-            '">' + this.series.name + ': </span>' +
-            this.y.toLocaleString() + ' g</b>';
-        if (this.x === 2)
-            string += "<b>| " + roundToTwo(percentage).toLocaleString() + " %</b>";
-        return string;
-    };
+    function updateGraphsForMethod(methodType) {
 
-    BarChart("graph-1", "CO2", "Estimated Emissions in grams", ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", CO2, pointFormatter);
-    BarChart("graph-2", "NOX", "Estimated Emissions in grams", ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", NOX, pointFormatter);
-    BarChart("graph-3", "PM 2.5", "Estimated Emissions in grams", ["<b>Current</b>", "<b>Target</b>", "<b>Savings</b>"], yTitle, "g", PM, pointFormatter);
-}
-
-// Call the profiles calculation functions (also update the bins that they use, for redundancy)
-function updateEmissionsCalculations() {
-    currentPerformance.bins = smartwayBinJSON;
-    targetPerformance.bins = smartwayBinJSON;
-    if (jQuery("#doDetailed:checked").length > 0) {
-        currentPerformance.updateEmissionsDetailed();
-        targetPerformance.updateEmissionsDetailed();
-    } else {
-        currentPerformance.updateEmissionsSimple();
-        targetPerformance.updateEmissionsSimple();
     }
-}
+
+    // Show the graphs with raw data, no percentages etc
+    function updateGraphsRaw() {
+
+        var active = [];
+        var getActive = function () {
+            if (this.active && (jQuery.inArray(this.type, active) === -1)) active.push(this.type);
+        };
+
+        // Collect all active models, no duplicates, from both lists
+        jQuery.each(Model.currentFreightMethods, getActive);
+        jQuery.each(Model.targetFreightMethods, getActive);
+        var yTitle = "Emissions";
+
+        // Create the series' for each pollutant
+        function createAllSeries(pollutant) {
+            var series = [];
+            jQuery.each(active, function () {
+                var val = this.toString();
+                var current =
+                    jQuery.grep(Model.currentFreightMethods,
+                        function (x) {
+                            return x.type === val;
+                        })[0][pollutant];
+
+                var target =
+                    jQuery.grep(Model.targetFreightMethods,
+                        function (x) {
+                            return x.type === val;
+                        })[0][pollutant];
+
+                var saved = (current - target);
+
+                series.push({
+                    name: val,
+                    data: [current, target, saved]
+                });
+            });
+
+            return series;
+        }
+        var CO2 = createAllSeries("CO2");
+        var NOX = createAllSeries("NOX");
+        var PM = createAllSeries("PM");
+
+        var pointFormatter = function () {
+            var values = this.series.data;
+            var percentage = (values[2].y / values[0].y) * 100;
+            var string = '<b><span style="color:' + this.series.color +
+                '">' + this.series.name + ': </span>' +
+                this.y.toLocaleString() + ' g</b>';
+            if (this.x === 2)
+                string += "<b>| " + roundToTwo(percentage).toLocaleString() + " %</b>";
+            return string;
+        };
+
+        var divs = jQuery("#graphTabs > div").is(":hidden");
+        jQuery(divs).show();
+        BarChart("graph-1", "CO2", "Estimated Emissions in grams", ["<b>Current</b>", "<b>Target</b>",
+                "<b>Savings</b>"
+            ],
+            yTitle, "g", CO2, pointFormatter);
+        BarChart("graph-2", "NOX", "Estimated Emissions in grams", ["<b>Current</b>", "<b>Target</b>",
+                "<b>Savings</b>"
+            ],
+            yTitle, "g", NOX, pointFormatter);
+        BarChart("graph-3", "PM 2.5", "Estimated Emissions in grams", ["<b>Current</b>", "<b>Target</b>",
+            "<b>Savings</b>"
+        ], yTitle, "g", PM, pointFormatter);
+        jQuery(divs).hide();
+    }
+
+    // Call the profiles calculation functions (also update the bins that they use, for redundancy)
+    function updateEmissionsCalculations() {
+        currentPerformance.bins = smartwayBinJSON;
+        targetPerformance.bins = smartwayBinJSON;
+        if (jQuery("#doDetailed:checked").length > 0) {
+            currentPerformance.updateEmissionsDetailed();
+            targetPerformance.updateEmissionsDetailed();
+        } else {
+            currentPerformance.updateEmissionsSimple();
+            targetPerformance.updateEmissionsSimple();
+        }
+    }
 </script>
