@@ -1,5 +1,8 @@
 <script type="text/javascript" src="/sites/all/modules/contrib/jquery_update/replace/ui/ui/minified/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/sites/all/libraries/js/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="/sites/all/libraries/js/highcharts/modules/exporting.js"></script>
+<script type="text/javascript" src="/sites/all/libraries/js/highcharts/modules/offline-exporting.js"></script>
+<script type="text/javascript" src="https://www.epa.gov/sites/production/files/js-scripts/jspdf.min.js"></script>
 <script type="text/javascript">
     var smartwayBinJSON = {
         "Miles": {
@@ -1096,9 +1099,11 @@
             var detailedNONRowCreator = function (method) {
                 var output = "<tr>";
                 output += "<td>" + method.type + "</td>";
-                output += '<td><input value="100" readOnly="true" type="number"/></td>';
+                output +=
+                    '<td><input value="100" min="0" max="100" maxlength="3" readOnly="true" type="number"/></td>';
                 for (var i = 0; i < 5; ++i)
-                    output += '<td><input value="0" readOnly="true" type="number"/></td>';
+                    output +=
+                    '<td><input value="0" readOnly="true" type="number" min="0" max="100" maxlength="3"/></td>';
                 output += "</tr>";
                 return output;
             };
@@ -1296,18 +1301,24 @@
 
 
 
-    function ActivityInputUI(location, onProfileChanged, methods, typeChange) {
+    function ActivityInputUI(location, onProfileChanged, methods,
+        typeChange, typeSet, unitsChange, quantityChange) {
         this.locationID = location;
         this.onProfileChanged = onProfileChanged;
         this.methods = methods;
+
         this.typeChange = typeChange;
+        this.unitsChange = unitsChange;
+        this.quantityChange = quantityChange;
+        this.typeSet = typeSet; // For when the type is set for the FIRST TIME ONLY
+        this.promptText = "--- Select Carrier Type ---";
         this.addQuantityInputUI = function () {
             var obj = this;
 
             var jQuerytypeSelect = jQuery('<select class="form-select"></select>');
             var methods = this.methods;
             jQuerytypeSelect.empty().append(function () {
-                var output = '';
+                var output = '<option>' + obj.promptText + '</option>';
                 jQuery.each(methods, function () {
                     output += "<option>" + this.type + "</option>";
                 });
@@ -1316,8 +1327,10 @@
             // Four times <td></td> for <Type, Quant, Units, Remove>
             jQuery(this.locationID).append("<tr><th></th><td></td><td></td><td></td></tr>");
             jQuery(this.locationID).find('tr').last().find('th').first().append(jQuerytypeSelect);
+            jQuerytypeSelect.attr("haschanged", "false");
             jQuerytypeSelect.change(function () {
                 obj.onTypeChanged(this);
+                jQuery(this).attr("haschanged", "true");
             });
             jQuerytypeSelect.attr("name", "type");
 
@@ -1328,7 +1341,7 @@
 
 
             var jQueryunitsInput =
-                jQuery('<select>' +
+                jQuery('<select class="form-select">' +
                     '<option value="Miles">Miles</option>' +
                     '<option value="Ton-Miles">Ton-Miles</option>');
             jQueryunitsInput.change(function () {
@@ -1347,7 +1360,7 @@
             jQuery(row).find('td:eq(2)').append(jQuery(jQueryremoveInput));
 
             this.updateSelectOptions();
-            jQuerytypeSelect.trigger('change');
+            //jQuerytypeSelect.trigger('change');
         };
 
         this.getTypeByElement =
@@ -1383,17 +1396,41 @@
                 if (!wasManual) {
                     this.typeChange(jQuery(element).parent().parent().index(), jQuery(element).val());
                     this.onProfileChanged();
-                }
+
+                    if (jQuery(element).attr("haschanged") === "false") {
+                        if (this.typeSet)
+                            this.typeSet();
+                    }
+                } else if (wasManual)
+                    jQuery(element).attr("haschanged", "true");
+
                 jQuery("body").css("cursor", "default");
             };
 
         this.setType =
             function (index, val) {
 
-                var element = jQuery(this.locationID + " > tr:eq(" + index + ")").find("select[name=type]").first();
+                var element = jQuery(this.locationID + " > tr:eq(" + index + ")")
+                    .find("select[name=type]").first();
                 element.val(val);
                 this.onTypeChanged(element, true);
             };
+
+        this.setUnits =
+            function (index, val) {
+                var element = jQuery(this.locationID + " > tr:eq(" + index + ")")
+                    .find("select[name=units]").first();
+                element.val(val);
+                this.onUnitsChanged(element, true);
+            }
+
+        this.setQuantity =
+            function (index, val) {
+                var element = jQuery(this.locationID + " > tr:eq(" + index + ")")
+                    .find("input[type=number]").first();
+                element.val(val);
+                this.onQuantityChanged(element, true);
+            }
 
 
         // Remove the active options 
@@ -1428,35 +1465,51 @@
             };
 
         this.onUnitsChanged =
-            function (element) {
+            function (element, wasManual) {
                 jQuery("body").css("cursor", "progress");
                 var type = this.getTypeByElement(event.currentTarget);
                 var method = jQuery.grep(this.methods, function (x) {
                     return x.type === type;
                 })[0];
-                method.activityUnits = event.currentTarget.value;
-                this.onProfileChanged();
+                if (method)
+                    method.activityUnits = event.currentTarget.value;
+                if (!wasManual) {
+                    if (this.unitsChange) this.unitsChange(
+                        jQuery(element).parent().parent().index(),
+                        jQuery(element).val());
+                    this.onProfileChanged();
+                }
                 jQuery("body").css("cursor", "default");
             };
 
         this.onQuantityChanged =
-            function (element) {
+            function (element, wasManual) {
                 jQuery("body").css("cursor", "progress");
                 var jQueryinput = jQuery(event.currentTarget);
                 var type = this.getTypeByElement(jQueryinput);
                 var quantity = jQueryinput.val();
 
-                jQuery.grep(this.methods, function (x) {
-                        return x.type === type;
-                    })[0]
-                    .activityQuantity = quantity;
-                this.onProfileChanged();
+                var method = jQuery.grep(this.methods, function (x) {
+                    return x.type === type;
+                })[0]
+                if (method) method.activityQuantity = quantity;
+                if (!wasManual) {
+                    if (this.quantityChange) {
+                        this.quantityChange(
+                            jQuery(element).parent().parent().index(),
+                            jQuery(element).val());
+                    }
+                    this.onProfileChanged();
+                }
                 jQuery("body").css("cursor", "default");
             };
 
         this.onRemove =
             function (element) {
                 var type = this.getTypeByElement(event.currentTarget);
+                if (type === this.promptText) {
+                    return;
+                }
                 var method = jQuery.grep(this.methods, function (x) {
                     return x.type === type;
                 })[0];
@@ -1479,7 +1532,7 @@
                 type: 'column'
             },
             exporting: {
-                enabled: false
+                enabled: true
             },
             title: {
                 text: title
@@ -1511,7 +1564,7 @@
                     dataLabels: {
                         enabled: true,
                         formatter: function () {
-                            return (this.y).toLocaleString();
+                            return (this.y);
                         }
                     }
                 }
@@ -1533,13 +1586,22 @@
         var currentTypeChange = function (index, val) {
             targetActivity.setType(index, val);
         };
+        var currentUnitsChange = function (index, val) {
+            targetActivity.setUnits(index, val);
+        }
+        var currentQuantityChange = function (index, val) {
+            targetActivity.setQuantity(index, val);
+        }
+
+
         // Object handling input for the CURRENT performance rankings
         currentPerformance = new PerformanceInputUI(Model.currentFreightMethods,
-            "activityPerformanceTable", "currentSimpleHeader",
+            "currentPerformanceTable", "currentSimpleHeader",
             "currentDetailedHeader", updateEmissions);
         // Object handling input for the CURRENT activity
-        currentActivity = new ActivityInputUI("#activityQuantityTable",
-            onActivityChanged, Model.currentFreightMethods, currentTypeChange);
+        currentActivity = new ActivityInputUI("#currentQuantityTable",
+            onActivityChanged, Model.currentFreightMethods,
+            currentTypeChange, addCurrentActivity, currentUnitsChange, currentQuantityChange);
 
         // Object handling input for all of the TARGET performance rankings
         targetPerformance = new PerformanceInputUI(Model.targetFreightMethods,
@@ -1547,7 +1609,7 @@
         // Object handling input for all of the TARGET activity
         targetActivity = new ActivityInputUI("#targetQuantityTable",
             onActivityChanged, Model.targetFreightMethods,
-            function () {}); // No syncing types for target values, for modal shift/usability reasons
+            function () {}, addTargetActivity); // No syncing types for target values, for modal shift/usability reasons
 
         // Load the bins JSON
         currentPerformance.bins = smartwayBinJSON;
@@ -1557,7 +1619,7 @@
         //  -Given id for parent div, tablinks parent, and name of tablinks
         var setupTabs = function (parentDiv, tabsNav, tablinksName) {
             jQuery(parentDiv + ' > div').hide(); // hide all child divs
-            jQuery(parentDiv + ' div:first').show(); // show first child dive
+            jQuery(parentDiv + ' div:first').show(); // show first child div
             jQuery(tabsNav + ' li:first').addClass('active');
 
             jQuery('.menu-internal[name="' + tablinksName + '"]').click(function () {
@@ -1572,16 +1634,50 @@
                 return false;
             });
         };
-        setupTabs("#mainColumn", "#inputTabsNav", "inputTab");
+        setupTabs("#tabsDiv", "#inputTabsNav", "inputTab");
         setupTabs("#graphTabs", "#graphTabsNav", "graphTab");
 
 
-        jQuery('#addCurrentActivity').click(addCurrentActivity);
-        jQuery("#addTargetActivity").click(addTargetActivity);
+        //jQuery('#addCurrentActivity').click(addCurrentActivity);
+        addCurrentActivity();
 
         jQuery("#doDetailed").change(onDetailedChange);
+        jQuery("#doBasic").change(onDetailedChange);
 
         jQuery("#graphSelect").change(updateGraphs);
+
+        // Show the intro div and show the app when Begin is clicked
+        jQuery("#appDiv").hide();
+        jQuery("#basicHeader").hide();
+        jQuery("#detailedHeader").hide();
+        jQuery("#hideIntro").click(function () {
+            if (jQuery("#doDetailed:checked").length > 0) {
+                jQuery("#introDiv").hide();
+                jQuery("#detailedHeader").show();
+                jQuery("#appDiv").show();
+            } else if (jQuery("#doBasic:checked").length > 0) {
+                jQuery("#introDiv").hide();
+                jQuery("#basicHeader").show();
+                jQuery("#appDiv").show();
+            } else {
+                alert("Please choose either basic or detailed Bin rankings!")
+            }
+        });
+        jQuery("#showIntro").click(function () {
+            window.scrollTo(0, 0);
+            jQuery("#introDiv").show();
+            jQuery("#appDiv").hide();
+            jQuery("#basicHeader").hide();
+            jQuery("#detailedHeader").hide();
+        });
+
+        jQuery("[name=exportButton").click(function () {
+            let target = jQuery(this).attr("href");
+            exportToPDF(target);
+        });
+
+        // Disabled due to time constraints
+        jQuery("#graphSelectDiv").hide();
 
         updateGraphs();
     });
@@ -1603,35 +1699,30 @@
 
         var failed = false;
         jQuery.each(methods, function () {
-            if (!this.active)
+            if (!this.active || failed)
                 return;
 
-            if (this.activityQuantity < 0) {
+            else if (this.activityQuantity < 0) {
                 alert("Negative activity quantity detected");
                 failed = true;
-            }
-            else if (this.activityQuantity === 0) {
+            } else if (this.activityQuantity == 0) {
                 alert("Activity quantity cannot be 0, remove the carrier or add movement");
                 failed = true;
-            }
-            if (jQuery("#doDetailed").prop("checked") && this.invalid) {
+            } else if (jQuery("#doDetailed").prop("checked") && this.invalid) {
                 alert("One of your detailed percentages does not add up to 100!");
                 failed = true;
             }
         });
 
-        if (failed)
-            return false;
-
-        return true;
+        return (!failed);
     }
 
 
     // Update all of the emissions calculations and UI
     function updateEmissions() {
         updateEmissionsCalculations();
-        updateEmissionsUI();
-        updateSavingsUI();
+        updateCurrentEmissionsUI();
+        updateGoalEmissionsUI();
         updateGraphs();
     }
 
@@ -1655,8 +1746,9 @@
 
     // When the add button for current activity input is clicked
     function addCurrentActivity() {
-        addTargetActivity();
         currentActivity.addQuantityInputUI();
+        if (jQuery("#currentQuantityTable > tr").length > jQuery("#targetQuantityTable > tr").length)
+            addTargetActivity();
     }
     // When the add button for target activity input is clicked
     function addTargetActivity() {
@@ -1669,17 +1761,21 @@
         updateEmissions();
     }
 
+    function format(number) {
+        return roundToTwo(number).toLocaleString();
+    }
+
     // Update the table for emissions
-    function updateEmissionsUI() {
+    function updateCurrentEmissionsUI() {
+
         var activeFreightMethods = [];
         // Get active methods from all current freightmethods
         jQuery.each(Model.currentFreightMethods, function () {
             if (this.active) activeFreightMethods.push(this);
         });
 
-        var table = document.getElementById("emissionsOutputTable");
-
-        jQuery("#emissionsOutputTable").empty();
+        jQuery("#currentTable").empty();
+        jQuery("#currentTable1").empty();
 
         var currentCO2 = 0;
         var currentNOX = 0;
@@ -1689,11 +1785,11 @@
             var method = activeFreightMethods[i];
             var tableRow = createTableRow(
                 createTableCell(method.type),
-                createTableCell(roundToTwo(method.CO2).toLocaleString()),
-                createTableCell(roundToTwo(method.NOX).toLocaleString()),
-                createTableCell(roundToTwo(method.PM).toLocaleString()));
+                createTableCell(format(method.CO2)),
+                createTableCell(format(method.NOX)),
+                createTableCell(format(method.PM)));
 
-            table.appendChild(tableRow);
+            jQuery(tableRow).appendTo("#currentTable,#currentTable1");
             currentCO2 += method.CO2;
             currentNOX += method.NOX;
             currentPM += method.PM;
@@ -1702,21 +1798,28 @@
         // Create a row for totals
         var currentTableRow = createTableRow(
             createTableHeader("TOTAL"),
-            createTableHeader(roundToTwo(currentCO2).toLocaleString()),
-            createTableHeader(roundToTwo(currentNOX).toLocaleString()),
-            createTableHeader(roundToTwo(currentPM).toLocaleString()));
-        jQuery("#emissionsOutputTable").append(jQuery(currentTableRow));
+            createTableHeader(format(currentCO2)),
+            createTableHeader(format(currentNOX)),
+            createTableHeader(format(currentPM)));
+        jQuery(currentTableRow).appendTo("#currentTable,#currentTable1");
     }
 
     // Update the savings table, including the calculations and totals
-    function updateSavingsUI() {
-        var table = document.getElementById("savingsTable");
+    function updateGoalEmissionsUI() {
+        jQuery("#targetTable").empty();
+        jQuery("#targetTable1").empty();
+        jQuery("#savingsTableRaw").empty();;
+        jQuery("#savingsTablePercent").empty();
 
-        jQuery("#savingsTable").empty();
-
-        var targetCO2 = 0;
-        var targetNOX = 0;
-        var targetPM = 0;
+        var emissionTypes = ["CO2", "NOX", "PM"];
+        var EmissionsGroup = function () {
+            this.CO2 = 0;
+            this.NOX = 0;
+            this.PM = 0;
+        }
+        var currentTotal = new EmissionsGroup();
+        var targetTotal = new EmissionsGroup();
+        var savedTotal = new EmissionsGroup();
 
         // Function builder for checking if methods are the same type, used in grep search
         var isSameType = function (val) {
@@ -1738,28 +1841,80 @@
                 continue;
             }
 
-            targetCO2 += targetMethod.CO2;
-            targetNOX += targetMethod.NOX;
-            targetPM += targetMethod.PM;
+            var targetCells = [createTableCell(targetMethod.type)];
+            var savedCells = [createTableCell(targetMethod.type)];
+            var percentCells = [createTableCell(targetMethod.type)];
 
-            var tableRow = createTableRow(
-                createTableCell(targetMethod.type),
-                createTableCell(roundToTwo(targetMethod.CO2).toLocaleString()),
-                createTableCell(roundToTwo(targetMethod.NOX).toLocaleString()),
-                createTableCell(roundToTwo(targetMethod.PM).toLocaleString())
-            );
-            table.appendChild(tableRow);
+            jQuery.each(emissionTypes, function () {
+                var emis = this.toString();
+                currentTotal[emis] += currentMethod[emis];
+                targetTotal[emis] += targetMethod[emis];
+                var saved = (currentMethod[emis] - targetMethod[emis]);
+                savedTotal[emis] += saved;
 
+                targetCells.push(createTableCell(format(targetMethod[emis])));
+                savedCells.push(createTableCell(format(saved)));
+                savedCells
+                // Add percentage to row, can't divide by zero
+                if (currentMethod[emis] > 0) {
+                    percentCells.push(createTableCell(format(
+                        (saved / currentMethod[emis]) * 100)));
+                } else percentCells.push(createTableCell("0"));
+
+            });
+            var targetRow = jQuery("<tr></tr>");
+            jQuery.each(targetCells, function () {
+                jQuery(this).appendTo(targetRow);
+            });
+            jQuery(targetRow).appendTo("#targetTable,#targetTable1");
+
+            var savedRow = jQuery("<tr></tr>");
+            jQuery.each(savedCells, function () {
+                jQuery(this).appendTo(savedRow);
+            });
+            jQuery(savedRow).appendTo("#savingsTableRaw")
+
+            var percentRow = jQuery("<tr></tr>");
+            jQuery.each(percentCells, function () {
+                jQuery(this).appendTo(percentRow);
+            });
+            jQuery(percentRow).appendTo("#savingsTablePercent")
         }
 
-        // Create a totals row
-        var totalsRow = createTableRow(
-            createTableHeader("TOTAL"),
-            createTableHeader(roundToTwo(targetCO2).toLocaleString()),
-            createTableHeader(roundToTwo(targetNOX).toLocaleString()),
-            createTableHeader(roundToTwo(targetPM).toLocaleString())
-        );
-        table.appendChild(totalsRow);
+        var targetTotalCells = [createTableHeader("TOTAL")];
+        var savedTotalCells = [createTableHeader("TOTAL")];
+        var percentTotalCells = [createTableHeader("TOTAL")];
+
+        // Create a totals row for target
+        jQuery.each(emissionTypes, function () {
+            var emis = this.toString();
+            targetTotalCells.push(createTableHeader(format(targetTotal[emis])));
+            savedTotalCells.push(createTableHeader(format(savedTotal[emis])));
+            if (targetTotal[emis] !== 0) {
+                percentTotalCells.push(createTableHeader(format(
+                    (savedTotal[emis] / currentTotal[emis]) * 100)));
+            } else {
+                percentTotalCells.push(createTableHeader(format("0")));
+            }
+        });
+
+        var targetTotalRow = jQuery("<tr></tr>");
+        jQuery.each(targetTotalCells, function () {
+            jQuery(this).appendTo(targetTotalRow);
+        });
+        jQuery(targetTotalRow).appendTo("#targetTable,#targetTable1");
+
+        var savedTotalRow = jQuery("<tr></tr>");
+        jQuery.each(savedTotalCells, function () {
+            jQuery(this).appendTo(savedTotalRow);
+        });
+        jQuery(savedTotalRow).appendTo("#savingsTableRaw");
+
+        var percentTotalRow = jQuery("<tr></tr>");
+        jQuery.each(percentTotalCells, function () {
+            jQuery(this).appendTo(percentTotalRow);
+        });
+        jQuery(percentTotalRow).appendTo("#savingsTablePercent");
     }
 
     // Update the graphs based on selected visualization metric
@@ -1851,9 +2006,9 @@
             var percentage = (values[2].y / values[0].y) * 100;
             var string = '<b><span style="color:' + this.series.color +
                 '">' + this.series.name + ': </span>' +
-                this.y.toLocaleString() + ' g</b>';
+                this.y + ' g</b>';
             if (this.x === 2)
-                string += "<b>| " + roundToTwo(percentage).toLocaleString() + " %</b>";
+                string += "<b>| " + format(percentage) + " %</b>";
             return string;
         };
 
@@ -1884,5 +2039,45 @@
             currentPerformance.updateEmissionsSimple();
             targetPerformance.updateEmissionsSimple();
         }
+    }
+
+    function exportToPDF(tableLocation) {
+        var pdf = new jsPDF('p', 'pt', 'letter');
+        // source can be HTML-formatted string, or a reference
+        // to an actual DOM element from which the text will be scraped.
+        source = jQuery(tableLocation)[0];
+
+        // we support special element handlers. Register them with jQuery-style 
+        // ID selector for either ID or node name. ("#iAmID", "div", "span" etc.)
+        // There is no support for any other type of selectors 
+        // (class, of compound) at this time.
+        specialElementHandlers = {
+            // element with id of "bypass" - jQuery style selector
+            'span': function (element, renderer) {
+                // true = "handled elsewhere, bypass text extraction"
+                return true
+            }
+        };
+        margins = {
+            top: 80,
+            bottom: 60,
+            left: 40,
+            width: 522
+        };
+        // all coords and widths are in jsPDF instance's declared units
+        // 'inches' in this case
+        pdf.fromHTML(
+            source, // HTML string or DOM elem ref.
+            margins.left, // x coord
+            margins.top, { // y coord
+                'width': margins.width, // max width of content on PDF
+                'elementHandlers': specialElementHandlers
+            },
+
+            function (dispose) {
+                // dispose: object with X, Y of the last line add to the PDF 
+                //          this allow the insertion of new lines after html
+                window.open(pdf.output('bloburl'), '_blank');
+            }, margins);
     }
 </script>
