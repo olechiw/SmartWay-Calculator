@@ -22,6 +22,28 @@
         </div>
     </div>
     <p>
+        &#8203;
+    </p>
+    <p>
+        This calculator will provide you with output estimates for Current and Goal emissions, either in grams or pounds which you
+        can configure here.
+    </p>
+    <p>
+        <div id="outputUnitsDiv">
+            <label for="select-id right">Output Emissions Units</label>
+            <select class="form-select" id="outputUnitsSelect">
+                <option value="Metric (kg)">Metric (kg)</option>
+                <option value="US (lb)">US (lb)</option>
+            </select>
+        </div>
+    </p>
+    <p>
+        &#8203;
+    </p>
+    <p class="disclaimer">
+        This page requires javascript to function, without it enabled you will not be able to input emissions or obtain calculations.
+    </p>
+    <p>
         <button id="hideIntro">Continue</button>
     </p>
 </div>
@@ -44,7 +66,9 @@
     </p>
 </div>
 <div id="appDiv">
-    <button id="showIntro">Show Instructions</button>
+
+
+    <a id="showIntro" href="#intro">Show Instructions</a>
     <hr>
     <div id="tabsDiv">
         <ul class="tabs" id="inputTabsNav">
@@ -55,7 +79,7 @@
                 <a class="menu-internal" href="#tab-2" id="inputTab2" name="inputTab">Goal Freight Activity</a>
             </li>
             <li>
-                <a class="menu-internal" href="#tab-3" id="inputTab3" name="inputTab">Emissions</a>
+                <a class="menu-internal" href="#tab-3" id="inputTab3" name="inputTab">Emissions Results</a>
             </li>
             <li>
                 <a class="menu-internal" href="#tab-4" id="inputTab4" name="inputTab">Visualization</a>
@@ -101,12 +125,20 @@
             <h2>Estimated Current Emissions</h2>
 
             <table style="width:100%">
-                <thead>
+                <thead id="kgCurrent">
                     <tr>
                         <th>Carrier Type</th>
-                        <th>CO2 (g)</th>
-                        <th>NOX (g)</th>
-                        <th>PM (g)</th>
+                        <th>CO2 (kg)</th>
+                        <th>NOX (kg)</th>
+                        <th>PM (kg)</th>
+                    </tr>
+                </thead>
+                <thead id="poundsCurrent">
+                    <tr>
+                        <th>Carrier Type</th>
+                        <th>CO2 (lb)</th>
+                        <th>NOX (lb)</th>
+                        <th>PM (lb)</th>
                     </tr>
                 </thead>
                 <tbody id="currentTable"></tbody>
@@ -155,12 +187,20 @@
                 <h2>Estimated Goal Emissions</h2>
 
                 <table style="width:100%" class="center">
-                    <thead>
+                    <thead id="kgTarget">
                         <tr>
                             <th>Carrier Type</th>
-                            <th>CO2 (g)</th>
-                            <th>NOX (g)</th>
-                            <th>PM (g)</th>
+                            <th>CO2 (kg)</th>
+                            <th>NOX (kg)</th>
+                            <th>PM (kg)</th>
+                        </tr>
+                    </thead>
+                    <thead id="poundsTarget">
+                        <tr>
+                            <th>Carrier Type</th>
+                            <th>CO2 (lb)</th>
+                            <th>NOX (lb)</th>
+                            <th>PM (lb)</th>
                         </tr>
                     </thead>
                     <tbody id="targetTable"></tbody>
@@ -170,19 +210,25 @@
 
         <div id="tab-3">
 
-            <a href="#tables" id="tablesExport" name="exportButton">Export All (PDF)</a>
-            <span class="fileinfo">(
-                <a href="/home/pdf-files">About PDF</a>)</span>
+            <a href="#tables" id="printButton">Print</a>
             <div id="tables">
                 <div id="current">
                     <h2>Estimated Current Emissions</h2>
                     <table style="width:100%">
-                        <thead>
+                        <thead id="kgCurrent1">
                             <tr>
                                 <th>Carrier Type</th>
-                                <th>CO2 (g)</th>
-                                <th>NOX (g)</th>
-                                <th>PM (g)</th>
+                                <th>CO2 (kg)</th>
+                                <th>NOX (kg)</th>
+                                <th>PM (kg)</th>
+                            </tr>
+                        </thead>
+                        <thead id="poundsCurrent1">
+                            <tr>
+                                <th>Carrier Type</th>
+                                <th>CO2 (lb)</th>
+                                <th>NOX (lb)</th>
+                                <th>PM (lb)</th>
                             </tr>
                         </thead>
                         <tbody id="currentTable1"></tbody>
@@ -192,12 +238,20 @@
                 <div id="target">
                     <h2>Estimated Goal Emissions</h2>
                     <table style="width:100%">
-                        <thead>
+                        <thead id="kgTarget1">
                             <tr>
                                 <th>Carrier Type</th>
-                                <th>CO2 (g)</th>
-                                <th>NOX (g)</th>
-                                <th>PM (g)</th>
+                                <th>CO2 (kg)</th>
+                                <th>NOX (kg)</th>
+                                <th>PM (kg)</th>
+                            </tr>
+                        </thead>
+                        <thead id="poundsTarget1">
+                            <tr>
+                                <th>Carrier Type</th>
+                                <th>CO2 (lb)</th>
+                                <th>NOX (lb)</th>
+                                <th>PM (lb)</th>
                             </tr>
                         </thead>
                         <tbody id="targetTable1"></tbody>
@@ -207,12 +261,20 @@
                 <div id="saved">
                     <h2>Estimated Savings</h2>
                     <table style="width:100%">
-                        <thead>
+                        <thead id="kgSavings">
                             <tr>
                                 <th>Carrier Type</th>
-                                <th>CO2 (g)</th>
-                                <th>NOX (g)</th>
-                                <th>PM (g)</th>
+                                <th>CO2 (kg)</th>
+                                <th>NOX (kg)</th>
+                                <th>PM (kg)</th>
+                            </tr>
+                        </thead>
+                        <thead id="poundsSavings">
+                            <tr>
+                                <th>Carrier Type</th>
+                                <th>CO2 (lb)</th>
+                                <th>NOX (lb)</th>
+                                <th>PM (lb)</th>
                             </tr>
                         </thead>
                         <tbody id="savingsTableRaw"></tbody>
@@ -237,12 +299,6 @@
         </div>
 
         <div id="tab-4">
-            <div class="form-item form-type-select" id="graphSelectDiv">
-                <label for="graphSelect">Carriers to Visualize</label>
-                <select class="form-select" id="graphSelect">
-                    <option value="All">All</option>
-                </select>
-            </div>
             <div id="graphTabs">
                 <ul class="tabs" id="graphTabsNav">
                     <li>

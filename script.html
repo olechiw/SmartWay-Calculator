@@ -1,5 +1,6 @@
-<script type="text/javascript" src="/sites/all/modules/contrib/jquery_update/replace/ui/ui/minified/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/sites/all/libraries/js/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="/sites/all/libraries/js/datatables-1.10.12/pdfmake/pdfmake.min.js"></script>
+<script type="text/javascript" src="/sites/all/libraries/js/datatables-1.10.12/pdfmake/vfs_fonts.js"></script>
 <script type="text/javascript" src="/sites/all/libraries/js/highcharts/modules/exporting.js"></script>
 <script type="text/javascript" src="/sites/all/libraries/js/highcharts/modules/offline-exporting.js"></script>
 <script type="text/javascript" src="https://www.epa.gov/sites/production/files/js-scripts/jspdf.min.js"></script>
@@ -1100,10 +1101,10 @@
                 var output = "<tr>";
                 output += "<td>" + method.type + "</td>";
                 output +=
-                    '<td><input value="100" min="0" max="100" maxlength="3" readOnly="true" type="number"/></td>';
+                    '<td><input style="width:40px;" value="100" min="0" max="100" maxlength="3" readOnly="true" type="number"/></td>';
                 for (var i = 0; i < 5; ++i)
                     output +=
-                    '<td><input value="0" readOnly="true" type="number" min="0" max="100" maxlength="3"/></td>';
+                    '<td><input style="width:40px;" value="0" readOnly="true" type="number" min="0" max="100" maxlength="3"/></td>';
                 output += "</tr>";
                 return output;
             };
@@ -1172,6 +1173,7 @@
                         input.min = 0;
                         input.max = 100;
                         input.maxLength = 3;
+                        input.style.width = "40px";
 
                         input.onchange = detailedChangeBuilder(method, i);
                         td.appendChild(input);
@@ -1179,7 +1181,7 @@
                     }
 
                     // Blank totals row
-                    jQuery(inputRow).append('<td style="color:red">0</td>');
+                    jQuery(inputRow).append('<td>0</td>');
 
                     this.table.appendChild(inputRow);
                 }
@@ -1207,7 +1209,7 @@
             if (this.doDetailed) this.updateDetailedTotals();
         };
 
-        this.updateEmissionsSimple = function () {
+        this.updateEmissionsSimple = function (factor) {
             for (var i = 0; i < this.methods.length; ++i) {
                 var method = this.methods[i];
 
@@ -1220,13 +1222,13 @@
                 var CO2 = bin.CO2;
                 var NOX = bin.NOX;
                 var PM = bin.PM;
-                method.CO2 = CO2 * Number(method.activityQuantity);
-                method.NOX = NOX * Number(method.activityQuantity);
-                method.PM = PM * Number(method.activityQuantity);
+                method.CO2 = CO2 * Number(method.activityQuantity) * factor;
+                method.NOX = NOX * Number(method.activityQuantity) * factor;
+                method.PM = PM * Number(method.activityQuantity) * factor;
             }
         };
 
-        this.updateEmissionsDetailed = function () {
+        this.updateEmissionsDetailed = function (factor) {
             for (var i = 0; i < this.methods.length; ++i) {
                 var method = this.methods[i];
 
@@ -1246,18 +1248,16 @@
                     var bin = this.bins[method.activityUnits][method.type + binTag];
 
                     var percent = Number(method.percentSmartWay[t]) * 0.01;
-                    method.CO2 += Number(activity) * percent * bin.CO2;
-                    method.NOX += Number(activity) * percent * bin.NOX;
-                    method.PM += Number(activity) * percent * bin.PM;
+                    method.CO2 += Number(activity) * percent * bin.CO2 * factor;
+                    method.NOX += Number(activity) * percent * bin.NOX * factor;
+                    method.PM += Number(activity) * percent * bin.PM * factor;
                 }
             }
         };
 
         // Update the total levels at the end and the "valid" member of each method
         this.updateDetailedTotals = function () {
-            if (!doDetailed) {
-                return;
-            }
+            if (!jQuery("#doDetailed").prop("checked")) return;
             if (this.table.childElementCount === 0) {
                 return;
             }
@@ -1288,10 +1288,8 @@
                 var td = document.createElement("td");
                 td.appendChild(label);
                 if (sum !== 100) {
-                    td.style.color = "red";
                     method.invalid = true;
                 } else {
-                    td.style.color = "green";
                     method.invalid = false;
                 }
                 row.appendChild(td);
@@ -1422,7 +1420,7 @@
                     .find("select[name=units]").first();
                 element.val(val);
                 this.onUnitsChanged(element, true);
-            }
+            };
 
         this.setQuantity =
             function (index, val) {
@@ -1430,7 +1428,7 @@
                     .find("input[type=number]").first();
                 element.val(val);
                 this.onQuantityChanged(element, true);
-            }
+            };
 
 
         // Remove the active options 
@@ -1441,8 +1439,12 @@
                 jQuery.each(profile.methods, function () {
                     if (!this.active) availableOptions.push(this.type);
                 });
+                var defaultValue = "--- Select Carrier Type ---";
                 jQuery(this.locationID).find('select[name=type]').each(function () {
                     var value = jQuery(this).val();
+                    if (jQuery(this).children("option").first().val() === defaultValue && value !==
+                        defaultValue)
+                        jQuery(this).children("option").first().remove();
                     jQuery(this).children('option').each(function () {
                         if (jQuery(this).val() === value || jQuery.inArray(jQuery(this).val(),
                                 availableOptions) !== -1) {
@@ -1491,7 +1493,7 @@
 
                 var method = jQuery.grep(this.methods, function (x) {
                     return x.type === type;
-                })[0]
+                })[0];
                 if (method) method.activityQuantity = quantity;
                 if (!wasManual) {
                     if (this.quantityChange) {
@@ -1529,7 +1531,7 @@
     function BarChart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, series, pointFormatter) {
         Highcharts.chart(locationID, {
             chart: {
-                type: 'column'
+                type: 'column',
             },
             exporting: {
                 enabled: true
@@ -1564,7 +1566,7 @@
                     dataLabels: {
                         enabled: true,
                         formatter: function () {
-                            return (this.y);
+                            return (format(this.y)) + ' ' + units;
                         }
                     }
                 }
@@ -1588,10 +1590,10 @@
         };
         var currentUnitsChange = function (index, val) {
             targetActivity.setUnits(index, val);
-        }
+        };
         var currentQuantityChange = function (index, val) {
             targetActivity.setQuantity(index, val);
-        }
+        };
 
 
         // Object handling input for the CURRENT performance rankings
@@ -1631,20 +1633,22 @@
                 jQuery(tabsNav + ' li a[href="' + targetTab + '"]').parent().addClass('active');
                 jQuery(parentDiv + ' > div').hide();
                 jQuery(targetTab).show();
+
+                // Fix for issues with graphs not filling their areas
+                jQuery("#graph-1").highcharts().reflow();
+                jQuery("#graph-2").highcharts().reflow();
+                jQuery("#graph-3").highcharts().reflow();
+
                 return false;
             });
         };
         setupTabs("#tabsDiv", "#inputTabsNav", "inputTab");
         setupTabs("#graphTabs", "#graphTabsNav", "graphTab");
 
-
-        //jQuery('#addCurrentActivity').click(addCurrentActivity);
         addCurrentActivity();
 
         jQuery("#doDetailed").change(onDetailedChange);
         jQuery("#doBasic").change(onDetailedChange);
-
-        jQuery("#graphSelect").change(updateGraphs);
 
         // Show the intro div and show the app when Begin is clicked
         jQuery("#appDiv").hide();
@@ -1655,12 +1659,16 @@
                 jQuery("#introDiv").hide();
                 jQuery("#detailedHeader").show();
                 jQuery("#appDiv").show();
+                updateEmissions();
+                window.scrollTo(0, 0);
             } else if (jQuery("#doBasic:checked").length > 0) {
                 jQuery("#introDiv").hide();
                 jQuery("#basicHeader").show();
                 jQuery("#appDiv").show();
+                updateEmissions();
+                window.scrollTo(0, 0);
             } else {
-                alert("Please choose either basic or detailed Bin rankings!")
+                alert("Please choose either basic or detailed Bin rankings!");
             }
         });
         jQuery("#showIntro").click(function () {
@@ -1671,15 +1679,24 @@
             jQuery("#detailedHeader").hide();
         });
 
-        jQuery("[name=exportButton").click(function () {
-            let target = jQuery(this).attr("href");
-            exportToPDF(target);
+        jQuery("#printButton").click(function () {
+            var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+            mywindow.document.write('<html><head><title>' + document.title + '</title>');
+            mywindow.document.write('</head><body >');
+            mywindow.document.write('<h1>' + document.title + '</h1>');
+            mywindow.document.write(document.getElementById("tables").innerHTML);
+            mywindow.document.write('</body></html>');
+
+            mywindow.document.close(); // necessary for IE >= 10
+            mywindow.focus(); // necessary for IE >= 10*/
+
+            mywindow.print();
+            mywindow.close();
         });
 
-        // Disabled due to time constraints
-        jQuery("#graphSelectDiv").hide();
-
-        updateGraphs();
+        jQuery("[id^=pounds]").hide();
+        jQuery("#outputUnitsSelect").change(setTableUnits);
     });
 
     function validateState(tabID) {
@@ -1705,7 +1722,7 @@
             else if (this.activityQuantity < 0) {
                 alert("Negative activity quantity detected");
                 failed = true;
-            } else if (this.activityQuantity == 0) {
+            } else if (Number(this.activityQuantity) === 0) {
                 alert("Activity quantity cannot be 0, remove the carrier or add movement");
                 failed = true;
             } else if (jQuery("#doDetailed").prop("checked") && this.invalid) {
@@ -1724,6 +1741,17 @@
         updateCurrentEmissionsUI();
         updateGoalEmissionsUI();
         updateGraphs();
+    }
+
+    function setTableUnits() {
+        var value = jQuery("#outputUnitsSelect").val();
+        if (value === "Metric (kg)") {
+            jQuery("[id^=kg]").show();
+            jQuery("[id^=pounds]").hide();
+        } else if (value === "US (lb)") {
+            jQuery("[id^=kg]").hide();
+            jQuery("[id^=pounds]").show();
+        }
     }
 
     // When the detailed checkbox changes
@@ -1808,7 +1836,7 @@
     function updateGoalEmissionsUI() {
         jQuery("#targetTable").empty();
         jQuery("#targetTable1").empty();
-        jQuery("#savingsTableRaw").empty();;
+        jQuery("#savingsTableRaw").empty();
         jQuery("#savingsTablePercent").empty();
 
         var emissionTypes = ["CO2", "NOX", "PM"];
@@ -1816,7 +1844,7 @@
             this.CO2 = 0;
             this.NOX = 0;
             this.PM = 0;
-        }
+        };
         var currentTotal = new EmissionsGroup();
         var targetTotal = new EmissionsGroup();
         var savedTotal = new EmissionsGroup();
@@ -1854,7 +1882,7 @@
 
                 targetCells.push(createTableCell(format(targetMethod[emis])));
                 savedCells.push(createTableCell(format(saved)));
-                savedCells
+
                 // Add percentage to row, can't divide by zero
                 if (currentMethod[emis] > 0) {
                     percentCells.push(createTableCell(format(
@@ -1872,13 +1900,13 @@
             jQuery.each(savedCells, function () {
                 jQuery(this).appendTo(savedRow);
             });
-            jQuery(savedRow).appendTo("#savingsTableRaw")
+            jQuery(savedRow).appendTo("#savingsTableRaw");
 
             var percentRow = jQuery("<tr></tr>");
             jQuery.each(percentCells, function () {
                 jQuery(this).appendTo(percentRow);
             });
-            jQuery(percentRow).appendTo("#savingsTablePercent")
+            jQuery(percentRow).appendTo("#savingsTablePercent");
         }
 
         var targetTotalCells = [createTableHeader("TOTAL")];
@@ -1917,48 +1945,15 @@
         jQuery(percentTotalRow).appendTo("#savingsTablePercent");
     }
 
-    // Update the graphs based on selected visualization metric
-    function updateGraphs() {
-        // Update the select options
-        var activeMethods = [];
-        var addIfActive = function (method) {
-            if (method.active && jQuery.inArray(method.type, activeMethods) === -1) {
-                activeMethods.push(method.type);
-            }
-        };
-        // Add all of the active methods to the array
-        jQuery.each(Model.currentFreightMethods, function () {
-            addIfActive(this);
-        });
-        jQuery.each(Model.targetFreightMethods, function () {
-            addIfActive(this);
-        });
-
-        var value = jQuery("#graphSelect").val();
-        var option = function (val) {
-            return '<option value="' + val + '">' +
-                val + '</option>';
-        }
-        jQuery("#graphSelect").empty();
-        jQuery("#graphSelect").append(option("All"));
-        jQuery.each(activeMethods, function () {
-            jQuery("#graphSelect").append(option(this.toString()));
-        });
-        if (jQuery.inArray(activeMethods, value) !== -1) {
-            jQuery("#graphSelect").val(value);
-            updateGraphsForMethod(jQuery("#graphSelect").val());
-        } else {
-            jQuery("#graphSelect").val("All");
-            updateGraphsRaw();
-        }
-    }
-
-    function updateGraphsForMethod(methodType) {
-
-    }
-
     // Show the graphs with raw data, no percentages etc
-    function updateGraphsRaw() {
+    function updateGraphs() {
+
+        var units = "Grams";
+        var unitsShort = "g";
+        if (jQuery("#outputUnitsSelect").val() === "US (lb)") {
+            units = "Pounds";
+            unitsShort = "lb";
+        }
 
         var active = [];
         var getActive = function () {
@@ -2004,80 +1999,45 @@
         var pointFormatter = function () {
             var values = this.series.data;
             var percentage = (values[2].y / values[0].y) * 100;
-            var string = '<b><span style="color:' + this.series.color +
-                '">' + this.series.name + ': </span>' +
-                this.y + ' g</b>';
+            var string = '<b><span>' + this.series.name + ': </span>' +
+                format(this.y) + ' ' + unitsShort + '</b>';
             if (this.x === 2)
                 string += "<b>| " + format(percentage) + " %</b>";
             return string;
         };
-
-        var divs = jQuery("#graphTabs > div").is(":hidden");
-        jQuery(divs).show();
-        BarChart("graph-1", "CO2", "Estimated Emissions in grams", ["<b>Current</b>", "<b>Target</b>",
+        BarChart("graph-1", "CO2", "Estimated Emissions in " + units, ["<b>Current</b>", "<b>Target</b>",
                 "<b>Savings</b>"
             ],
-            yTitle, "g", CO2, pointFormatter);
-        BarChart("graph-2", "NOX", "Estimated Emissions in grams", ["<b>Current</b>", "<b>Target</b>",
+            yTitle, unitsShort, CO2, pointFormatter);
+        BarChart("graph-2", "NOX", "Estimated Emissions in " + units, ["<b>Current</b>", "<b>Target</b>",
                 "<b>Savings</b>"
             ],
-            yTitle, "g", NOX, pointFormatter);
-        BarChart("graph-3", "PM 2.5", "Estimated Emissions in grams", ["<b>Current</b>", "<b>Target</b>",
+            yTitle, unitsShort, NOX, pointFormatter);
+        BarChart("graph-3", "PM 2.5", "Estimated Emissions in " + units, ["<b>Current</b>", "<b>Target</b>",
             "<b>Savings</b>"
-        ], yTitle, "g", PM, pointFormatter);
-        jQuery(divs).hide();
+        ], yTitle, unitsShort, PM, pointFormatter);
     }
 
     // Call the profiles calculation functions (also update the bins that they use, for redundancy)
     function updateEmissionsCalculations() {
         currentPerformance.bins = smartwayBinJSON;
         targetPerformance.bins = smartwayBinJSON;
-        if (jQuery("#doDetailed:checked").length > 0) {
-            currentPerformance.updateEmissionsDetailed();
-            targetPerformance.updateEmissionsDetailed();
-        } else {
-            currentPerformance.updateEmissionsSimple();
-            targetPerformance.updateEmissionsSimple();
+
+        var outputEmissionsUnit = jQuery("#outputUnitsSelect").val();
+
+        var factor = 1;
+        if (outputEmissionsUnit === "US (lb)") {
+            factor = (1 / 453.592);
+        } else if (outputEmissionsUnit === "Metric (kg)") {
+            factor = (1 / 1000);
         }
-    }
 
-    function exportToPDF(tableLocation) {
-        var pdf = new jsPDF('p', 'pt', 'letter');
-        // source can be HTML-formatted string, or a reference
-        // to an actual DOM element from which the text will be scraped.
-        source = jQuery(tableLocation)[0];
-
-        // we support special element handlers. Register them with jQuery-style 
-        // ID selector for either ID or node name. ("#iAmID", "div", "span" etc.)
-        // There is no support for any other type of selectors 
-        // (class, of compound) at this time.
-        specialElementHandlers = {
-            // element with id of "bypass" - jQuery style selector
-            'span': function (element, renderer) {
-                // true = "handled elsewhere, bypass text extraction"
-                return true
-            }
-        };
-        margins = {
-            top: 80,
-            bottom: 60,
-            left: 40,
-            width: 522
-        };
-        // all coords and widths are in jsPDF instance's declared units
-        // 'inches' in this case
-        pdf.fromHTML(
-            source, // HTML string or DOM elem ref.
-            margins.left, // x coord
-            margins.top, { // y coord
-                'width': margins.width, // max width of content on PDF
-                'elementHandlers': specialElementHandlers
-            },
-
-            function (dispose) {
-                // dispose: object with X, Y of the last line add to the PDF 
-                //          this allow the insertion of new lines after html
-                window.open(pdf.output('bloburl'), '_blank');
-            }, margins);
+        if (jQuery("#doDetailed:checked").length > 0) {
+            currentPerformance.updateEmissionsDetailed(factor);
+            targetPerformance.updateEmissionsDetailed(factor);
+        } else {
+            currentPerformance.updateEmissionsSimple(factor);
+            targetPerformance.updateEmissionsSimple(factor);
+        }
     }
 </script>
