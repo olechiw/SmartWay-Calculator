@@ -86,7 +86,7 @@
         var tableRow = jQuery("<tr></tr>");
         jQuery.each(arguments, function () {
             tableRow.append(jQuery(this));
-        })
+        });
         return tableRow;
     }
 
@@ -129,21 +129,21 @@
             // For a detailed NON-only row,such as barge, creates 6 readonly inputs
             var detailedNONRowCreator = function (method) {
                 var output = "<tr>";
-                output += "<td>" + method.type + "</td>";
+                output += "<th>" + method.type + "</th>";
                 output +=
                     '<td><input style="width:55px;" value="100" min="0" max="100" maxlength="3" readOnly="true" type="number"/></td>';
-                for (var i = 0; i < 5; ++i)
+                for (var i = 0; i < 6; ++i)
                     output +=
                     '<td><input style="width:55px;" value="0" readOnly="true" type="number" min="0" max="100" maxlength="3"/></td>';
                 output += "</tr>";
-                return output;
+                return jQuery(output);
             };
             // For a simple NON-only row,such as barge, creates a select with only 1 option
             var simpleNONRowCreator = function (method) {
                 var output = "<tr><th>" + method.type + "</th><td>";
-                output += '<select class="form-select"><option value="NON">NON</option></select>';
+                output += '<select class="form-select"><option value="NON">NON-SmartWay</option></select>';
                 output += "</td></tr>";
-                return output;
+                return jQuery(output);
             };
             var profile = this;
             // Function builder for when a detailed input changes
@@ -158,11 +158,19 @@
                 };
             };
             // Function builder for when a simple input changes (select)
-            var simpleClickBuilder = function (method) {
+            var simpleChangeBuilder = function (method) {
                 return function () {
                     method.smartWayGeneral = event.currentTarget.value;
                     obj.updateEmissionsSimple();
                     obj.onEmissionsUpdate();
+                };
+            };
+
+            var optionAdder = function (select) {
+                return function (text) {
+                    var option = jQuery('<option value="' + this.toString() + '">' + this.toString() +
+                        '</option>');
+                    select.append(option);
                 };
             };
 
@@ -177,11 +185,9 @@
                 // If it is NON-Smartway only (rail, barge, etc.) then it needs to be readonly
                 if (jQuery.inArray(method.type, Model.NonOnlyCarriers) !== -1) {
                     if (this.doDetailed) {
-                        var row = jQuery(detailedNONRowCreator(method));
-                        jQuery(this.table).append(row);
+                        jQuery(this.table).append(detailedNONRowCreator(method));
                     } else {
-                        var row = jQuery(simpleNONRowCreator(method));
-                        jQuery(this.table).append(row);
+                        jQuery(this.table).append(simpleNONRowCreator(method));
                     }
                     method.percentSmartWay[5] = 100;
                 }
@@ -222,15 +228,11 @@
                     // Select which has the 6 bin options (stored in performancelevels array)
                     var select = jQuery('<select class="form-select"></select>');
 
-                    jQuery.each(performanceLevels, function () {
-                        var option = jQuery('<option value="' + this.toString() + '">' + this.toString() +
-                            '</option>')
-                        select.append(option);
-                    });
+                    jQuery.each(performanceLevels, optionAdder(select));
 
                     select.val(method.smartWayGeneral);
                     var obj = this;
-                    select.change(simpleClickBuilder(method));
+                    select.change(simpleChangeBuilder(method));
                     var selectTD = jQuery("<td></td>");
                     selectTD.append(select);
                     simpleRow.append(selectTD);
@@ -570,7 +572,7 @@
     function BarChart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, series, pointFormatter) {
         Highcharts.chart(locationID, {
             chart: {
-                type: 'column',
+                type: 'column'
             },
             exporting: {
                 enabled: true
@@ -646,20 +648,20 @@
                     alert("Please choose either basic or detailed Bin rankings!");
                 }
             });
-        })
+        });
 
         /*
         Events fired by current performance when it changes, so that the target activities can be updated
         */
         var onCurrentTypeSet = function (index, val) {
             targetActivity.setType(index, val);
-        }
+        };
         var onCurrentUnitsSet = function (index, val) {
             targetActivity.setUnits(index, val);
-        }
+        };
         var onCurrentQuantitySet = function (index, val) {
             targetActivity.setQuantity(index, val);
-        }
+        };
 
         // Object handling input for the CURRENT performance rankings
         currentPerformance = new PerformanceInputUI(Model.CurrentCarriers,
@@ -911,6 +913,32 @@
             };
         };
 
+        var cellPopulator = function (currentMethod, targetMethod,
+            targetCells, savedCells, percentCells) {
+            return function () {
+                var emis = this.toString();
+                currentTotal[emis] += currentMethod[emis];
+                targetTotal[emis] += targetMethod[emis];
+                var saved = (currentMethod[emis] - targetMethod[emis]);
+                savedTotal[emis] += saved;
+
+                targetCells.push(createTableCell(format(targetMethod[emis])));
+                savedCells.push(createTableCell(format(saved)));
+
+                // Add percentage to row, can't divide by zero
+                if (currentMethod[emis] > 0) {
+                    percentCells.push(createTableCell(format(
+                        (saved / currentMethod[emis]) * 100)));
+                } else percentCells.push(createTableCell("0"));
+            };
+        };
+
+        var appender = function (element) {
+            return function () {
+                jQuery(this).appendTo(element);
+            };
+        };
+
         // Go through each method to calculate savings
         for (var i = 0; i < Model.CurrentCarriers.length; ++i) {
 
@@ -930,39 +958,19 @@
             var percentCells = [createTableCell(targetMethod.type)];
 
             // Update all of the totals and add to the cells list for this row
-            jQuery.each(emissionTypes, function () {
-                var emis = this.toString();
-                currentTotal[emis] += currentMethod[emis];
-                targetTotal[emis] += targetMethod[emis];
-                var saved = (currentMethod[emis] - targetMethod[emis]);
-                savedTotal[emis] += saved;
-
-                targetCells.push(createTableCell(format(targetMethod[emis])));
-                savedCells.push(createTableCell(format(saved)));
-
-                // Add percentage to row, can't divide by zero
-                if (currentMethod[emis] > 0) {
-                    percentCells.push(createTableCell(format(
-                        (saved / currentMethod[emis]) * 100)));
-                } else percentCells.push(createTableCell("0"));
-
-            });
+            jQuery.each(emissionTypes, cellPopulator(currentMethod, targetMethod,
+                targetCells, savedCells, percentCells));
             var targetRow = jQuery("<tr></tr>");
-            jQuery.each(targetCells, function () {
-                jQuery(this).appendTo(targetRow);
-            });
+
+            jQuery.each(targetCells, appender(targetRow));
             jQuery(targetRow).appendTo("#targetTable,#targetTable1");
 
             var savedRow = jQuery("<tr></tr>");
-            jQuery.each(savedCells, function () {
-                jQuery(this).appendTo(savedRow);
-            });
+            jQuery.each(savedCells, appender(savedRow));
             jQuery(savedRow).appendTo("#savingsTableRaw");
 
             var percentRow = jQuery("<tr></tr>");
-            jQuery.each(percentCells, function () {
-                jQuery(this).appendTo(percentRow);
-            });
+            jQuery.each(percentCells, appender(percentRow));
             jQuery(percentRow).appendTo("#savingsTablePercent");
         }
 
@@ -1009,8 +1017,8 @@
     // Show the graphs with raw data, no percentages etc
     function updateGraphs() {
 
-        var units = "Grams";
-        var unitsShort = "g";
+        var units = "KiloGrams";
+        var unitsShort = "kg";
         if (jQuery("#outputUnitsSelect").val() === "US (lb)") {
             units = "Pounds";
             unitsShort = "lb";
