@@ -41,10 +41,10 @@
             new CarrierModel("TL/Dry Van"),
             new CarrierModel("Logistics"),
             new CarrierModel("Multimodal"),
-            new CarrierModel("Rail"),
-            new CarrierModel("Barge"),
-            new CarrierModel("Air-Long Haul"),
-            new CarrierModel("Air-Short Haul")
+            new CarrierModel("Rail"), //NON-ONLY, JSON data only needs to have a NON child
+            new CarrierModel("Barge"), //NON-ONLY
+            new CarrierModel("Air-Long Haul"), //NON-ONLY
+            new CarrierModel("Air-Short Haul") //NON-ONLY
         ];
     }
     // Global freight model
@@ -90,6 +90,7 @@
 
         // Toggle whether to do a detailed or simple input
         this.setDetailed = function (detailed) {
+            // Show the correct table header
             if (detailed) {
                 this.simpleHeader.hide();
                 this.detailedHeader.show();
@@ -97,12 +98,14 @@
                 this.simpleHeader.show();
                 this.detailedHeader.hide();
             }
+            // Store the value
             this.doDetailed = detailed;
 
+            // Recompute all the input boxes
             this.rebuildInputUI();
         };
 
-        // Update the input for performance, redoing every row of the table
+        // Update the input fields, redoing every row of the table
         this.rebuildInputUI = function () {
             // Clear table
             jQuery(this.table).empty();
@@ -839,13 +842,14 @@
         var cellPopulator = function (currentCarrier, targetCarrier,
             currentCells, targetCells, savedCells, percentCells) {
             return function () {
+                if (!currentCarrier || !targetCarrier) return;
+
                 var emis = this.toString();
                 var saved = (currentCarrier[emis] - targetCarrier[emis]);
 
                 currentTotal[emis] += currentCarrier[emis];
                 targetTotal[emis] += targetCarrier[emis];
                 savedTotal[emis] += saved;
-
                 currentCells.push(createTableCell(format(currentCarrier[emis])));
                 targetCells.push(createTableCell(format(targetCarrier[emis])));
                 savedCells.push(createTableCell(format(saved)));
@@ -897,8 +901,15 @@
             jQuery.each(emissionTypes, cellPopulator(currentCarrier, targetCarrier,
                 currentCells, targetCells, savedCells, percentCells));
 
-            addAsRow(currentCells, currentTables);
-            addAsRow(targetCells, targetTables);
+            // If carrier is inactive, only dad to emissions page
+            if (currentCarrier.active)
+                addAsRow(currentCells, currentTables);
+            else
+                addAsRow(currentCells, "#currentTable1");
+            if (targetCarrier.active)
+                addAsRow(targetCells, targetTables);
+            else
+                addAsRow(targetCells, "#targetTable1");
             addAsRow(savedCells, "#savingsTableRaw");
             addAsRow(percentCells, "#savingsTablePercent");
         }
