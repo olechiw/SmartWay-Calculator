@@ -1,9 +1,6 @@
 <script type="text/javascript" src="/sites/all/libraries/js/highcharts/highcharts.js"></script>
-<script type="text/javascript" src="/sites/all/libraries/js/datatables-1.10.12/pdfmake/pdfmake.min.js"></script>
-<script type="text/javascript" src="/sites/all/libraries/js/datatables-1.10.12/pdfmake/vfs_fonts.js"></script>
 <script type="text/javascript" src="/sites/all/libraries/js/highcharts/modules/exporting.js"></script>
 <script type="text/javascript" src="/sites/all/libraries/js/highcharts/modules/offline-exporting.js"></script>
-<script type="text/javascript" src="https://www.epa.gov/sites/production/files/js-scripts/jspdf.min.js"></script>
 <script type="text/javascript">
     function CarrierModel(name) {
         // The name of the movement type
@@ -26,7 +23,7 @@
         this.percentSmartWay = [0, 0, 0, 0, 0, 0];
     }
 
-    // Constant function to create a list of every carrier, used as the model
+    // Function to create a list of every carrier, used as the model
     function createCarriers() {
         return [
             new CarrierModel("Auto Carrier Trucking"),
@@ -67,6 +64,7 @@
         Bins: {}
     };
 
+    // The available general performance bins
     var performanceLevels = [
         "1",
         "2",
@@ -212,7 +210,6 @@
                     jQuery.each(performanceLevels, optionAdder(select));
 
                     select.val(carrier.smartWayGeneral);
-                    var obj = this;
                     select.change(simpleChangeBuilder(carrier));
                     var selectTD = jQuery("<td></td>");
                     selectTD.append(select);
@@ -351,6 +348,7 @@
                         return (x.type === type);
                     }))[0];
                     if (!carrier) return;
+
                     carrier.active = true;
                     carrier.activityQuantity = jQuery(this).parent().parent()
                         .find('input[name=quantity]').first().val();
@@ -502,56 +500,6 @@
                 this.onProfileChanged();
             };
     }
-
-    // Graph in the location div
-    function BarChart(locationID, title, subtitle, xAxisLabels, yAxisTitle, units, series, pointFormatter) {
-        Highcharts.chart(locationID, {
-            chart: {
-                type: 'column'
-            },
-            exporting: {
-                enabled: true
-            },
-            title: {
-                text: title
-            },
-            subtitle: {
-                text: subtitle
-            },
-            xAxis: {
-                categories: xAxisLabels
-            },
-            yAxis: {
-                title: {
-                    text: '<b>' + yAxisTitle + ' (' + units + ')' + '</b>'
-                }
-            },
-            tooltip: {
-                // White
-                backgroundColor: '#ffffff',
-                headerFormat: '',
-                pointFormatter: pointFormatter,
-                followPointer: true
-            },
-            plotOptions: {
-                series: {
-                    allowPointSelect: true
-                },
-                column: {
-                    pointPadding: 0.2,
-                    borderWidth: 0,
-                    dataLabels: {
-                        enabled: true,
-                        formatter: function () {
-                            return (format(this.y)) + ' ' + units;
-                        }
-                    }
-                }
-            },
-            series: series
-        });
-    }
-
 
     // Globals for four different input forms
     var currentPerformance; //PerformanceInput
@@ -769,6 +717,7 @@
         update(factor, Model.TargetCarriers);
     }
 
+    // Update emissions for carrriers given emissions unit factor and the carriers to update
     function updateEmissionsDetailed(factor, carriers) {
         for (var i = 0; i < carriers.length; ++i) {
             var carrier = carriers[i];
@@ -794,8 +743,8 @@
                 carrier.PM += Number(activity) * percent * bin.PM * factor;
             }
         }
-    };
-
+    }
+    // Update emissions for carrriers given emissions unit factor and the carriers to update
     function updateEmissionsSimple(factor, carriers) {
         for (var i = 0; i < carriers.length; ++i) {
             var carrier = carriers[i];
@@ -813,7 +762,7 @@
             carrier.NOX = NOX * Number(carrier.activityQuantity) * factor;
             carrier.PM = PM * Number(carrier.activityQuantity) * factor;
         }
-    };
+    }
 
     // Set the units of headers for all the tables based on what is selected
     // Accomplished by hiding unused headers and showing used ones
@@ -864,6 +813,7 @@
 
         var currentTables = "#currentTable,#currentTable1";
         var targetTables = "#targetTable,#targetTable1";
+
         jQuery(currentTables).empty();
         jQuery(targetTables).empty();
         jQuery("#savingsTableRaw").empty();
@@ -890,9 +840,10 @@
             currentCells, targetCells, savedCells, percentCells) {
             return function () {
                 var emis = this.toString();
+                var saved = (currentCarrier[emis] - targetCarrier[emis]);
+
                 currentTotal[emis] += currentCarrier[emis];
                 targetTotal[emis] += targetCarrier[emis];
-                var saved = (currentCarrier[emis] - targetCarrier[emis]);
                 savedTotal[emis] += saved;
 
                 currentCells.push(createTableCell(format(currentCarrier[emis])));
@@ -960,9 +911,12 @@
         // Create a totals row for target
         jQuery.each(emissionTypes, function () {
             var emis = this.toString();
+
             currentTotalCells.push(createTableHeader(format(currentTotal[emis])));
             targetTotalCells.push(createTableHeader(format(targetTotal[emis])));
             rawTotalCells.push(createTableHeader(format(savedTotal[emis])));
+
+            // Calculate the percentage, accouting for divide by zero
             if (currentTotal[emis] !== 0) {
                 percentTotalCells.push(createTableHeader(format(
                     (savedTotal[emis] / currentTotal[emis]) * 100)));
@@ -984,7 +938,7 @@
     // Show the graphs with raw data, no percentages etc
     function updateGraphs() {
 
-        var units = "KiloGrams";
+        var units = "Kilograms";
         var unitsShort = "kg";
         if (jQuery("#outputUnitsSelect").val() === "US (lb)") {
             units = "Pounds";
@@ -1000,22 +954,22 @@
         // Collect all active models, no duplicates, from both lists
         jQuery.each(Model.CurrentCarriers, getActive);
         jQuery.each(Model.TargetCarriers, getActive);
-        var yTitle = "Emissions";
 
         // Create the series for each pollutant
         function createAllSeries(pollutant) {
             var series = [];
             jQuery.each(active, function () {
                 var val = this.toString();
+
+                // finds the first carrier matching the query
                 var current =
-                    // finds the first carrier matching the query
                     jQuery.grep(Model.CurrentCarriers,
                         function (x) {
                             return x.type === val;
                         })[0][pollutant];
 
+                // finds the first carrier matching the query     
                 var target =
-                    // finds the first carrier matching the query
                     jQuery.grep(Model.TargetCarriers,
                         function (x) {
                             return x.type === val;
@@ -1036,25 +990,77 @@
         var PM = createAllSeries("PM");
 
         // Formatter for the tooltip, constructs the box for when you mouse over the graph
-        var pointFormatter = function () {
+        var tooltipFormatter = function () {
             var values = this.series.data;
-            var percentage = (values[2].y / values[0].y) * 100;
-            var string = '<b><span>' + this.series.name + ': </span>' +
+
+            var percentage;
+            if (values[0].y !== 0)
+                percentage = (values[2].y / values[0].y) * 100;
+            else
+                percentage = 0;
+
+            var string = '<span style="color:' + this.series.color + ';font-weight:bolder">' +
+                this.series.name +
+                ': </span><b>' +
                 format(this.y) + ' ' + unitsShort + '</b>';
+
             if (this.x === 2)
                 string += "<b>| " + format(percentage) + " %</b>";
+
             return string;
         };
-        BarChart("graph-1", "CO2", "Estimated Emissions in " + units, ["<b>Current</b>", "<b>Target</b>",
-                "<b>Savings</b>"
-            ],
-            yTitle, unitsShort, CO2, pointFormatter);
-        BarChart("graph-2", "NOX", "Estimated Emissions in " + units, ["<b>Current</b>", "<b>Target</b>",
-                "<b>Savings</b>"
-            ],
-            yTitle, unitsShort, NOX, pointFormatter);
-        BarChart("graph-3", "PM 2.5", "Estimated Emissions in " + units, ["<b>Current</b>", "<b>Target</b>",
-            "<b>Savings</b>"
-        ], yTitle, unitsShort, PM, pointFormatter);
+
+        // Graph in the location div
+        var barGraph = function (locationID, title, series) {
+            Highcharts.chart(locationID, {
+                chart: {
+                    type: 'column'
+                },
+                exporting: {
+                    enabled: true
+                },
+                title: {
+                    text: title
+                },
+                subtitle: {
+                    text: "Estimated Emissions in " + units
+                },
+                xAxis: {
+                    categories: ["<b>Current</b>", "<b>Goal</b>", "<b>Savings</b>"]
+                },
+                yAxis: {
+                    title: {
+                        text: '<b>Estimated Emissions (' + unitsShort + ')' + '</b>'
+                    }
+                },
+                tooltip: {
+                    // White
+                    backgroundColor: '#ffffff',
+                    headerFormat: '',
+                    formatter: tooltipFormatter,
+                    followPointer: true
+                },
+                plotOptions: {
+                    series: {
+                        allowPointSelect: true
+                    },
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0,
+                        dataLabels: {
+                            enabled: true,
+                            formatter: function () {
+                                return (format(this.y)) + ' ' + unitsShort;
+                            }
+                        }
+                    }
+                },
+                series: series
+            });
+        };
+
+        barGraph("graph-1", "CO2", CO2);
+        barGraph("graph-2", "NOX", NOX);
+        barGraph("graph-3", "PM 2.5", PM);
     }
 </script>
