@@ -5,7 +5,7 @@
 <script type="text/javascript" src="/sites/all/libraries/js/highcharts/modules/offline-exporting.js"></script>
 <script type="text/javascript" src="https://www.epa.gov/sites/production/files/js-scripts/jspdf.min.js"></script>
 <script type="text/javascript">
-    function FreightMethodModel(name) {
+    function CarrierModel(name) {
         // The name of the movement type
         this.type = name;
         this.active = false;
@@ -26,40 +26,44 @@
         this.percentSmartWay = [0, 0, 0, 0, 0, 0];
     }
 
-    // Constant function to create a list of every method, used as the model
-    function createFreightMethods() {
+    // Constant function to create a list of every carrier, used as the model
+    function createCarriers() {
         return [
-            new FreightMethodModel("Auto Carrier Trucking"),
-            new FreightMethodModel("Dray Trucking"),
-            new FreightMethodModel("Expedited Trucking"),
-            new FreightMethodModel("Flatbed Trucking"),
-            new FreightMethodModel("Heavy and Bulk Trucking"),
-            new FreightMethodModel("LTL/Dry Van"),
-            new FreightMethodModel("Mixed Trucking"),
-            new FreightMethodModel("Moving Van Trucking"),
-            new FreightMethodModel("Package Delivery Trucking"),
-            new FreightMethodModel("Refrigerated Trucking"),
-            new FreightMethodModel("Specialty Haul Trucking"),
-            new FreightMethodModel("Tanker Trucking"),
-            new FreightMethodModel("TL/Dry Van"),
-            new FreightMethodModel("Logistics"),
-            new FreightMethodModel("Multimodal"),
-            new FreightMethodModel("Rail"),
-            new FreightMethodModel("Barge"),
-            new FreightMethodModel("Air-Long Haul"),
-            new FreightMethodModel("Air-Short Haul")
+            new CarrierModel("Auto Carrier Trucking"),
+            new CarrierModel("Dray Trucking"),
+            new CarrierModel("Expedited Trucking"),
+            new CarrierModel("Flatbed Trucking"),
+            new CarrierModel("Heavy and Bulk Trucking"),
+            new CarrierModel("LTL/Dry Van"),
+            new CarrierModel("Mixed Trucking"),
+            new CarrierModel("Moving Van Trucking"),
+            new CarrierModel("Package Delivery Trucking"),
+            new CarrierModel("Refrigerated Trucking"),
+            new CarrierModel("Specialty Haul Trucking"),
+            new CarrierModel("Tanker Trucking"),
+            new CarrierModel("TL/Dry Van"),
+            new CarrierModel("Logistics"),
+            new CarrierModel("Multimodal"),
+            new CarrierModel("Rail"),
+            new CarrierModel("Barge"),
+            new CarrierModel("Air-Long Haul"),
+            new CarrierModel("Air-Short Haul")
         ];
     }
     // Global freight model
     var Model = {
-        NonOnlyCarriers: [
+        // Carrier types which are only NON smartway tier
+        NonSmartwayCarriers: [
             "Rail",
             "Barge",
             "Air-Long Haul",
             "Air-Short Haul"
         ],
-        CurrentCarriers: createFreightMethods(),
-        TargetCarriers: createFreightMethods(),
+        // The current carriers and usage input into the model
+        CurrentCarriers: createCarriers(),
+        // The target or goal carriers
+        TargetCarriers: createCarriers(),
+        // The bins object, loaded from smartway_bins_formatted_0.json
         Bins: {}
     };
 
@@ -72,33 +76,12 @@
         "NON"
     ];
 
-    // Create a table data cell from text
-    function createTableCell(text) {
-        return jQuery("<td>" + text + "</td>");
-    }
-
-    function createTableHeader(text) {
-        return jQuery("<th>" + text + "</th>");
-    }
-
-    // Create a table row, populated with input forms, takes a variable amount of arguments
-    function createTableRow() {
-        var tableRow = jQuery("<tr></tr>");
-        jQuery.each(arguments, function () {
-            tableRow.append(jQuery(this));
-        });
-        return tableRow;
-    }
-
-    /*
-    An object responsible for modeling performance of all carriers, and also constructing/updating a user-interface to match it
-    */
-
-    function PerformanceInputUI(freightMethods, tableID, simpleHeaderID,
+    // Class which handles the UI/input for performance levels, and runs calculations
+    function PerformanceInput(carriers, tableID, simpleHeaderID,
         detailedHeaderID, onEmissionsUpdate) {
         // DOM Object for where to put the UI
         this.table = jQuery(tableID);
-        this.methods = freightMethods;
+        this.carriers = carriers;
         this.doDetailed = false;
 
         this.simpleHeader = jQuery(simpleHeaderID);
@@ -118,51 +101,49 @@
             }
             this.doDetailed = detailed;
 
-            this.updateInputUI();
+            this.rebuildInputUI();
         };
 
         // Update the input for performance, redoing every row of the table
-        this.updateInputUI = function () {
+        this.rebuildInputUI = function () {
             // Clear table
             jQuery(this.table).empty();
 
             // For a detailed NON-only row,such as barge, creates 6 readonly inputs
-            var detailedNONRowCreator = function (method) {
+            var detailedNONRowCreator = function (carrier) {
                 var output = "<tr>";
-                output += "<th>" + method.type + "</th>";
+                output += "<th>" + carrier.type + "</th>";
                 output +=
-                    '<td><input style="width:55px;" value="100" min="0" max="100" maxlength="3" readOnly="true" type="number"/></td>';
+                    '<td><input style="width:3em;" value="100" min="0" max="100" maxlength="3" readOnly="true" type="number"/></td>';
                 for (var i = 0; i < 6; ++i)
                     output +=
-                    '<td><input style="width:55px;" value="0" readOnly="true" type="number" min="0" max="100" maxlength="3"/></td>';
+                    '<td><input style="width:3em;" value="0" readOnly="true" type="number" min="0" max="100" maxlength="3"/></td>';
                 output += "</tr>";
                 return jQuery(output);
             };
             // For a simple NON-only row,such as barge, creates a select with only 1 option
-            var simpleNONRowCreator = function (method) {
-                var output = "<tr><th>" + method.type + "</th><td>";
+            var simpleNONRowCreator = function (carrier) {
+                var output = "<tr><th>" + carrier.type + "</th><td>";
                 output += '<select class="form-select"><option value="NON">NON-SmartWay</option></select>';
                 output += "</td></tr>";
                 return jQuery(output);
             };
             var profile = this;
             // Function builder for when a detailed input changes
-            var detailedChangeBuilder = function (method, inputIndex) {
+            var detailedChangeBuilder = function (carrier, inputIndex) {
                 return function () {
-                    // Update the freightmethods model onchange
-                    method.percentSmartWay[5 - inputIndex] =
+                    // Update the carriers model onchange
+                    carrier.percentSmartWay[5 - inputIndex] =
                         Number(event.currentTarget.value);
                     profile.updateDetailedTotals();
-                    profile.updateEmissionsDetailed();
                     profile.onEmissionsUpdate();
                 };
             };
             // Function builder for when a simple input changes (select)
-            var simpleChangeBuilder = function (method) {
+            var simpleChangeBuilder = function (carrier) {
                 return function () {
-                    method.smartWayGeneral = event.currentTarget.value;
-                    obj.updateEmissionsSimple();
-                    obj.onEmissionsUpdate();
+                    carrier.smartWayGeneral = event.currentTarget.value;
+                    profile.onEmissionsUpdate();
                 };
             };
 
@@ -176,38 +157,38 @@
 
 
             // One row per type
-            for (var t = 0; t < this.methods.length; ++t) {
-                var method = this.methods[t];
-                if (!method.active || !method) {
+            for (var t = 0; t < this.carriers.length; ++t) {
+                var carrier = this.carriers[t];
+                if (!carrier.active || !carrier) {
                     continue;
                 }
 
                 // If it is NON-Smartway only (rail, barge, etc.) then it needs to be readonly
-                if (jQuery.inArray(method.type, Model.NonOnlyCarriers) !== -1) {
+                if (jQuery.inArray(carrier.type, Model.NonSmartwayCarriers) !== -1) {
                     if (this.doDetailed) {
-                        jQuery(this.table).append(detailedNONRowCreator(method));
+                        jQuery(this.table).append(detailedNONRowCreator(carrier));
                     } else {
-                        jQuery(this.table).append(simpleNONRowCreator(method));
+                        jQuery(this.table).append(simpleNONRowCreator(carrier));
                     }
-                    method.percentSmartWay[5] = 100;
+                    carrier.percentSmartWay[5] = 100;
                 }
                 // Row of six inputs
                 else if (this.doDetailed) {
                     var detailedRow = jQuery("<tr></tr>");
 
                     // Add type header
-                    var th = jQuery("<th>" + method.type + "</td>");
+                    var th = jQuery("<th>" + carrier.type + "</td>");
                     detailedRow.append(th);
 
                     // 0,1,2,3,4,5 from best to worst. UI is from worst to best so flip the index with 5-i
                     for (var i = 0; i < 6; ++i) {
                         var td = jQuery("<td></td>");
                         var input = jQuery(
-                            '<input type="number" min="0" max="100" maxLength="3" style="width:55px"></input>');
+                            '<input type="number" min="0" max="100" maxLength="3" style="width:3em"></input>');
                         // Inverted because theyre stored in the opposite order
-                        jQuery(input).val(method.percentSmartWay[5 - i]);
+                        jQuery(input).val(carrier.percentSmartWay[5 - i]);
 
-                        input.on('change keyup', detailedChangeBuilder(method, i));
+                        input.on('change keyup', detailedChangeBuilder(carrier, i));
                         td.append(jQuery(input));
                         detailedRow.append(td);
                     }
@@ -222,7 +203,7 @@
                     var simpleRow = jQuery("<tr></tr>");
 
                     // Add type label
-                    var thSimple = jQuery("<th>" + method.type + "</th>");
+                    var thSimple = jQuery("<th>" + carrier.type + "</th>");
                     simpleRow.append(thSimple);
 
                     // Select which has the 6 bin options (stored in performancelevels array)
@@ -230,9 +211,9 @@
 
                     jQuery.each(performanceLevels, optionAdder(select));
 
-                    select.val(method.smartWayGeneral);
+                    select.val(carrier.smartWayGeneral);
                     var obj = this;
-                    select.change(simpleChangeBuilder(method));
+                    select.change(simpleChangeBuilder(carrier));
                     var selectTD = jQuery("<td></td>");
                     selectTD.append(select);
                     simpleRow.append(selectTD);
@@ -243,53 +224,7 @@
             if (this.doDetailed) this.updateDetailedTotals();
         };
 
-        this.updateEmissionsSimple = function (factor) {
-            for (var i = 0; i < this.methods.length; ++i) {
-                var method = this.methods[i];
-
-                if (!method.active) {
-                    continue;
-                }
-
-                // Do simple calculations with units/type/bin
-                var bin = Model.Bins[method.activityUnits][method.type][method.smartWayGeneral];
-                var CO2 = bin.CO2;
-                var NOX = bin.NOX;
-                var PM = bin.PM;
-                method.CO2 = CO2 * Number(method.activityQuantity) * factor;
-                method.NOX = NOX * Number(method.activityQuantity) * factor;
-                method.PM = PM * Number(method.activityQuantity) * factor;
-            }
-        };
-
-        this.updateEmissionsDetailed = function (factor) {
-            for (var i = 0; i < this.methods.length; ++i) {
-                var method = this.methods[i];
-
-                // If percentages dont add up, dont re-calculate
-                if (method.invalid || !method.active) {
-                    continue;
-                }
-
-                method.CO2 = 0;
-                method.NOX = 0;
-                method.PM = 0;
-                var activity = method.activityQuantity;
-                // Iterate through 6 different percents, do calculation for each
-                for (var t = 0; t < method.percentSmartWay.length; ++t) {
-                    var binTag = performanceLevels[t];
-                    if (jQuery.inArray(method.type, Model.NonOnlyCarriers) !== -1 && binTag !== "NON") continue;
-                    var bin = Model.Bins[method.activityUnits][method.type][binTag];
-
-                    var percent = Number(method.percentSmartWay[t]) * 0.01;
-                    method.CO2 += Number(activity) * percent * bin.CO2 * factor;
-                    method.NOX += Number(activity) * percent * bin.NOX * factor;
-                    method.PM += Number(activity) * percent * bin.PM * factor;
-                }
-            }
-        };
-
-        // Update the total levels at the end and the "valid" member of each method
+        // Update the total levels at the end and the "valid" member of each carrier
         this.updateDetailedTotals = function () {
             if (!jQuery("#doDetailed").prop("checked")) return;
             if (this.table.childElementCount === 0) {
@@ -297,44 +232,43 @@
             }
 
             // Get the active ones
-            var activeFreightMethods = [];
-            jQuery.each(this.methods, function () {
+            var activeCarriers = [];
+            jQuery.each(this.carriers, function () {
                 if (this.active) {
-                    activeFreightMethods.push(this);
+                    activeCarriers.push(this);
                 }
             });
 
             // Do totaling
-            for (var i = 0; i < activeFreightMethods.length; ++i) {
-                var method = activeFreightMethods[i];
+            for (var i = 0; i < activeCarriers.length; ++i) {
+                var carrier = activeCarriers[i];
                 var row = this.table.children("tr:eq(" + i + ")");
                 if (!row) continue;
 
                 var td = row.children("th,td").last();
 
                 // Sum all of the percentages
-                var sum = method.percentSmartWay.reduce(function (total, num) {
+                var sum = carrier.percentSmartWay.reduce(function (total, num) {
                     return total + num;
                 });
                 td.html("<b>" + sum + "</b>");
-                // If computed value is invalid, mark that on the method for state checks
+                // If computed value is invalid, mark that on the carrier for state checks
                 if (sum === 100) {
-                    method.invalid = false;
+                    carrier.invalid = false;
                 } else {
-                    method.invalid = true;
+                    carrier.invalid = true;
                 }
                 jQuery(row).append(td);
             }
         };
     }
 
-
     // Class which handles the UI/input for activity quantity input, including adding new activities
-    function ActivityInputUI(location, onProfileChanged, methods,
+    function ActivityInput(location, onProfileChanged, carriers,
         typeChange, typeSet, unitsChange, quantityChange) {
         this.locationID = location;
         this.onProfileChanged = onProfileChanged;
-        this.methods = methods;
+        this.carriers = carriers;
 
         this.typeChange = typeChange;
         this.unitsChange = unitsChange;
@@ -344,53 +278,54 @@
         this.addQuantityInputUI = function () {
             var obj = this;
 
-            var jQuerytypeSelect = jQuery('<select class="form-select"></select>');
-            var methods = this.methods;
-            jQuerytypeSelect.empty().append(function () {
+            var typeSelect = jQuery('<select class="form-select"></select>');
+            var carriers = this.carriers;
+            typeSelect.empty().append(function () {
                 var output = '<option>' + obj.promptText + '</option>';
-                jQuery.each(methods, function () {
+                jQuery.each(carriers, function () {
                     output += "<option>" + this.type + "</option>";
                 });
                 return output;
             });
             // Four times <td></td> for <Type, Quant, Units, Remove>
             jQuery(this.locationID).append("<tr><th></th><td></td><td></td><td></td></tr>");
-            jQuery(this.locationID).find('tr').last().find('th').first().append(jQuerytypeSelect);
-            jQuerytypeSelect.attr("haschanged", "false");
-            jQuerytypeSelect.change(function () {
+            jQuery(this.locationID).find('tr').last().children("th:eq(0)").append(typeSelect);
+            typeSelect.attr("haschanged", "false");
+            typeSelect.change(function () {
                 obj.onTypeChanged(this);
                 jQuery(this).attr("haschanged", "true");
             });
-            jQuerytypeSelect.attr("name", "type");
+            typeSelect.attr("name", "type");
 
             // Quantity number input
-            var jQueryquantityInput = jQuery('<input type="number" min="0" value="0" name="quantity"/>');
-            jQueryquantityInput.on('change keyup', function () {
+            var quantityInput = jQuery(
+                '<input class="form-text" style="max-width:10em;" type="number" min="0" value="0" name="quantity"/>'
+            );
+            quantityInput.on('change keyup', function () {
                 obj.onQuantityChanged(this);
             });
 
             // Select for the units
-            var jQueryunitsInput =
-                jQuery('<select class="form-select">' +
+            var unitsInput =
+                jQuery('<select class="form-select" style="max-width:7em;min-width:7em;">' +
                     '<option value="Miles">Miles</option>' +
                     '<option value="Ton-Miles">Ton-Miles</option>');
-            jQueryunitsInput.change(function () {
+            unitsInput.change(function () {
                 obj.onUnitsChanged(this);
             });
-            jQueryunitsInput.attr("name", "units");
+            unitsInput.attr("name", "units");
 
-            var jQueryremoveInput = jQuery('<input type="button" value="X"/>');
-            jQueryremoveInput.click(function () {
+            var removeInput = jQuery('<input type="button" value="X"/>');
+            removeInput.click(function () {
                 obj.onRemove(this);
             });
 
             var row = jQuery(this.locationID).find('tr').last();
-            jQuery(row).find('td:eq(0)').append(jQuery(jQueryquantityInput));
-            jQuery(row).find('td:eq(1)').append(jQuery(jQueryunitsInput));
-            jQuery(row).find('td:eq(2)').append(jQuery(jQueryremoveInput));
+            jQuery(row).find('td:eq(0)').append(quantityInput);
+            jQuery(row).find('td:eq(1)').append(unitsInput);
+            jQuery(row).find('td:eq(2)').append(removeInput);
 
             this.updateSelectOptions();
-            //jQuerytypeSelect.trigger('change');
         };
 
         this.getTypeByElement =
@@ -402,8 +337,8 @@
         this.onTypeChanged =
             function (element, wasManual) {
                 jQuery("body").css("cursor", "progress");
-                // Clear all active methods
-                jQuery.each(methods, function () {
+                // Clear all active carriers
+                jQuery.each(carriers, function () {
                     this.active = false;
                     this.activityQuantity = 0;
                 });
@@ -412,16 +347,16 @@
                 // Update which types are active, and update their activityQuantity values
                 jQuery(this.locationID).find('select[name=type]').each(function () {
                     var type = jQuery(this).val();
-                    var method = jQuery.grep(obj.methods, (function (x) {
+                    var carrier = jQuery.grep(obj.carriers, (function (x) {
                         return (x.type === type);
                     }))[0];
-                    if (!method) return;
-                    method.active = true;
-                    method.activityQuantity = jQuery(this).parent().parent()
+                    if (!carrier) return;
+                    carrier.active = true;
+                    carrier.activityQuantity = jQuery(this).parent().parent()
                         .find('input[name=quantity]').first().val();
 
-                    obj.methods.splice(obj.methods.indexOf(method), 1);
-                    obj.methods.push(method);
+                    obj.carriers.splice(obj.carriers.indexOf(carrier), 1);
+                    obj.carriers.push(carrier);
                 });
                 this.updateSelectOptions();
 
@@ -439,7 +374,7 @@
                 jQuery("body").css("cursor", "default");
             };
 
-        // A manual type set which updates the UI and the method
+        // A manual type set which updates the UI and the carrier
         this.setType =
             function (index, val) {
 
@@ -449,7 +384,7 @@
                 this.onTypeChanged(element, true);
             };
 
-        // A manual units set which updates the UI and the method
+        // A manual units set which updates the UI and the carrier
         this.setUnits =
             function (index, val) {
                 var element = jQuery(this.locationID + " > tr:eq(" + index + ")")
@@ -458,7 +393,7 @@
                 this.onUnitsChanged(element, true);
             };
 
-        // A manual quantity set which updates the UI and the method
+        // A manual quantity set which updates the UI and the carrier
         this.setQuantity =
             function (index, val) {
                 var element = jQuery(this.locationID + " > tr:eq(" + index + ")")
@@ -468,12 +403,12 @@
             };
 
 
-        // Remove the active methods as, keeping people from selecting twice for current or twice for target
+        // Remove the active carriers as, keeping people from selecting twice for current or twice for target
         this.updateSelectOptions =
             function () {
                 var profile = this;
                 var availableOptions = [];
-                jQuery.each(profile.methods, function () {
+                jQuery.each(profile.carriers, function () {
                     if (!this.active) availableOptions.push(this.type);
                 });
                 jQuery(this.locationID).find('select[name=type]').each(function () {
@@ -488,10 +423,10 @@
                         if (jQuery(this).val() === value || jQuery.inArray(jQuery(this).val(),
                                 availableOptions) !== -1) {
                             // Change the order because hiding it pushs it to the end
-                            var methods = createFreightMethods();
+                            var carriers = createCarriers();
                             var index = -1;
-                            for (var i = 0; i < methods.length; ++i)
-                                if (methods[i].type === jQuery(this).val())
+                            for (var i = 0; i < carriers.length; ++i)
+                                if (carriers[i].type === jQuery(this).val())
                                     index = i;
 
                             if (index !== 0)
@@ -510,11 +445,11 @@
             function (element, wasManual) {
                 jQuery("body").css("cursor", "progress");
                 var type = this.getTypeByElement(event.currentTarget);
-                var method = jQuery.grep(this.methods, function (x) {
+                var carrier = jQuery.grep(this.carriers, function (x) {
                     return x.type === type;
                 })[0];
-                if (method)
-                    method.activityUnits = event.currentTarget.value;
+                if (carrier)
+                    carrier.activityUnits = event.currentTarget.value;
                 if (!wasManual) {
                     if (this.unitsChange) this.unitsChange(
                         jQuery(element).parent().parent().index(),
@@ -531,10 +466,10 @@
                 var type = this.getTypeByElement(jQueryinput);
                 var quantity = jQueryinput.val();
 
-                var method = jQuery.grep(this.methods, function (x) {
+                var carrier = jQuery.grep(this.carriers, function (x) {
                     return x.type === type;
                 })[0];
-                if (method) method.activityQuantity = quantity;
+                if (carrier) carrier.activityQuantity = quantity;
                 if (!wasManual) {
                     if (this.quantityChange) {
                         this.quantityChange(
@@ -553,13 +488,13 @@
                 if (type === this.promptText) {
                     return;
                 }
-                var method = jQuery.grep(this.methods, function (x) {
+                var carrier = jQuery.grep(this.carriers, function (x) {
                     return x.type === type;
                 })[0];
-                if (method) {
-                    method.activityQuantity = 0;
-                    method.percentSmartWay = [0, 0, 0, 0, 0, 0];
-                    method.active = false;
+                if (carrier) {
+                    carrier.activityQuantity = 0;
+                    carrier.percentSmartWay = [0, 0, 0, 0, 0, 0];
+                    carrier.active = false;
                 }
 
                 this.updateSelectOptions();
@@ -619,30 +554,30 @@
 
 
     // Globals for four different input forms
-    var currentPerformance;
-    var currentActivity;
-    var targetPerformance;
-    var targetActivity;
+    var currentPerformance; //PerformanceInput
+    var currentActivity; //ActivityInput
+    var targetPerformance; //PerformanceInput
+    var targetActivity; //ActivityInput
 
     jQuery(document).ready(function () {
 
-        // Start loading the json data right away
+        // Start loading the bins data right away
         jQuery.getJSON("/sites/staging/files/2018-07/smartway_bins_formatted_0.json", function (data) {
             Model.Bins = data;
 
             // The begin button, here so that the user cannot continue without the bins
             jQuery("#hideIntro").click(function () {
-                if (jQuery("#doDetailed:checked").length > 0) {
+                if (jQuery("#doDetailed").prop("checked")) {
                     jQuery("#introDiv").hide();
                     jQuery("#detailedHeader").show();
                     jQuery("#appDiv").show();
-                    updateEmissions();
+                    updateOutput();
                     window.scrollTo(0, 0);
-                } else if (jQuery("#doBasic:checked").length > 0) {
+                } else if (jQuery("#doBasic").prop("checked")) {
                     jQuery("#introDiv").hide();
                     jQuery("#basicHeader").show();
                     jQuery("#appDiv").show();
-                    updateEmissions();
+                    updateOutput();
                     window.scrollTo(0, 0);
                 } else {
                     alert("Please choose either basic or detailed Bin rankings!");
@@ -656,29 +591,41 @@
         var onCurrentTypeSet = function (index, val) {
             targetActivity.setType(index, val);
         };
+
         var onCurrentUnitsSet = function (index, val) {
             targetActivity.setUnits(index, val);
         };
+
         var onCurrentQuantitySet = function (index, val) {
             targetActivity.setQuantity(index, val);
         };
+        // When the add button for current activity input is clicked
+        var addCurrentActivity = function () {
+            currentActivity.addQuantityInputUI();
+            if (jQuery("#currentQuantityTable > tr").length > jQuery("#targetQuantityTable > tr").length)
+                addTargetActivity();
+        };
+        // When the add button for target activity input is clicked
+        var addTargetActivity = function () {
+            targetActivity.addQuantityInputUI();
+        };
 
         // Object handling input for the CURRENT performance rankings
-        currentPerformance = new PerformanceInputUI(Model.CurrentCarriers,
+        currentPerformance = new PerformanceInput(Model.CurrentCarriers,
             "#currentPerformanceTable", "#currentSimpleHeader",
-            "#currentDetailedHeader", updateEmissions);
+            "#currentDetailedHeader", updateOutput);
         // Object handling input for the CURRENT activity
         // For CURRENT the event handlers like settype update the target model, for a one-way sync
-        currentActivity = new ActivityInputUI("#currentQuantityTable",
+        currentActivity = new ActivityInput("#currentQuantityTable",
             onActivityChanged, Model.CurrentCarriers,
             onCurrentTypeSet, addCurrentActivity, onCurrentUnitsSet, onCurrentQuantitySet
         );
 
         // Object handling input for all of the TARGET performance rankings
-        targetPerformance = new PerformanceInputUI(Model.TargetCarriers,
-            "#targetPerformanceTable", "#targetSimpleHeader", "#targetDetailedHeader", updateEmissions);
+        targetPerformance = new PerformanceInput(Model.TargetCarriers,
+            "#targetPerformanceTable", "#targetSimpleHeader", "#targetDetailedHeader", updateOutput);
         // Object handling input for all of the TARGET activity
-        targetActivity = new ActivityInputUI("#targetQuantityTable",
+        targetActivity = new ActivityInput("#targetQuantityTable",
             onActivityChanged, Model.TargetCarriers,
             function () {}, addTargetActivity); // No syncing types for target values, for modal shift/usability reasons
 
@@ -751,35 +698,45 @@
             printWindow.close();
         });
 
+        // For table headers, there are two headers one for each unit. Defaults to kg so hide pounds
         jQuery("[id^=pounds]").hide();
-        jQuery("#outputUnitsSelect").change(setTableUnits);
+        jQuery("#outputUnitsSelect").change(updateTableUnits);
     });
 
+    // Update all calculations, tables, and graphs
+    function updateOutput() {
+        updateEmissionsCalculations();
+        updateEmissionsTables();
+        updateGraphs();
+    }
+
+    // Validate the state of the current tab and alert the user of issues
     function validateState(tabID) {
-        var methods;
-        // Get the methods model relevant to the current tab
+        var carriers;
+        // Get the carriers model relevant to the current tab
         switch (tabID) {
             // Current activity tab
             case "#tab-1":
-                methods = Model.CurrentCarriers;
+                carriers = Model.CurrentCarriers;
                 break;
                 // Target activity tab
             case "#tab-2":
-                methods = Model.TargetCarriers;
+                carriers = Model.TargetCarriers;
                 break;
         }
-        if (!methods)
+        if (!carriers)
             return true;
 
         var failed = false;
-        // Check each method for issues and inform the user if there are any
-        jQuery.each(methods, function () {
+        // Check each carrier for issues and inform the user if there are any
+        jQuery.each(carriers, function () {
             if (!this.active || failed)
                 return;
-
+            // Activity Quantity is too little
             else if (Number(this.activityQuantity) <= 0) {
                 alert("One of your Current Activity Quantities is Zero or Invalid!");
                 failed = true;
+                // Detailed values are not adding up to 100 (this.invalid === true)
             } else if (jQuery("#doDetailed").prop("checked") && this.invalid) {
                 alert("One of your Current Activty Bins (%) does not add up to 100!");
                 failed = true;
@@ -789,18 +746,78 @@
         return (!failed);
     }
 
+    // Call the profiles calculation functions (also update the bins that they use, for redundancy)
+    // This updates the MODEL
+    function updateEmissionsCalculations() {
+        var outputEmissionsUnit = jQuery("#outputUnitsSelect").val();
 
-    // Update all of the emissions calculations and UI
-    function updateEmissions() {
-        updateEmissionsCalculations();
-        updateCurrentEmissionsUI();
-        updateGoalEmissionsUI();
-        updateGraphs();
+        // The conversion factor all emissions are multplied by. Original is grams
+        var factor = 1;
+        if (outputEmissionsUnit === "US (lb)") { // g -> lb
+            factor = (1 / 453.592);
+        } else if (outputEmissionsUnit === "Metric (kg)") { // g -> kg
+            factor = (1 / 1000);
+        }
+
+        var update;
+        if (jQuery("#doDetailed").prop("checked")) {
+            update = updateEmissionsDetailed;
+        } else {
+            update = updateEmissionsSimple;
+        }
+        update(factor, Model.CurrentCarriers);
+        update(factor, Model.TargetCarriers);
     }
+
+    function updateEmissionsDetailed(factor, carriers) {
+        for (var i = 0; i < carriers.length; ++i) {
+            var carrier = carriers[i];
+
+            // If percentages dont add up, dont re-calculate
+            if (carrier.invalid || !carrier.active) {
+                continue;
+            }
+
+            carrier.CO2 = 0;
+            carrier.NOX = 0;
+            carrier.PM = 0;
+            var activity = carrier.activityQuantity;
+            // Iterate through 6 different percents, do calculation for each
+            for (var t = 0; t < carrier.percentSmartWay.length; ++t) {
+                var binTag = performanceLevels[t];
+                if (jQuery.inArray(carrier.type, Model.NonSmartwayCarriers) !== -1 && binTag !== "NON") continue;
+                var bin = Model.Bins[carrier.activityUnits][carrier.type][binTag];
+
+                var percent = Number(carrier.percentSmartWay[t]) * 0.01;
+                carrier.CO2 += Number(activity) * percent * bin.CO2 * factor;
+                carrier.NOX += Number(activity) * percent * bin.NOX * factor;
+                carrier.PM += Number(activity) * percent * bin.PM * factor;
+            }
+        }
+    };
+
+    function updateEmissionsSimple(factor, carriers) {
+        for (var i = 0; i < carriers.length; ++i) {
+            var carrier = carriers[i];
+
+            if (!carrier.active) {
+                continue;
+            }
+
+            // Do simple calculations with units/type/bin
+            var bin = Model.Bins[carrier.activityUnits][carrier.type][carrier.smartWayGeneral];
+            var CO2 = bin.CO2;
+            var NOX = bin.NOX;
+            var PM = bin.PM;
+            carrier.CO2 = CO2 * Number(carrier.activityQuantity) * factor;
+            carrier.NOX = NOX * Number(carrier.activityQuantity) * factor;
+            carrier.PM = PM * Number(carrier.activityQuantity) * factor;
+        }
+    };
 
     // Set the units of headers for all the tables based on what is selected
     // Accomplished by hiding unused headers and showing used ones
-    function setTableUnits() {
+    function updateTableUnits() {
         var value = jQuery("#outputUnitsSelect").val();
         if (value === "Metric (kg)") {
             jQuery("[id^=kg]").show();
@@ -811,88 +828,44 @@
         }
     }
 
-    // When the detailed checkbox changes
+    // When the detailed radio button changes, change the headers/display mode
     function onDetailedChange() {
         var detailed = jQuery("#doDetailed").prop('checked');
         currentPerformance.setDetailed(detailed);
         targetPerformance.setDetailed(detailed);
     }
 
-    // Update the target/current performance input fields
-    function updatePerformanceInputUI() {
-        currentPerformance.updateInputUI();
-        targetPerformance.updateInputUI();
-    }
-
-    // For output number formatting
-    function roundToTwo(num) {
-        return +(Math.round(num + "e+2") + "e-2");
-    }
-
-    // When the add button for current activity input is clicked
-    function addCurrentActivity() {
-        currentActivity.addQuantityInputUI();
-        if (jQuery("#currentQuantityTable > tr").length > jQuery("#targetQuantityTable > tr").length)
-            addTargetActivity();
-    }
-    // When the add button for target activity input is clicked
-    function addTargetActivity() {
-        targetActivity.addQuantityInputUI();
-    }
-
     // When the activity input, target or current, changes. Fired by activityprofiles
     function onActivityChanged() {
-        updatePerformanceInputUI();
-        updateEmissions();
+        rebuildPerformanceInputUI();
+        updateOutput();
     }
 
+    // Update the target/current performance input fields (add/remove based on which are active)
+    function rebuildPerformanceInputUI() {
+        currentPerformance.rebuildInputUI();
+        targetPerformance.rebuildInputUI();
+    }
+
+    // Takes a number and adds commas/rounds to two
     function format(number) {
-        return roundToTwo(number).toLocaleString();
-    }
-
-    // Update the table for emissions
-    function updateCurrentEmissionsUI() {
-
-        var activeFreightMethods = [];
-        // Get active methods from all current freightmethods
-        jQuery.each(Model.CurrentCarriers, function () {
-            if (this.active) activeFreightMethods.push(this);
-        });
-
-        jQuery("#currentTable").empty();
-        jQuery("#currentTable1").empty();
-
-        var currentCO2 = 0;
-        var currentNOX = 0;
-        var currentPM = 0;
-        // Add row for emissions for each type
-        for (var i = 0; i < activeFreightMethods.length; ++i) {
-            var method = activeFreightMethods[i];
-            var tableRow = createTableRow(
-                createTableCell(method.type),
-                createTableCell(format(method.CO2)),
-                createTableCell(format(method.NOX)),
-                createTableCell(format(method.PM)));
-
-            jQuery(tableRow).appendTo("#currentTable,#currentTable1");
-            currentCO2 += method.CO2;
-            currentNOX += method.NOX;
-            currentPM += method.PM;
-        }
-
-        // Create a row for totals
-        var currentTableRow = createTableRow(
-            createTableHeader("TOTAL"),
-            createTableHeader(format(currentCO2)),
-            createTableHeader(format(currentNOX)),
-            createTableHeader(format(currentPM)));
-        jQuery(currentTableRow).appendTo("#currentTable,#currentTable1");
+        return (+(Math.round(number + "e+2") + "e-2")).toLocaleString();
     }
 
     // Update the savings table, including the calculations and totals
-    function updateGoalEmissionsUI() {
-        jQuery("#targetTable").empty();
-        jQuery("#targetTable1").empty();
+    function updateEmissionsTables() {
+        // Create a table data cell from text
+        var createTableCell = function (text) {
+            return jQuery("<td>" + text + "</td>");
+        };
+        var createTableHeader = function (text) {
+            return jQuery("<th>" + text + "</th>");
+        };
+
+        var currentTables = "#currentTable,#currentTable1";
+        var targetTables = "#targetTable,#targetTable1";
+        jQuery(currentTables).empty();
+        jQuery(targetTables).empty();
         jQuery("#savingsTableRaw").empty();
         jQuery("#savingsTablePercent").empty();
 
@@ -906,84 +879,91 @@
         var targetTotal = new EmissionsGroup();
         var savedTotal = new EmissionsGroup();
 
-        // Function builder for checking if methods are the same type, used in grep search
+        // Function builder for checking if carriers are the same type, used in grep search
         var isSameType = function (val) {
             return function (val2) {
                 return val.type === val2.type;
             };
         };
 
-        var cellPopulator = function (currentMethod, targetMethod,
-            targetCells, savedCells, percentCells) {
+        var cellPopulator = function (currentCarrier, targetCarrier,
+            currentCells, targetCells, savedCells, percentCells) {
             return function () {
                 var emis = this.toString();
-                currentTotal[emis] += currentMethod[emis];
-                targetTotal[emis] += targetMethod[emis];
-                var saved = (currentMethod[emis] - targetMethod[emis]);
+                currentTotal[emis] += currentCarrier[emis];
+                targetTotal[emis] += targetCarrier[emis];
+                var saved = (currentCarrier[emis] - targetCarrier[emis]);
                 savedTotal[emis] += saved;
 
-                targetCells.push(createTableCell(format(targetMethod[emis])));
+                currentCells.push(createTableCell(format(currentCarrier[emis])));
+                targetCells.push(createTableCell(format(targetCarrier[emis])));
                 savedCells.push(createTableCell(format(saved)));
 
                 // Add percentage to row, can't divide by zero
-                if (currentMethod[emis] > 0) {
+                if (currentCarrier[emis] > 0) {
                     percentCells.push(createTableCell(format(
-                        (saved / currentMethod[emis]) * 100)));
+                        (saved / currentCarrier[emis]) * 100)));
                 } else percentCells.push(createTableCell("0"));
             };
         };
 
+        var addAsRow = function (cells, table) {
+            var row = jQuery("<tr></tr>");
+            jQuery.each(cells, appender(row));
+            row.appendTo(jQuery(table));
+        };
+
+        // Closure for event that appends to an object
         var appender = function (element) {
             return function () {
                 jQuery(this).appendTo(element);
             };
         };
 
-        // Go through each method to calculate savings
+        // Go through each carrier to calculate savings
         for (var i = 0; i < Model.CurrentCarriers.length; ++i) {
 
-            var currentMethod = Model.CurrentCarriers[i];
+            var currentCarrier = Model.CurrentCarriers[i];
 
-            // Find the first "targetmethod" with same ID
-            var targetMethod = jQuery.grep(Model.TargetCarriers,
-                isSameType(currentMethod))[0];
+            // Find the first "targetcarrier" with same ID
+            var targetCarrier = jQuery.grep(Model.TargetCarriers,
+                isSameType(currentCarrier))[0];
 
-            if (!currentMethod.active && !targetMethod.active) {
+            if (!currentCarrier || !targetCarrier) {
+                continue;
+            }
+            if (!currentCarrier.active && !targetCarrier.active) {
                 continue;
             }
 
             // Each of the rows for target, saved, and percent tables (current is elsewhere)
-            var targetCells = [createTableCell(targetMethod.type)];
-            var savedCells = [createTableCell(targetMethod.type)];
-            var percentCells = [createTableCell(targetMethod.type)];
+            var currentCells = [createTableCell(targetCarrier.type)];
+            var targetCells = [createTableCell(targetCarrier.type)];
+            var savedCells = [createTableCell(targetCarrier.type)];
+            var percentCells = [createTableCell(targetCarrier.type)];
 
             // Update all of the totals and add to the cells list for this row
-            jQuery.each(emissionTypes, cellPopulator(currentMethod, targetMethod,
-                targetCells, savedCells, percentCells));
-            var targetRow = jQuery("<tr></tr>");
+            jQuery.each(emissionTypes, cellPopulator(currentCarrier, targetCarrier,
+                currentCells, targetCells, savedCells, percentCells));
 
-            jQuery.each(targetCells, appender(targetRow));
-            jQuery(targetRow).appendTo("#targetTable,#targetTable1");
-
-            var savedRow = jQuery("<tr></tr>");
-            jQuery.each(savedCells, appender(savedRow));
-            jQuery(savedRow).appendTo("#savingsTableRaw");
-
-            var percentRow = jQuery("<tr></tr>");
-            jQuery.each(percentCells, appender(percentRow));
-            jQuery(percentRow).appendTo("#savingsTablePercent");
+            addAsRow(currentCells, currentTables);
+            addAsRow(targetCells, targetTables);
+            addAsRow(savedCells, "#savingsTableRaw");
+            addAsRow(percentCells, "#savingsTablePercent");
         }
 
+        var currentTotalCells = [createTableHeader("TOTAL")];
         var targetTotalCells = [createTableHeader("TOTAL")];
-        var savedTotalCells = [createTableHeader("TOTAL")];
+        var rawTotalCells = [createTableHeader("TOTAL")];
         var percentTotalCells = [createTableHeader("TOTAL")];
 
         // Create a totals row for target
         jQuery.each(emissionTypes, function () {
             var emis = this.toString();
+            currentTotalCells.push(createTableHeader(format(currentTotal[emis])));
             targetTotalCells.push(createTableHeader(format(targetTotal[emis])));
-            savedTotalCells.push(createTableHeader(format(savedTotal[emis])));
-            if (targetTotal[emis] !== 0) {
+            rawTotalCells.push(createTableHeader(format(savedTotal[emis])));
+            if (currentTotal[emis] !== 0) {
                 percentTotalCells.push(createTableHeader(format(
                     (savedTotal[emis] / currentTotal[emis]) * 100)));
             } else {
@@ -995,23 +975,10 @@
         Append to all the tables
         */
 
-        var targetTotalRow = jQuery("<tr></tr>");
-        jQuery.each(targetTotalCells, function () {
-            jQuery(this).appendTo(targetTotalRow);
-        });
-        jQuery(targetTotalRow).appendTo("#targetTable,#targetTable1");
-
-        var savedTotalRow = jQuery("<tr></tr>");
-        jQuery.each(savedTotalCells, function () {
-            jQuery(this).appendTo(savedTotalRow);
-        });
-        jQuery(savedTotalRow).appendTo("#savingsTableRaw");
-
-        var percentTotalRow = jQuery("<tr></tr>");
-        jQuery.each(percentTotalCells, function () {
-            jQuery(this).appendTo(percentTotalRow);
-        });
-        jQuery(percentTotalRow).appendTo("#savingsTablePercent");
+        addAsRow(currentTotalCells, currentTables);
+        addAsRow(targetTotalCells, targetTables);
+        addAsRow(rawTotalCells, "#savingsTableRaw");
+        addAsRow(percentTotalCells, "#savingsTablePercent");
     }
 
     // Show the graphs with raw data, no percentages etc
@@ -1041,14 +1008,14 @@
             jQuery.each(active, function () {
                 var val = this.toString();
                 var current =
-                    // finds the first method matching the query
+                    // finds the first carrier matching the query
                     jQuery.grep(Model.CurrentCarriers,
                         function (x) {
                             return x.type === val;
                         })[0][pollutant];
 
                 var target =
-                    // finds the first method matching the query
+                    // finds the first carrier matching the query
                     jQuery.grep(Model.TargetCarriers,
                         function (x) {
                             return x.type === val;
@@ -1089,26 +1056,5 @@
         BarChart("graph-3", "PM 2.5", "Estimated Emissions in " + units, ["<b>Current</b>", "<b>Target</b>",
             "<b>Savings</b>"
         ], yTitle, unitsShort, PM, pointFormatter);
-    }
-
-    // Call the profiles calculation functions (also update the bins that they use, for redundancy)
-    function updateEmissionsCalculations() {
-        var outputEmissionsUnit = jQuery("#outputUnitsSelect").val();
-
-        // The conversion factor all emissions are multplied by. Original is grams
-        var factor = 1;
-        if (outputEmissionsUnit === "US (lb)") { // g -> lb
-            factor = (1 / 453.592);
-        } else if (outputEmissionsUnit === "Metric (kg)") { // g -> kg
-            factor = (1 / 1000);
-        }
-
-        if (jQuery("#doDetailed:checked").length > 0) {
-            currentPerformance.updateEmissionsDetailed(factor);
-            targetPerformance.updateEmissionsDetailed(factor);
-        } else {
-            currentPerformance.updateEmissionsSimple(factor);
-            targetPerformance.updateEmissionsSimple(factor);
-        }
     }
 </script>
