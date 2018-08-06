@@ -315,7 +315,7 @@
             });
             unitsInput.attr("name", "units");
 
-            var removeInput = jQuery('<input type="button" value="X"/>');
+            var removeInput = jQuery('<input type="button" value="X" style="margin:0px;width:100%;"/>');
             removeInput.click(function () {
                 obj.onRemove(this);
             });
@@ -700,6 +700,14 @@
     // Call the profiles calculation functions (also update the bins that they use, for redundancy)
     // This updates the MODEL
     function updateEmissionsCalculations() {
+        var clearIfInactive = function () {
+            if (!this.active) {
+                this.activityQuantity = 0;
+            }
+        }
+        jQuery.each(Model.CurrentCarriers, clearIfInactive);
+        jQuery.each(Model.TargetCarriers, clearIfInactive)
+
         var outputEmissionsUnit = jQuery("#outputUnitsSelect").val();
 
         // The conversion factor all emissions are multplied by. Original is grams
@@ -751,6 +759,10 @@
     function updateEmissionsSimple(factor, carriers) {
         for (var i = 0; i < carriers.length; ++i) {
             var carrier = carriers[i];
+
+            carrier.CO2 = 0;
+            carrier.NOX = 0;
+            carrier.PM = 0;
 
             if (!carrier.active) {
                 continue;
