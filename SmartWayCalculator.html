@@ -1,0 +1,358 @@
+<html>
+
+<head></head>
+
+<body>
+    <div id="introDiv">
+        <h2>Instructions</h2>
+
+        <p>Ever wondered why so many companies have joined SmartWay? SmartWay carrier fleets measure and benchmark their performance
+            and are placed into one of five performance ranks (Rank 1 is best.) By simply using SmartWay carriers, and especially
+            better ranked SmartWay carriers, you can reduce pollution.</p>
+
+        <p>You can estimate the emissions savings you will achieve by using SmartWay carrier fleets with this calculator. Choose
+            either the Basic version: you will choose a single SmartWay ranking for analysis, or Detailed: you will indicate
+            the % of activity in each SmartWay rank.</p>
+
+        <div class="form-radios row cols-2" id="radios">
+            <div class="form-item form-type-radio form-item-radios col">
+                <input class="form-radio" id="doBasic" name="radios" type="radio" value="one">
+                <label class="option" for="doBasic">Basic</label>
+            </div>
+
+            <div class="form-item form-type-radio form-item-radios col">
+                <input class="form-radio" id="doDetailed" name="radios" type="radio" value="two">
+                <label class="option" for="doDetailed">Detailed</label>
+            </div>
+        </div>
+
+        <p>&#8203;</p>
+
+        <p>This calculator will provide you with output estimates for Current and Goal emissions, either in grams or pounds
+            which you can configure here.</p>
+        <div id="outputUnitsDiv">
+            <label for="select-id right">Output Emissions Units</label>
+            <select class="form-select" id="outputUnitsSelect">
+                <option value="Metric (kg)">Metric (kg)</option>
+                <option value="US (lb)">US (lb)</option>
+            </select>
+        </div>
+
+        <p>&#8203;</p>
+
+        <p class="disclaimer">This page requires javascript to function, without it enabled you will not be able to input emissions or obtain calculations.</p>
+
+        <button id="hideIntro">Continue</button>
+    </div>
+
+    <div id="basicHeader">
+        <h2>Basic</h2>
+
+        <p>To see your current emissions, input your current freight activity by choosing a carrier type(s) (18 choices), measurement
+            units (miles or ton-miles) and input your activity. Then choose your current SmartWay performance level (1 through
+            5) or choose NON-SmartWay if you don’t use any SmartWay carriers. You’ll see your current emissions. Then, determine
+            your goals (what-if scenario) by clicking on the Goal Tab.</p>
+    </div>
+
+    <div id="detailedHeader">
+        <h2>Detailed</h2>
+
+        <p>To see your current emissions, input your current freight activity by choosing a carrier type(s) (18 choices), measurement
+            units (miles or ton-miles) and input your activity. Then input the percentage of carriers you use for each SmartWay
+            Bin (1-5). If the carrier is not a SmartWay carrier count its percentage of activity as NON. You’ll see your
+            current emissions. Then, determine your goals (what-if scenario) by clicking on the Goal Tab. This may include
+            changing carrier types/quantities or improving your rankings.</p>
+    </div>
+
+
+    <div id="appDiv">
+        <a href="#intro" id="showIntro">Return to Start</a>
+
+        <hr>
+        <div id="tabsDiv">
+            <ul class="tabs" id="inputTabsNav">
+                <li>
+                    <a class="menu-internal" href="#tab-1" id="inputTab1" name="inputTab">Current Freight Activity</a>
+                </li>
+                <li>
+                    <a class="menu-internal" href="#tab-2" id="inputTab2" name="inputTab">Goal Freight Activity</a>
+                </li>
+                <li>
+                    <a class="menu-internal" href="#tab-3" id="inputTab3" name="inputTab">Emissions Results</a>
+                </li>
+                <li>
+                    <a class="menu-internal" href="#tab-4" id="inputTab4" name="inputTab">Visualization</a>
+                </li>
+            </ul>
+
+            <div id="tab-1">
+                <h2>Current Activity Quantity</h2>
+
+                <table class="center" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Carrier Type</th>
+                            <th>Movement Amount</th>
+                            <th>Movement Units</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody id="currentQuantityTable"></tbody>
+                </table>
+
+                <h2>Current Activity Bins</h2>
+
+                <table style="width:100%">
+                    <thead id="currentSimpleHeader">
+                        <tr>
+                            <th>Carrier Type</th>
+                            <th>General Performance Level</th>
+                        </tr>
+                    </thead>
+                    <thead id="currentDetailedHeader" style="display:none">
+                        <tr>
+                            <th>Carrier Type</th>
+                            <th>% NON SmartWay</th>
+                            <th>% Bin 5</th>
+                            <th>% Bin 4</th>
+                            <th>% Bin 3</th>
+                            <th>% Bin 2</th>
+                            <th>% Bin 1</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="center" id="currentPerformanceTable"></tbody>
+                </table>
+
+                <h2>Estimated Current Emissions</h2>
+
+                <table style="width:100%">
+                    <thead id="kgCurrent">
+                        <tr>
+                            <th>Carrier Type</th>
+                            <th>CO2 (kg)</th>
+                            <th>NOX (kg)</th>
+                            <th>PM (kg)</th>
+                        </tr>
+                    </thead>
+                    <thead id="poundsCurrent">
+                        <tr>
+                            <th>Carrier Type</th>
+                            <th>CO2 (lb)</th>
+                            <th>NOX (lb)</th>
+                            <th>PM (lb)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="currentTable"></tbody>
+                </table>
+            </div>
+
+            <div id="tab-2">
+                <h2>Goal Activity Quantity</h2>
+
+                <div id="targetQuantityDiv">
+                    <table class="center" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Movement Amount</th>
+                                <th>Movement Units</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody id="targetQuantityTable"></tbody>
+                    </table>
+                </div>
+
+                <h2>Goal Activity Bins</h2>
+
+                <div id="targetPerformanceDiv">
+                    <table class="center" style="width:100%">
+                        <thead id="targetSimpleHeader">
+                            <tr>
+                                <th>Carrier Type</th>
+                                <th>General Performance Level</th>
+                            </tr>
+                        </thead>
+                        <thead id="targetDetailedHeader" style="display:none">
+                            <tr>
+                                <th>Carrier Type</th>
+                                <th>% NON SmartWay</th>
+                                <th>% Bin 5</th>
+                                <th>% Bin 4</th>
+                                <th>% Bin 3</th>
+                                <th>% Bin 2</th>
+                                <th>% Bin 1</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="center" id="targetPerformanceTable"></tbody>
+                    </table>
+
+                    <h2>Estimated Goal Emissions</h2>
+
+                    <table class="center" style="width:100%">
+                        <thead id="kgTarget">
+                            <tr>
+                                <th>Carrier Type</th>
+                                <th>CO2 (kg)</th>
+                                <th>NOX (kg)</th>
+                                <th>PM (kg)</th>
+                            </tr>
+                        </thead>
+                        <thead id="poundsTarget">
+                            <tr>
+                                <th>Carrier Type</th>
+                                <th>CO2 (lb)</th>
+                                <th>NOX (lb)</th>
+                                <th>PM (lb)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="targetTable"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tab-3">
+                <a href="#tables" id="printButton">Print</a>
+
+                <div id="tables">
+                    <div id="current">
+                        <h2>Estimated Current Emissions</h2>
+
+                        <table style="width:100%">
+                            <thead id="kgCurrent1">
+                                <tr>
+                                    <th>Carrier Type</th>
+                                    <th>CO2 (kg)</th>
+                                    <th>NOX (kg)</th>
+                                    <th>PM (kg)</th>
+                                </tr>
+                            </thead>
+                            <thead id="poundsCurrent1">
+                                <tr>
+                                    <th>Carrier Type</th>
+                                    <th>CO2 (lb)</th>
+                                    <th>NOX (lb)</th>
+                                    <th>PM (lb)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="currentTable1"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="target">
+                        <h2>Estimated Goal Emissions</h2>
+
+                        <table style="width:100%">
+                            <thead id="kgTarget1">
+                                <tr>
+                                    <th>Carrier Type</th>
+                                    <th>CO2 (kg)</th>
+                                    <th>NOX (kg)</th>
+                                    <th>PM (kg)</th>
+                                </tr>
+                            </thead>
+                            <thead id="poundsTarget1">
+                                <tr>
+                                    <th>Carrier Type</th>
+                                    <th>CO2 (lb)</th>
+                                    <th>NOX (lb)</th>
+                                    <th>PM (lb)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="targetTable1"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="saved">
+                        <h2>Estimated Savings</h2>
+
+                        <table style="width:100%">
+                            <thead id="kgSavings">
+                                <tr>
+                                    <th>Carrier Type</th>
+                                    <th>CO2 (kg)</th>
+                                    <th>NOX (kg)</th>
+                                    <th>PM (kg)</th>
+                                </tr>
+                            </thead>
+                            <thead id="poundsSavings">
+                                <tr>
+                                    <th>Carrier Type</th>
+                                    <th>CO2 (lb)</th>
+                                    <th>NOX (lb)</th>
+                                    <th>PM (lb)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="savingsTableRaw"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="percent">
+                        <h2>Estimated Percent Savings</h2>
+
+                        <table style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Carrier Type</th>
+                                    <th>CO2 (%)</th>
+                                    <th>NOX (%)</th>
+                                    <th>PM (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="savingsTablePercent"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-4">
+                <div id="graphTabs">
+                    <ul class="tabs" id="graphTabsNav">
+                        <li>
+                            <a class="menu-internal" href="#graph-1" id="graphTab1" name="graphTab">CO2</a>
+                        </li>
+                        <li>
+                            <a class="menu-internal" href="#graph-2" id="graphTab2" name="graphTab">NOX</a>
+                        </li>
+                        <li>
+                            <a class="menu-internal" href="#graph-3" id="graphTab3" name="graphTab">PM 2.5</a>
+                        </li>
+                    </ul>
+
+                    <div id="graph-1">&nbsp;</div>
+
+                    <div id="graph-2">&nbsp;</div>
+
+                    <div id="graph-3">&nbsp;</div>
+                </div>
+            </div>
+        </div>
+
+        <p class="pagetop col">
+            <a href="#main-content">Top of Page</a>
+        </p>
+
+        <hr>
+        <p>
+            <small>When choosing performance level, you are choosing the same performance level for CO2, NOx and PM emissions. Actual
+                SmartWay carriers are ranked individually for each pollutant for grams per mile and grams per ton-mile, resulting
+                in 6 individual rankings per carrier fleet. </small>
+        </p>
+        [[{"fid":"452656","view_mode":"media_link","fields":{"format":"media_link"},"link_text":null,"type":"media","field_deltas":{"1":{"format":"media_link"}},"attributes":{"class":"media-element
+        file-media-link","data-delta":"1"}}]]
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js">
+    </script>
+    <script type="text/javascript" src="https://epa.gov/sites/all/libraries/js/highcharts/highcharts.js">
+    </script>
+    <script type="text/javascript" src="https://epa.gov/sites/all/libraries/js/highcharts/modules/exporting.js">
+    </script>
+    <script type="text/javascript" src="https://epa.gov/sites/all/libraries/js/highcharts/modules/offline-exporting.js">
+    </script>
+    <script type="text/javascript" src="SmartWayCalculator.js">
+    </script>
+</body>
+
+</html>
