@@ -121,7 +121,7 @@ function PerformanceInput(carriers, tableID, simpleHeaderID,
         // For a simple NON-only row,such as barge, creates a select with only 1 option
         var simpleNONRowCreator = function (carrier) {
             var output = "<tr><th>" + carrier.type + "</th><td>";
-            output += '<select class="form-select"><option value="NON">NON-SmartWay</option></select>';
+            output += '<select class="form-select"><option value="NON">NON</option></select>';
             output += "</td></tr>";
             return jQuery(output);
         };
@@ -516,13 +516,13 @@ jQuery(document).ready(function () {
         jQuery("#hideIntro").click(function () {
             if (jQuery("#doDetailed").prop("checked")) {
                 jQuery("#introDiv").hide();
-                jQuery("#detailedHeader").show();
+                jQuery("[id^=detailedHeader]").show();
                 jQuery("#appDiv").show();
                 updateOutput();
                 window.scrollTo(0, 0);
             } else if (jQuery("#doBasic").prop("checked")) {
                 jQuery("#introDiv").hide();
-                jQuery("#basicHeader").show();
+                jQuery("[id^=basicHeader]").show();
                 jQuery("#appDiv").show();
                 updateOutput();
                 window.scrollTo(0, 0);
@@ -614,8 +614,8 @@ jQuery(document).ready(function () {
 
     // Show the intro div and show the app when Begin is clicked
     jQuery("#appDiv").hide();
-    jQuery("#basicHeader").hide();
-    jQuery("#detailedHeader").hide();
+    jQuery("[id^=basicHeader]").hide();
+    jQuery("[id^=detailedHeader]").hide();
 
 
     // Show the introduction instructions
@@ -623,8 +623,8 @@ jQuery(document).ready(function () {
         window.scrollTo(0, 0);
         jQuery("#introDiv").show();
         jQuery("#appDiv").hide();
-        jQuery("#basicHeader").hide();
-        jQuery("#detailedHeader").hide();
+        jQuery("[id^=basicHeader]").hide();
+        jQuery("[id^=detailedHeader]").hide();
     });
 
     // Copy #tables div to new window and print it (no styling)

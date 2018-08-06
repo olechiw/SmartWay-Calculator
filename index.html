@@ -23,7 +23,7 @@
 
     <p>&#8203;</p>
 
-    <p>This calculator will provide you with output estimates for Current and Goal emissions, either in grams or pounds which
+    <p>This calculator will provide you with output estimates for Current and Target emissions, either in grams or pounds which
         you can configure here.</p>
     <div id="outputUnitsDiv">
         <label for="select-id right">Output Emissions Units</label>
@@ -40,25 +40,6 @@
     <button id="hideIntro">Continue</button>
 </div>
 
-<div id="basicHeader">
-    <h2>Basic</h2>
-
-    <p>To see your current emissions, input your current freight activity by choosing a carrier type(s) (18 choices), measurement
-        units (miles or ton-miles) and input your activity. Then choose your current SmartWay performance level (1 through
-        5) or choose NON-SmartWay if you don’t use any SmartWay carriers. You’ll see your current emissions. Then, determine
-        your goals (what-if scenario) by clicking on the Goal Tab.</p>
-</div>
-
-<div id="detailedHeader">
-    <h2>Detailed</h2>
-
-    <p>To see your current emissions, input your current freight activity by choosing a carrier type(s) (18 choices), measurement
-        units (miles or ton-miles) and input your activity. Then input the percentage of carriers you use for each SmartWay
-        Bin (1-5). If the carrier is not a SmartWay carrier count its percentage of activity as NON. You’ll see your current
-        emissions. Then, determine your goals (what-if scenario) by clicking on the Goal Tab. This may include changing carrier
-        types/quantities or improving your rankings.</p>
-</div>
-
 
 <div id="appDiv">
     <a href="#intro" id="showIntro">Return to Start</a>
@@ -70,18 +51,33 @@
                 <a class="menu-internal" href="#tab-1" id="inputTab1" name="inputTab">Current Freight Activity</a>
             </li>
             <li>
-                <a class="menu-internal" href="#tab-2" id="inputTab2" name="inputTab">Goal Freight Activity</a>
+                <a class="menu-internal" href="#tab-2" id="inputTab2" name="inputTab">Target Freight Activity</a>
             </li>
             <li>
-                <a class="menu-internal" href="#tab-3" id="inputTab3" name="inputTab">Emissions Results</a>
+                <a class="menu-internal" href="#tab-3" id="inputTab3" name="inputTab">Result Summary</a>
             </li>
             <li>
-                <a class="menu-internal" href="#tab-4" id="inputTab4" name="inputTab">Visualization</a>
+                <a class="menu-internal" href="#tab-4" id="inputTab4" name="inputTab">Result Graphs</a>
             </li>
         </ul>
 
         <div id="tab-1">
-            <h2>Current Activity Quantity</h2>
+            <div id="basicHeaderCurrent">
+                <p>To see your current emissions, input your current freight activity by choosing a carrier type(s) (18 choices),
+                    inputting your activity, and your activity units (miles or ton-miles). Then choose your current SmartWay
+                    performance level (1 through 5) or choose NON-SmartWay if you don’t use any SmartWay carriers. Once done
+                    your estimated emissions will be displayed at the bottom of the page. Click the Target tab to continue.</p>
+            </div>
+
+            <div id="detailedHeaderCurrent">
+                <p>To see your current emissions, input your current freight activity by choosing a carrier type(s) (18 choices),
+                    inputting your activity, and your activity units (miles or ton-miles). Then input the percentage of carriers
+                    you use for each SmartWay Bin (1-5). If the carrier is not a SmartWay carrier count its percentage of
+                    activity as NON. Once done your estimated emissions will be displayed at the bottom of the page. Click
+                    the Target tab to continue.</p>
+            </div>
+
+            <h2>Current Activity</h2>
 
             <table class="center" style="width:100%">
                 <thead>
@@ -95,7 +91,7 @@
                 <tbody id="currentQuantityTable"></tbody>
             </table>
 
-            <h2>Current Activity Bins</h2>
+            <h2>Current SmartWay Performance Level</h2>
 
             <table style="width:100%">
                 <thead id="currentSimpleHeader">
@@ -143,15 +139,29 @@
         </div>
 
         <div id="tab-2">
-            <h2>Goal Activity Quantity</h2>
+            <div id="basicHeaderTarget">
+                <p>To see your target emissions, input your target freight activity by choosing a carrier type(s) (18 choices),
+                    inputting your activity, and your activity units (miles or ton-miles). Then choose your current SmartWay
+                    performance level (1 through 5). Follow the previous instructions but use Target values, then click on
+                    Result Summary or Result Graphs.</p>
+            </div>
+
+            <div id="detailedHeaderTarget">
+                <p>To see your target emissions, input your target freight activity by choosing a carrier type(s) (18 choices),
+                    inputting your activity, and your activity units (miles or ton-miles). Then input the percentage of carriers
+                    you use for each SmartWay Bin (1-5). Follow the previous instructions but use Target values, then click
+                    on Result Summary or Result Graphs.</p>
+            </div>
+
+            <h2>Target Activity</h2>
 
             <div id="targetQuantityDiv">
                 <table class="center" style="width:100%">
                     <thead>
                         <tr>
                             <th>Type</th>
-                            <th>Movement Amount</th>
-                            <th>Movement Units</th>
+                            <th>Activity</th>
+                            <th>Activity Units</th>
                             <th>Remove</th>
                         </tr>
                     </thead>
@@ -159,7 +169,7 @@
                 </table>
             </div>
 
-            <h2>Goal Activity Bins</h2>
+            <h2>Target SmartWay Performance Level</h2>
 
             <div id="targetPerformanceDiv">
                 <table class="center" style="width:100%">
@@ -184,7 +194,7 @@
                     <tbody class="center" id="targetPerformanceTable"></tbody>
                 </table>
 
-                <h2>Estimated Goal Emissions</h2>
+                <h2>Estimated Target Emissions</h2>
 
                 <table class="center" style="width:100%">
                     <thead id="kgTarget">
@@ -237,7 +247,7 @@
                 </div>
 
                 <div id="target">
-                    <h2>Estimated Goal Emissions</h2>
+                    <h2>Estimated Target Emissions</h2>
 
                     <table style="width:100%">
                         <thead id="kgTarget1">
