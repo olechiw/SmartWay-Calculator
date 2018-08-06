@@ -509,7 +509,7 @@ var targetActivity; //ActivityInput
 jQuery(document).ready(function () {
 
     // Start loading the bins data right away
-    jQuery.getJSON("smartway_bins_formatted_0.json", function (data) {
+    jQuery.getJSON("smartway_bins_formatted.json", function (data) {
         Model.Bins = data;
 
         // The begin button, here so that the user cannot continue without the bins
