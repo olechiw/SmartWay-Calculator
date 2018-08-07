@@ -1,7 +1,10 @@
+// Class which represents a single carrier type for either current or target activity
 function CarrierModel(name) {
-    // The name of the movement type
+    // Carrier type
     this.type = name;
+    // Whether it is currently used in UI
     this.active = false;
+    // Whether the detailed percentages are invalid (not 100) or not
     this.invalid = false;
 
     // The activity units (Ton-Miles or Miles) and the corresponding scalar
@@ -13,62 +16,11 @@ function CarrierModel(name) {
     this.NOX = 0;
     this.PM = 0;
 
-    // The general ranking, 1-6 with 6 being NON
+    // The general ranking, string value used to query Bin JSON
     this.smartWayGeneral = "NON";
     // The specific smartway usage, from Bin 1 to NON
     this.percentSmartWay = [0, 0, 0, 0, 0, 0];
 }
-
-// Function to create a list of every carrier, used as the model
-function createCarriers() {
-    return [
-        new CarrierModel("Auto Carrier Trucking"),
-        new CarrierModel("Dray Trucking"),
-        new CarrierModel("Expedited Trucking"),
-        new CarrierModel("Flatbed Trucking"),
-        new CarrierModel("Heavy and Bulk Trucking"),
-        new CarrierModel("LTL/Dry Van"),
-        new CarrierModel("Mixed Trucking"),
-        new CarrierModel("Moving Van Trucking"),
-        new CarrierModel("Package Delivery Trucking"),
-        new CarrierModel("Refrigerated Trucking"),
-        new CarrierModel("Specialty Haul Trucking"),
-        new CarrierModel("Tanker Trucking"),
-        new CarrierModel("TL/Dry Van"),
-        new CarrierModel("Logistics"),
-        new CarrierModel("Multimodal"),
-        new CarrierModel("Rail"), //NON-ONLY, JSON data only needs to have a NON child
-        new CarrierModel("Barge"), //NON-ONLY
-        new CarrierModel("Air-Long Haul"), //NON-ONLY
-        new CarrierModel("Air-Short Haul") //NON-ONLY
-    ];
-}
-// Global freight model
-var Model = {
-    // Carrier types which are only NON smartway tier
-    NonSmartwayCarriers: [
-        "Rail",
-        "Barge",
-        "Air-Long Haul",
-        "Air-Short Haul"
-    ],
-    // The current carriers and usage input into the model
-    CurrentCarriers: createCarriers(),
-    // The target or goal carriers
-    TargetCarriers: createCarriers(),
-    // The bins object, loaded from smartway_bins_formatted_0.json
-    Bins: {}
-};
-
-// The available general performance bins
-var performanceLevels = [
-    "1",
-    "2",
-    "3",
-    "4",
-    "5",
-    "NON"
-];
 
 // Class which handles the UI/input for performance levels, and runs calculations
 function PerformanceInput(carriers, tableID, simpleHeaderID,
@@ -206,7 +158,7 @@ function PerformanceInput(carriers, tableID, simpleHeaderID,
                 // Select which has the 6 bin options (stored in performancelevels array)
                 var select = jQuery('<select class="form-select"></select>');
 
-                jQuery.each(performanceLevels, optionAdder(select));
+                jQuery.each(Model.PerformanceLevels, optionAdder(select));
 
                 select.val(carrier.smartWayGeneral);
                 select.change(simpleChangeBuilder(carrier));
@@ -420,10 +372,9 @@ function ActivityInput(location, onProfileChanged, carriers,
                     if (jQuery(this).val() === value || jQuery.inArray(jQuery(this).val(),
                             availableOptions) !== -1) {
                         // Change the order because hiding it pushs it to the end
-                        var carriers = createCarriers();
                         var index = -1;
-                        for (var i = 0; i < carriers.length; ++i)
-                            if (carriers[i].type === jQuery(this).val())
+                        for (var i = 0; i < Model.CarrierTypes.length; ++i)
+                            if (Model.CarrierTypes[i] === jQuery(this).val())
                                 index = i;
 
                         if (index !== 0)
@@ -500,16 +451,74 @@ function ActivityInput(location, onProfileChanged, carriers,
         };
 }
 
-// Globals for four different input forms
-var currentPerformance; //PerformanceInput
-var currentActivity; //ActivityInput
-var targetPerformance; //PerformanceInput
-var targetActivity; //ActivityInput
+var Model = {};
+var UI = {};
 
 jQuery(document).ready(function () {
 
+    var JSON_URL = "smartway_bins_formatted.json";
+
+    // Global freight model
+    Model = {
+        // The available general performance bins
+        PerformanceLevels: [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "NON"
+        ],
+        // Carrier types which are only NON smartway tier
+        NonSmartwayCarriers: [
+            "Rail",
+            "Barge",
+            "Air-Long Haul",
+            "Air-Short Haul"
+        ],
+        // Types of carriers
+        CarrierTypes: [
+            "Auto Carrier Trucking",
+            "Dray Trucking",
+            "Expedited Trucking",
+            "Flatbed Trucking",
+            "Heavy and Bulk Trucking",
+            "LTL/Dry Van",
+            "Mixed Trucking",
+            "Moving Van Trucking",
+            "Package Delivery Trucking",
+            "Refrigerated Trucking",
+            "Specialty Haul Trucking",
+            "Tanker Trucking",
+            "TL/Dry Van",
+            "Logistics",
+            "Multimodal",
+            "Rail", //NON-ONLY, JSON data only needs to have a NON child
+            "Barge", //NON-ONLY
+            "Air-Long Haul", //NON-ONLY
+            "Air-Short Haul" //NON-ONLY
+        ],
+        // The bins object, loaded from smartway_bins_formatted_0.json
+        Bins: {}
+    };
+    // Create a carrier model for each type
+    var createCarriers = function () {
+        var result = [];
+        if (Model.CarrierTypes) {
+            jQuery.each(Model.CarrierTypes, function () {
+                result.push(new CarrierModel(this.toString()));
+            });
+        }
+        return result;
+    };
+
+    // The current carriers and usage input into the model
+    Model.CurrentCarriers = createCarriers();
+    // The target or goal carriers
+    Model.TargetCarriers = createCarriers();
+
     // Start loading the bins data right away
-    jQuery.getJSON("smartway_bins_formatted.json", function (data) {
+    jQuery.getJSON(JSON_URL, function (data) {
         Model.Bins = data;
 
         // The begin button, here so that the user cannot continue without the bins
@@ -532,47 +541,50 @@ jQuery(document).ready(function () {
         });
     });
 
-    /*
-    Events fired by current performance when it changes, so that the target activities can be updated
-    */
+    // Event for type set on UI.currentActivity, sync to UI.targetActivity
     var onCurrentTypeSet = function (index, val) {
-        targetActivity.setType(index, val);
+        if (UI.targetActivity)
+            UI.targetActivity.setType(index, val);
     };
-
+    // Event for units set on UI.currentActivity, sync to UI.targetActivity
     var onCurrentUnitsSet = function (index, val) {
-        targetActivity.setUnits(index, val);
+        if (UI.targetActivity)
+            UI.targetActivity.setUnits(index, val);
     };
-
+    // Event for activity set on UI.currentActivity, sync to UI.targetActivity
     var onCurrentQuantitySet = function (index, val) {
-        targetActivity.setQuantity(index, val);
+        if (UI.targetActivity)
+            UI.targetActivity.setQuantity(index, val);
     };
     // When the add button for current activity input is clicked
     var addCurrentActivity = function () {
-        currentActivity.addQuantityInputUI();
+        if (UI.currentActivity)
+            UI.currentActivity.addQuantityInputUI();
         if (jQuery("#currentQuantityTable > tr").length > jQuery("#targetQuantityTable > tr").length)
             addTargetActivity();
     };
     // When the add button for target activity input is clicked
     var addTargetActivity = function () {
-        targetActivity.addQuantityInputUI();
+        if (UI.targetActivity)
+            UI.targetActivity.addQuantityInputUI();
     };
 
     // Object handling input for the CURRENT performance rankings
-    currentPerformance = new PerformanceInput(Model.CurrentCarriers,
+    UI.currentPerformance = new PerformanceInput(Model.CurrentCarriers,
         "#currentPerformanceTable", "#currentSimpleHeader",
         "#currentDetailedHeader", updateOutput);
     // Object handling input for the CURRENT activity
     // For CURRENT the event handlers like settype update the target model, for a one-way sync
-    currentActivity = new ActivityInput("#currentQuantityTable",
+    UI.currentActivity = new ActivityInput("#currentQuantityTable",
         onActivityChanged, Model.CurrentCarriers,
         onCurrentTypeSet, addCurrentActivity, onCurrentUnitsSet, onCurrentQuantitySet
     );
 
     // Object handling input for all of the TARGET performance rankings
-    targetPerformance = new PerformanceInput(Model.TargetCarriers,
+    UI.targetPerformance = new PerformanceInput(Model.TargetCarriers,
         "#targetPerformanceTable", "#targetSimpleHeader", "#targetDetailedHeader", updateOutput);
     // Object handling input for all of the TARGET activity
-    targetActivity = new ActivityInput("#targetQuantityTable",
+    UI.targetActivity = new ActivityInput("#targetQuantityTable",
         onActivityChanged, Model.TargetCarriers,
         function () {}, addTargetActivity); // No syncing types for target values, for modal shift/usability reasons
 
@@ -609,6 +621,7 @@ jQuery(document).ready(function () {
 
     addCurrentActivity();
 
+    // Radio buttons that set detailed/basic trigger change to update headers/PerformanceInput(s)
     jQuery("#doDetailed").change(onDetailedChange);
     jQuery("#doBasic").change(onDetailedChange);
 
@@ -671,31 +684,33 @@ function validateState(tabID) {
             carriers = Model.TargetCarriers;
             break;
     }
+    // Passes because its not one of the input tabs, so no validation happens
     if (!carriers)
         return true;
 
-    var failed = false;
+    var passed = true;
     // Check each carrier for issues and inform the user if there are any
     jQuery.each(carriers, function () {
-        if (!this.active || failed)
-            return;
+        if (!this || !this.active || !passed)
+            return; // continue;
         // Activity Quantity is too little
         else if (Number(this.activityQuantity) <= 0) {
             alert("One of your Current Activity Quantities is Zero or Invalid!");
-            failed = true;
+            passed = false;
             // Detailed values are not adding up to 100 (this.invalid === true)
         } else if (jQuery("#doDetailed").prop("checked") && this.invalid) {
             alert("One of your Current Activty Bins (%) does not add up to 100!");
-            failed = true;
+            passed = false;
         }
     });
 
-    return (!failed);
+    return (passed);
 }
 
 // Call the profiles calculation functions (also update the bins that they use, for redundancy)
 // This updates the MODEL
 function updateEmissionsCalculations() {
+    // Clears the quantity if inactive, used because remove button doesn't set to 0 (a bit redundant)
     var clearIfInactive = function () {
         if (!this.active) {
             this.activityQuantity = 0;
@@ -714,6 +729,7 @@ function updateEmissionsCalculations() {
         factor = (1 / 1000);
     }
 
+    // Function to update carrier groups, either updateEmissionsDetailed or updateEmissionsSimple
     var update;
     if (jQuery("#doDetailed").prop("checked")) {
         update = updateEmissionsDetailed;
@@ -726,21 +742,24 @@ function updateEmissionsCalculations() {
 
 // Update emissions for carrriers given emissions unit factor and the carriers to update
 function updateEmissionsDetailed(factor, carriers) {
+    if (!Model.Bins) return;
     for (var i = 0; i < carriers.length; ++i) {
         var carrier = carriers[i];
 
-        // If percentages dont add up, dont re-calculate
-        if (carrier.invalid || !carrier.active) {
-            continue;
-        }
+        if (!carrier || carrier.invalid) continue;
 
+        // Clear current values so if it is not active it is 0 (if current is active while target isnt for example)
         carrier.CO2 = 0;
         carrier.NOX = 0;
         carrier.PM = 0;
+
+        // If percentages dont add up, dont re-calculate
+        if (!carrier.active) continue;
+
         var activity = carrier.activityQuantity;
         // Iterate through 6 different percents, do calculation for each
         for (var t = 0; t < carrier.percentSmartWay.length; ++t) {
-            var binTag = performanceLevels[t];
+            var binTag = Model.PerformanceLevels[t];
             if (jQuery.inArray(carrier.type, Model.NonSmartwayCarriers) !== -1 && binTag !== "NON") continue;
             var bin = Model.Bins[carrier.activityUnits][carrier.type][binTag];
 
@@ -753,9 +772,13 @@ function updateEmissionsDetailed(factor, carriers) {
 }
 // Update emissions for carrriers given emissions unit factor and the carriers to update
 function updateEmissionsSimple(factor, carriers) {
+    if (!Model.Bins) return;
     for (var i = 0; i < carriers.length; ++i) {
         var carrier = carriers[i];
 
+        if (!carrier) continue;
+
+        // Clear current values so if it is not active it is 0 (if current is active while target isnt for example)
         carrier.CO2 = 0;
         carrier.NOX = 0;
         carrier.PM = 0;
@@ -769,6 +792,7 @@ function updateEmissionsSimple(factor, carriers) {
         var CO2 = bin.CO2;
         var NOX = bin.NOX;
         var PM = bin.PM;
+        // activity amount * activity emissions rating * unit conversion factor
         carrier.CO2 = CO2 * Number(carrier.activityQuantity) * factor;
         carrier.NOX = NOX * Number(carrier.activityQuantity) * factor;
         carrier.PM = PM * Number(carrier.activityQuantity) * factor;
@@ -791,8 +815,8 @@ function updateTableUnits() {
 // When the detailed radio button changes, change the headers/display mode
 function onDetailedChange() {
     var detailed = jQuery("#doDetailed").prop('checked');
-    currentPerformance.setDetailed(detailed);
-    targetPerformance.setDetailed(detailed);
+    UI.currentPerformance.setDetailed(detailed);
+    UI.targetPerformance.setDetailed(detailed);
 }
 
 // When the activity input, target or current, changes. Fired by activityprofiles
@@ -803,8 +827,8 @@ function onActivityChanged() {
 
 // Update the target/current performance input fields (add/remove based on which are active)
 function rebuildPerformanceInputUI() {
-    currentPerformance.rebuildInputUI();
-    targetPerformance.rebuildInputUI();
+    UI.currentPerformance.rebuildInputUI();
+    UI.targetPerformance.rebuildInputUI();
 }
 
 // Takes a number and adds commas/rounds to two
@@ -818,10 +842,12 @@ function updateEmissionsTables() {
     var createTableCell = function (text) {
         return jQuery("<td>" + text + "</td>");
     };
+    // Create a table header from text
     var createTableHeader = function (text) {
         return jQuery("<th>" + text + "</th>");
     };
 
+    // JQuery selectors for tables to put current/target values into (multiple places)
     var currentTables = "#currentTable,#currentTable1";
     var targetTables = "#targetTable,#targetTable1";
 
@@ -831,6 +857,7 @@ function updateEmissionsTables() {
     jQuery("#savingsTablePercent").empty();
 
     var emissionTypes = ["CO2", "NOX", "PM"];
+    // Model for CO2, NOX, and PM emissions which is used in all the calculations (current, target, saved, percent)
     var EmissionsGroup = function () {
         this.CO2 = 0;
         this.NOX = 0;
@@ -847,6 +874,8 @@ function updateEmissionsTables() {
         };
     };
 
+    // A function builder that takes cells and returns an iterator for an emission (string)
+    // Used with jQuery.each(["CO2", "NOX", "PM"]), cellPopulator);
     var cellPopulator = function (currentCarrier, targetCarrier,
         currentCells, targetCells, savedCells, percentCells) {
         return function () {
@@ -1012,12 +1041,14 @@ function updateGraphs() {
     var tooltipFormatter = function () {
         var values = this.series.data;
 
+        // Calculate a percentage if current isnt 0 (no divide by zero)
         var percentage;
         if (values[0].y !== 0)
             percentage = (values[2].y / values[0].y) * 100;
         else
             percentage = 0;
 
+        // Value in bold, label in color of series
         var string = '<span style="color:' + this.series.color + ';font-weight:bolder">' +
             this.series.name +
             ': </span><b>' +
@@ -1029,7 +1060,7 @@ function updateGraphs() {
         return string;
     };
 
-    // Graph in the location div
+    // Highcharts graph config, notably tooltipformatter and datalabel formatter
     var barGraph = function (locationID, title, series) {
         Highcharts.chart(locationID, {
             chart: {
